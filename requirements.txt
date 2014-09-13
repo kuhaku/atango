@@ -1,0 +1,10 @@
+tweepy
+flickrapi
+nkf
+numpy
+jctconv
+python-tr
+requests
+scipy
+matplotlib
+pil

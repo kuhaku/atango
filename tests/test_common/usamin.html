@@ -1,0 +1,192 @@
+<html>
+<head>
+<title>Q全文:マミさん</title>
+<script type="text/javascript">
+  function func1(id1){
+    if(document.getElementById(id1).style.display == 'none'){
+       document.getElementById(id1).style.display = 'inline'; 
+    }
+    else{
+      document.getElementById(id1).style.display = 'none';
+    }
+  }  
+  function func2(){
+    document.form1.w.focus(); 
+  }  
+</script>
+<meta name="viewport" content="width=device-width, user-scalable=yes, initial-scale=1, maximum-scale=5.0 minimum-scale=0.2">
+<style type="text/css">
+pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow: auto;
+}
+input { font-family: monospace }
+em { background:#ffff00; color:#000000; font-style:normal; }
+</style>
+
+</head>
+<body text="#ffffff" bgcolor="#004040" link="#eeffee" vlink="#dddddd" alink="#ff0000" onload="func2();">
+<a href="/cgi/swlog">戻る</a>
+<form method="get" action="/cgi/swlog" name="form1">
+<input type="text" size="30" name="w" value="マミさん"/>
+<input type="submit" value="検索" /><br/>
+<a href="javascript:;" onmousedown="func1('opt');">option</a>
+<a href="javascript:;" onmousedown="func1('note');">説明</a>
+<a href="javascript:;" onmousedown="func1('hist');">履歴</a>
+<div id="opt" style="display:none">
+<table border="1">
+<tr>
+<td>論理式</td>
+<td>
+<input type="radio" name="ao" value="a" checked/>AND
+<input type="radio" name="ao" value="o" />OR
+</td>
+</tr>
+<tr>
+<td>ハイライト</td>
+<td>
+<input type="checkbox" name="hl" ><br/>
+</td>
+</tr>
+<tr>
+<td>表示順</td>
+<td>
+<input type="radio" name="o" value="d" />日時降順
+<input type="radio" name="o" value="a" checked="checked"/>日時昇順
+</td>
+</tr>
+<tr>
+<td>表示件数</td>
+<td>
+<select name="num">
+  <option value="500"  >500</option>
+  <option value="100"  >100</option>
+  <option value="50"    >50</option>
+</select>
+</td>
+</tr>
+<tr>
+<td>直レス数表示</td>
+<td>
+<input type="checkbox" name="rn" checked> (遅くなる)<br/>
+</td>
+</tr>
+<tr>
+<tr>
+<td>検索対象項目</td>
+<td>
+<input type="checkbox" name="i0" checked="checked"/>本文</input><br/><input type="checkbox" name="i1" />投稿者</input><br/><input type="checkbox" name="i2" />題名</input><br/>
+</td>
+</tr>
+<tr>
+<td>検索対象板</td>
+<td>
+<input type="checkbox" name="b0" checked="checked"/>qwerty</input><br/><input type="checkbox" name="b1" />mirai</input><br/>
+</td>
+</tr>
+<tr>
+<td>対象期間</td>
+<td>
+<input type="checkbox" name="y0" >2014年<br/><input type="checkbox" name="y1" >2013年<br/><input type="checkbox" name="y2" >2012年<br/><input type="checkbox" name="y3" >2011年<br/><input type="checkbox" name="y4" >2010年<br/><input type="checkbox" name="y5" >2009年<br/><input type="checkbox" name="y6" >2008年<br/><input type="checkbox" name="y7" >2007年<br/><input type="checkbox" name="y8" >2006年<br/><input type="checkbox" name="y9" >2005年<br/><input type="checkbox" name="y10" >2004年<br/><input type="checkbox" name="y11" >2003年<br/><input type="checkbox" name="y12" >2002年<br/><input type="checkbox" name="y13" >2001年<br/><input type="checkbox" name="y14" >2000年<br/>
+</td>
+</tr>
+<tr>
+<td>色設定</td>
+<td>
+<input type="text" name="tc" size="7" value="ffffff">文字色<br/>
+<input type="text" name="bc" size="7" value="004040">背景色<br/>
+<input type="text" name="lc" size="7" value="eeffee">リンク色<br/>
+<input type="text" name="vc" size="7" value="dddddd">訪問済リンク色<br/>
+<input type="text" name="qc" size="7" value="ffffff">引用色<br/>
+<input type="text" name="htc" size="7" value="000000">ハイライト文字色<br/>
+<input type="text" name="hbc" size="7" value="ffff00">ハイライト背景色<br/>
+<input type="submit" name="color_set" value="色設定後URL" /><br/>
+</td>
+</tr>
+</table>
+</div>
+<div id="note" style="display:none">
+<pre>
+<ul>
+<li>全文検索です！</li>
+<li>1文字だけの単語やフレーズ検索はできません！(;´Д`)<br/>でも *津 とか 上* みたいな工夫が使えるよ</li>
+<li>単語を空白で区切って並べると暗黙的にANDになるよ</li>
+<li>OR検索は明示的に指定するよ。<a href="http://usamin.mine.nu/cgi/swlog?w=%E3%81%95%E3%82%84%E3%81%8B+OR+%E3%81%BB%E3%82%80%E3%82%89+OR+%E6%9D%8F%E5%AD%90">このような感じ</a></li>
+<li>正規表現は使えないので＠検索とかがいいと思います</li>
+<li>本文の引用行は検索対象から除外しています</li>
+<li>ハイライトは検索ヒット部分とは厳密には異なります。<br/>引用行もハイライトされてるのは分けると面倒だからです。<br/>あとカナ英数字の半角全角混在はハイライトされません</li>
+<li>◆はスレッド表示です</li>
+<li>▼は前後10分のログ表示です</li>
+<li>◇は投稿1件表示です</li>
+<li>直レス数選択をオンにすると日時の横に直レス数が表示されます。<br/>また、非レスで直レス0の投稿は◆を表示しません</li>
+<li>ログは毎分更新です。常に現在の参加者です(;´Д`)</li>
+<li>メアド付き投稿のメアドがあったりなかったりしますがそのうちちゃんとします(;´Д`)</li>
+<li>他所のログは持ってない(ﾟДﾟ)</li>
+<li>クエリーパラメータは'w'だけあればあとはデフォで日時降順,検索対象本文,対象期間全てになるよ。<a href="http://usamin.mine.nu/cgi/swlog?w=%E3%81%8A%E3%81%BE%E3%82%93%E3%81%93">こんなかんじ</a></li>
+<li>検索は<a href="http://www.google.com/search?q=solr+lucene">Solr/Lucene</a>の文法に従うよ。本文:text_idx, 題名:title, 投稿者:poster, 投稿日時:post_dtなので適当にどうぞ</li>
+<li>サーバは<a href="http://www.cloudcore.jp/vps/">CloudCore</a>です</li>
+<li>当たり前だけど検索キーワードとか公開したりはしないんで</li>
+<li>用があれば＠上海で「qwerty全文検索の人いる？」ってきいて下さい</li>
+<li>考えれば考えるほど個別の削除は判断が難しいので対応しかねます(;´Д`)</li>
+</ul>
+</pre>
+</div>
+<div id="hist" style="display:none">
+<pre>
+[2013/05/20]
+<div>
+solrを4.3.0へ更新
+qwertyのログでシングルクォーテーションを含む語句が正しく検索されない不具合を修正
+</div>
+[2012/06/12]
+<div>
+viewport指定を追加 
+</div>
+[2012/06/11]
+<div>
+表示件数選択(50,100,500)を追加
+直レス数表示の選択を追加 (実験的)
+</div>
+[2012/06/09]
+<div>
+単語だけ並べた際のAND/OR選択の追加
+</div>
+[2012/05/29]
+<div>
+ハイライト機能を追加
+</div>
+[2012/05/21]
+<div>
+PREタグ内をwrapするように変更
+URLが短くなるように改善
+検索後のタイトル表示を改善
+▼は対象postに飛ぶように改善
+色設定に対応(form設定、もしくはcパラメータ付きqwerty.on.arena.ne.jpからのreferer)
+</div>
+</pre>
+</div>
+</form>
+
+<a href="#bottom">下へ</a>
+<a name="top"></a>
+
+15719 hits 0 <a href="/cgi/swlog?o=a&rn=on&num=3&b0=on&w=%E3%83%9E%E3%83%9F%E3%81%95%E3%82%93&p=1">1</a> .. <a href="/cgi/swlog?o=a&rn=on&num=3&b0=on&w=%E3%83%9E%E3%83%9F%E3%81%95%E3%82%93&p=5238">5238</a> <a href="/cgi/swlog?o=a&rn=on&num=3&b0=on&w=%E3%83%9E%E3%83%9F%E3%81%95%E3%82%93&p=5239">5239</a> 
+<hr/><a id="624916"></a><FONT size="+1" color="#ffffff"><B>＞　</B></FONT> <font size="-1">2005/05/19 (木) 01:38:50　[1]　 <a href="/cgi/swlog?b=qwerty&s=624916&o=a">◆</a>　 <a href="/cgi/swlog?b=qwerty&r=624916&o=a#624916">▼</a>　 <a href="/cgi/swlog?id=624916&b=qwerty">◇</a>　 [qwerty]</font><pre>&gt; ｽｽｷﾉ壊滅！(;´Д`)今なら風俗嬢火事場泥棒！
+
+俺のﾏﾐさんはもういないんだよ(;´ДT)
+
+<A href="#624902">参考：2005/05/19(木)01時36分58秒</A>
+</pre><hr/><a id="748750"></a><FONT size="+1" color="#ffffff"><B>＞　</B></FONT> <font size="-1">2005/06/02 (木) 16:10:47　[0]　 <a href="/cgi/swlog?b=qwerty&s=748750&o=a">◆</a>　 <a href="/cgi/swlog?b=qwerty&r=748750&o=a#748750">▼</a>　 <a href="/cgi/swlog?id=748750&b=qwerty">◇</a>　 [qwerty]</font><pre>&gt; 鳴滝荘にﾀﾞﾒ住人が入ってｷﾞｽｷﾞｽする展開まだぁ
+
+ﾀﾏﾐさんに排除される
+
+<A href="#748746">参考：2005/06/02(木)16時09分48秒</A>
+</pre><hr/><a id="991933"></a><font size="-1">2005/06/27 (月) 01:51:24　[0]　 <a href="/cgi/swlog?b=qwerty&r=991933&o=a#991933">▼</a>　 <a href="/cgi/swlog?id=991933&b=qwerty">◇</a>　 [qwerty]</font><pre>ﾀﾏﾐさんﾏｼﾞｷﾞﾚ(;´Д`)
+</pre><hr/>
+15719 hits 0 <a href="/cgi/swlog?o=a&rn=on&num=3&b0=on&w=%E3%83%9E%E3%83%9F%E3%81%95%E3%82%93&p=1">1</a> .. <a href="/cgi/swlog?o=a&rn=on&num=3&b0=on&w=%E3%83%9E%E3%83%9F%E3%81%95%E3%82%93&p=5238">5238</a> <a href="/cgi/swlog?o=a&rn=on&num=3&b0=on&w=%E3%83%9E%E3%83%9F%E3%81%95%E3%82%93&p=5239">5239</a> 
+<a name="bottom"></a>
+<a href="#top">上へ</a>
+
+</body>
+</html>

@@ -1,0 +1,9 @@
+ld/*
+dist/*
+*.egg-info
+*.pyc
+.svn
+*.swp
+*.swo
+.DS_Store
+.*.un~

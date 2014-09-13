@@ -1,0 +1,10 @@
+{
+  "WordMap": {
+    "font": "/Library/Fonts/Microsoft/MS Gothic.ttf",
+    "bgcolor": "#004040",
+    "fig_size": 7.5,
+    "canvas_size": 355.0,
+    "overlap_allowable_rate": 0.7,
+    "min_font_size": 6
+  }
+}
