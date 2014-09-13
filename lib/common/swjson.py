@@ -155,7 +155,7 @@ class SwJson:
         if quote_match:
             quoted_post_id = quote_match.group(1)
             posts[id]['quote'] = quoted_post_id
-            if not quoted_post_id in posts:
+            if quoted_post_id not in posts:
                 posts[quoted_post_id] = {}
             if 'quoted_by' in posts[quoted_post_id]:
                 posts[quoted_post_id]['quoted_by'].append(id)

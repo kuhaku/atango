@@ -32,7 +32,7 @@ class WordCount(app.App):
 
     @staticmethod
     def is_valid_post(post):
-        if not 'text' in post or post.get('author', '') == u'アニメ時報':
+        if ('text' not in post) or post.get('author', '') == u'アニメ時報':
             return False
         return True
 
@@ -57,7 +57,7 @@ class WordCount(app.App):
             all_words[word].distribution += counter
             if self.plot_wordmap:
                 all_words[word].time = self.calc_avg_time(all_words[word],
-                                                            post_time)
+                                                          post_time)
         return all_words
 
     def is_valid_word(self, word):
@@ -132,9 +132,9 @@ class WordCount(app.App):
                     message = u'%s %s：%d,' % (message, word.surface, word.count)
             elif self.plot_wordmap:
                 all_words = self.to_bag_of_words(all_words)
-                wmap = wordmap.WordMap(upload_flickr=self.up_flickr, verbose=self.verbose, debug=self.debug)
-                message += u' ' + wmap.run(all_words, message[:-1],
-                                           upload_flickr=self.up_flickr)
+                wmap = wordmap.WordMap(upload_flickr=self.up_flickr, verbose=self.verbose,
+                                       debug=self.debug)
+                message += u' ' + wmap.run(all_words, message[:-1])
                 return message
             else:
                 break

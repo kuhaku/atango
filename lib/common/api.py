@@ -24,7 +24,7 @@ class Flickr(app.App):
         super(Flickr, self).__init__()
         config_parser = config.read(CFG_FILE)
         self.api = flickrapi.FlickrAPI(config_parser.get('Flickr', 'api_key'),
-                                  config_parser.get('Flickr', 'api_secret'))
+                                       config_parser.get('Flickr', 'api_secret'))
         (token, frob) = self.api.get_token_part_one(perms='write')
         if not token:
             self.logger.warn('Flickr API requires an authorization')

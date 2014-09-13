@@ -26,10 +26,10 @@ class test_WordCount:
 
     def test_sort_by_count(self):
         words = {
-                'xx': wordcount.Word(surface='xx', count=2),
-                'y': wordcount.Word(surface='y', count=2),
-                'z': wordcount.Word(surface='z', count=1),
-                }
+            'xx': wordcount.Word(surface='xx', count=2),
+            'y': wordcount.Word(surface='y', count=2),
+            'z': wordcount.Word(surface='z', count=1),
+        }
         got = self.wm.sort_by_count(words)
         assert_equals(got[0].surface, 'xx')
         assert_equals(got[1].surface, 'y')
@@ -77,7 +77,7 @@ class test_WordCount:
         assert_equals(got, label)
         canvas[0][0] = 1
         got = self.wm.eliminate_overwrap(canvas, label)
-        assert_true(got['y'] == {'min': 1, 'max': 3} or 
+        assert_true(got['y'] == {'min': 1, 'max': 3} or
                     got['y'] == {'max': 2, 'min': 0})
 
     def test_put_label_on_canvas(self):

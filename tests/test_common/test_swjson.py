@@ -73,7 +73,7 @@ class testSwJson:
         assert_equals(parsed_post_text['q2'], [u'(;´Д`)'])
         assert_equals(parsed_post_text['q1'], [u'ヽ(´ー｀)ノ'])
         assert_equals(parsed_post_text['text'],
-                      [u'v(*´Д､ﾟ)v', 
+                      [u'v(*´Д､ﾟ)v',
                        u'<A href="#25721977">参考：2014/06/15(日)00時06分32秒</A>'])
 
     def test_link_by_quote(self):
@@ -97,4 +97,3 @@ class testSwJson:
         print posts[u'25721989']
         assert_equals(posts[u'25721989']['quote'], u'25721977')
         assert_equals(posts[u'25721977']['quoted_by'], [u'25721989'])
-

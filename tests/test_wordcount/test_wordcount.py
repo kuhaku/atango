@@ -51,7 +51,7 @@ class test_WordCount:
 
     def test_sort_by_keys_length(self):
         vals = [Word(surface='xx', count=2),
-                   Word(surface='x', count=0)]
+                Word(surface='x', count=0)]
         mapping = dict(zip(('xx', 'x'), vals))
         gots = self.wc.sort_by_keys_length(mapping)
         for got, expect in zip(gots, vals):

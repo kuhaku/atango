@@ -22,6 +22,7 @@ class WordMap(app.App):
 
     def __init__(self, upload_flickr=False, verbose=False, debug=False):
         super(WordMap, self).__init__(verbose, debug)
+        self.upload_flickr = upload_flickr
         if upload_flickr:
             self.flickr = api.Flickr()
             self.temp_file = tempfile.mkstemp(suffix='.png')[1]
@@ -327,7 +328,7 @@ class WordMap(app.App):
         url = FLICKR_URL + result.find('photoid').text
         return url
 
-    def run(self, words, description='', upload_flickr=False):
+    def run(self, words, description=''):
         total_count = np.sum([v.count for v in words.values()])
         num_items = self.determine_num_plot_items(total_count)
 
@@ -339,7 +340,7 @@ class WordMap(app.App):
         words = self.rescale_canvas(words)
 
         self.plot_map(words, total_count)
-        if upload_flickr is True:
+        if self.upload_flickr is True:
             url = self.upload(description)
         else:
             plt.show()

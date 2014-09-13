@@ -97,7 +97,7 @@ def gen_params(kwd='', date_range={}):
     <datetime> now
     <dict<str>> params
     """
-    if not 'start_hour' in date_range:
+    if 'start_hour' not in date_range:
         date_range.update(
             {
                 'start_hour': 0,
@@ -147,9 +147,9 @@ def _get_gikogicom_log(params):
         del params['kwd']
     else:
         params['qs'] = _parse_keyword(params['qs'], 'cp932')
-    if not 'n' in params:
+    if 'n' not in params:
         params['n'] = 'all'
-    if not 'o' in params:
+    if 'o' not in params:
         params['o'] = 'o'
     html = web.open_url(GIKOGICOM_URL, params=params)
     return html
@@ -161,9 +161,9 @@ def _get_usamin_log(params):
         del params['kwd']
     else:
         params['w'] = _parse_keyword(params['w'], 'utf8')
-    if not 'ao' in params:
+    if 'ao' not in params:
         params['ao'] = 'a'
-    if not 'num' in params:
+    if 'num' not in params:
         params['num'] = 100
     html = web.open_url(USAMIN_URL, params=params)
     return html
@@ -172,13 +172,13 @@ def _get_usamin_log(params):
 def get_log(site, params={}, link=False, font_tag=False):
     if site == 'qwerty':
         html = _get_qwerty_log(params)
-        if not '<PRE' in html:
+        if '<PRE' not in html:
             return None
         html = cleansing(html, font_tag, link, site)
 
     elif site == 'gikogi':
         html = _get_gikogicom_log(params)
-        if not '<pre' in html:
+        if '<pre' not in html:
             return None
         html = cleansing(html, font_tag, link, site)
 
