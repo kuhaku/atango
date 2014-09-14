@@ -40,6 +40,12 @@ class test_WordCount:
         self.wc.start_time = 0
         assert_equals(self.wc.calc_avg_time(word, 7), 5)
 
+    def test_prepare_for_counting(self):
+        pass
+
+    def test_count(self):
+        pass
+
     def test_merge_counter(self):
         self.wc.plot_wordmap = False
         counter = Counter({'x': 1})
@@ -48,6 +54,21 @@ class test_WordCount:
         got = self.wc.merge_counter(counter, total_words)
         assert_equals(got['x'].count, 2)
         assert_equals(got['x'].distribution, Counter({'x': 2, 'y': 1}))
+
+    def test_is_valid_word(self):
+        assert_true(self.wc.is_valid_word(u'まんこ'))
+        assert_true(not self.wc.is_valid_word(u'あと'))
+        assert_true(not self.wc.is_valid_word(u'111'))
+        assert_true(not self.wc.is_valid_word(u'ょゅぅ'))
+
+    def test_del_word(self):
+        pass
+
+    def test_cut_ngword(self):
+        pass
+
+    def test_decrease_duplicate_count(self):
+        pass
 
     def test_sort_by_keys_length(self):
         vals = [Word(surface='xx', count=2),
@@ -58,6 +79,12 @@ class test_WordCount:
             assert_equals(got[1].surface, expect.surface)
             assert_equals(got[1].count, expect.count)
 
+    def test_del_duplicate_word(self):
+        pass
+
+    def test_to_bag_of_words(self):
+        pass
+
     def test_gen_report(self):
         word_x = Word(surface='word_x', count=2)
         word_y = Word(surface='word_y', count=1)
@@ -66,3 +93,6 @@ class test_WordCount:
         got = self.wc.gen_report({'word_x': word_x, 'word_y': word_y})
         expect = u'0~1時の＠上海:\n word_x：2, word_y：1'
         assert_equals(got, expect)
+
+    def test_run(self):
+        pass
