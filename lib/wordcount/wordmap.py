@@ -343,6 +343,11 @@ class WordMap(app.App):
         if self.upload_flickr is True:
             url = self.upload(description)
         else:
-            plt.show()
-            url = 'https://twitter.com/sw_words'
+            if os.getenv('DISPLAY'):
+                plt.show()
+            else:
+                temp_file = tempfile.mkstemp(suffix='.png')[1]
+                plt.savefig(temp_file)
+                self.logger.debug('word-map image is stored at %s' % temp_file)
+            url = ''
         return url

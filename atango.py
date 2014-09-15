@@ -24,7 +24,8 @@ class Atango(App):
     def run(self, job):
         if job == 'wordcount':
             from lib.wordcount.wordcount import WordCount
-            wc = WordCount(plot_wordmap=True, up_flickr=True,
+            up_flickr = not self.debug
+            wc = WordCount(plot_wordmap=True, up_flickr=up_flickr,
                            verbose=self.verbose, debug=self.debug)
             self.output(wc.run(hour=1))
         else:
