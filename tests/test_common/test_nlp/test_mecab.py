@@ -32,8 +32,8 @@ def test_extract_word():
     assert_equals(got, [u'環境', u'音楽'])
     got = mecab.extract_word('環境音楽だ', '名詞', phrase=True)
     assert_equals(got, [u'環境', u'音楽', u'環境音楽'])
-    got = mecab.extract_word('進め', '動詞', rootform=True)
-    assert_equals(got, [u'進む'])
+    got = mecab.extract_word('寝ろ', '動詞', rootform=True)
+    assert_equals(got, [u'寝る'])
 
 
 def test_count_word():
