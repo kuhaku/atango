@@ -70,6 +70,13 @@ class test_WordCount:
     def test_decrease_duplicate_count(self):
         pass
 
+    def test_del_minus_count_word(self):
+        vals = [Word(surface='anko', count=2),
+                Word(surface='manko', count=-1)]
+        words = dict(zip(('anko', 'manko'), vals))
+        got = self.wc.del_minus_count_word(words)
+        assert_equals(got.keys(), ['anko'])
+
     def test_sort_by_keys_length(self):
         vals = [Word(surface='xx', count=2),
                 Word(surface='x', count=0)]

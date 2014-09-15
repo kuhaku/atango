@@ -96,6 +96,12 @@ class WordCount(app.App):
                         all_words[key].count -= all_words[ng].count
         return all_words
 
+    def del_minus_count_word(self, all_words):
+        minus_words = [k for (k, v) in all_words.iteritems() if v.count < 0]
+        for word in minus_words:
+            self.del_word(word, all_words)
+        return all_words
+
     def del_duplicate_word(self, all_words):
         for (i, j) in combinations(all_words.iterkeys(), 2):
             if len(i) != len(j):
@@ -158,6 +164,7 @@ class WordCount(app.App):
 
         all_words = self.cut_ngword(all_words)
         all_words = self.decrease_duplicate_count(all_words)
+        all_words = self.del_minus_count_word(all_words)
         all_words = self.del_duplicate_word(all_words)
         return self.gen_report(all_words)
 
