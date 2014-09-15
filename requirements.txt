@@ -1,10 +1,11 @@
 tweepy
 flickrapi
-nkf
-numpy
+nose
 jctconv
 python-tr
 requests
+nkf
+numpy
 scipy
+Pillow
 matplotlib
-pil
