@@ -17,3 +17,6 @@ mkdir -p /work
 chmod 777 /work
 
 ln -sf /usr/share/zoneinfo/Japan /etc/localtime
+
+# Install substitute fonts to use in WordMap job
+apt-get install fonts-migmix
