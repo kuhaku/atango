@@ -10,15 +10,15 @@ def test_is_target_pos():
 
 
 def test_extract_rootform():
-    feature = '動詞,自立,*,*,五段・マ行,命令e,進む,ススメ,ススメ,すすめ/進め,'
-    assert_equals(mecab._extract_rootform(feature, dic='IPA'), u'進む')
+    feature = '動詞,自立,*,*,一段,命令ro,寝る,ネロ,ネロ'
+    assert_equals(mecab._extract_rootform(feature, dic='IPA'), u'寝る')
 
 
 def test_extract_surface():
     m = mecab.MeCabWrapper()
-    nodes = [n for n in m.parse_to_node('進め')]
-    assert_equals(mecab._extract_surface(nodes[0]), u'進め')
-    assert_equals(mecab._extract_surface(nodes[0], True), u'進む')
+    nodes = [n for n in m.parse_to_node('寝ろ')]
+    assert_equals(mecab._extract_surface(nodes[0]), u'寝ろ')
+    assert_equals(mecab._extract_surface(nodes[0], True), u'寝る')
 
 
 def test_extract_phrase():
