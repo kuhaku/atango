@@ -7,3 +7,4 @@ dist/*
 *.swo
 .DS_Store
 .*.un~
+setup/.vagrant/*
