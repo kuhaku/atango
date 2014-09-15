@@ -296,7 +296,7 @@ class WordMap(app.App):
         for word in words[::-1]:
             labelsize = self.calc_label_size(word.count, total_count)
             if word.count < 1 or labelsize < self.min_font_size:
-                break
+                continue
             (x, y) = self.adjust_label(int(labelsize), word.surface, word.x, word.y)
             self.logger.debug('%s %f %f %s' % (word.surface, word.x, word.y, labelsize))
             args = {'size': labelsize, 'color': 'white', 'ha': 'center', 'va': 'center',
