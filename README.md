@@ -8,10 +8,10 @@
                       |___/
 </pre>
 
-Atango is a Twitter bot using [qwerty@Strange World](http://qwerty.on.arena.ne.jp/cgi-bin/bbs.cgi) posts.
+Atango is a Twitter bot using [strangeworld@qwerty](http://qwerty.on.arena.ne.jp/cgi-bin/bbs.cgi) posts.
 This bot is just for fun.
 
-Atango directory path must be added to $PYTHONPATH
+[Installation is here](https://github.com/kuhaku/atango/wiki/ぁ単語が動くようになるまでの手順).
 
 Contributions are welcome!ヽ(´ー｀)ノ
 
