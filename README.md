@@ -11,7 +11,7 @@
 Atango is a Twitter bot using [strangeworld@qwerty](http://qwerty.on.arena.ne.jp/cgi-bin/bbs.cgi) posts.
 This bot is just for fun.
 
-[Installation is here](https://github.com/kuhaku/atango/wiki/ぁ単語が動くようになるまでの手順).
+[Installation is here](https://github.com/kuhaku/atango/wiki/Installation) ([Japanese](https://github.com/kuhaku/atango/wiki/ぁ単語が動くようになるまでの手順))
 
 Contributions are welcome!ヽ(´ー｀)ノ
 
