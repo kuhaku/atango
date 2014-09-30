@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 import json
-import ConfigParser
+from configparser import ConfigParser, SafeConfigParser
 from . import file_io
 
 
@@ -29,7 +29,7 @@ def logdir():
 def read(filename, encoding=''):
     if filename.endswith('.cfg'):
         cfg = os.path.join(cfgdir(), filename)
-        config_parser = ConfigParser.SafeConfigParser()
+        config_parser = SafeConfigParser()
         config_parser.read(cfg)
         return config_parser
     elif filename.endswith('.json'):

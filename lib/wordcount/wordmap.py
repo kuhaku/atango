@@ -77,6 +77,7 @@ class WordMap(app.App):
         return graphtitle
 
     def configure_graph(self):
+        plt.switch_backend('agg')
         plt.figure(figsize=(self.fig_size, self.fig_size))
         plt.axes(axisbg=self.bgcolor)
         ax = plt.gca()
@@ -104,7 +105,7 @@ class WordMap(app.App):
 
     @staticmethod
     def sort_by_count(words):
-        return sorted(words.itervalues(), key=lambda x: [x.count, len(x.surface)],
+        return sorted(words.values(), key=lambda x: [x.count, len(x.surface)],
                       reverse=True)
 
     @staticmethod
@@ -113,9 +114,9 @@ class WordMap(app.App):
         distance = cos_similarity * time_distance
         """
         num_words = len(words)
-        for i in xrange(num_words):
+        for i in range(num_words):
             words[i].distance = np.zeros(num_words)
-            for j in xrange(num_words):
+            for j in range(num_words):
                 cos_dist = rogerstanimoto(words[i].distribution, words[j].distribution)
                 time_dist = np.abs(words[i].time - words[j].time)
                 words[i].distance[j] = cos_dist * time_dist
@@ -152,7 +153,7 @@ class WordMap(app.App):
         minmax = self.get_minmax(words)
         xscale = 0.95 / (minmax['minx'] + minmax['maxx'])
         yscale = 0.95 / (minmax['miny'] + minmax['maxy'])
-        for i in xrange(len(words)):
+        for i in range(len(words)):
             words[i].x = (words[i].x + minmax['minx']) * xscale
             words[i].y = (words[i].y + minmax['miny']) * yscale
         return words
@@ -225,7 +226,7 @@ class WordMap(app.App):
         """
         Arrange word-label position to avoid overlaping with other labels
         """
-        total_count = np.sum(map(lambda x: x.count, words))
+        total_count = sum(map(lambda x: x.count, words))
         if total_count < 200:
             total_count = 200
 
@@ -310,29 +311,28 @@ class WordMap(app.App):
         """
         items = description.split(' ')
         result = items[0][:-1]
-        for item in [item.split(u'：') for item in items[1:]]:
-            result += u' <a href="%s%s">%s</a>：%s' % (USAMIN_URL, item[0], item[0], item[1])
-        return result.encode('utf8', 'replace')
+        for item in [item.split('：') for item in items[1:]]:
+            result += ' <a href="%s%s">%s</a>：%s' % (USAMIN_URL, item[0], item[0], item[1])
+        return result#.encode('utf8', 'replace')
 
     def upload(self, description):
         """
         Upload wordmap image file to Flickr
         """
         plt.savefig(self.temp_file)
-        tempfilename = self.temp_file
-        result = self.flickr.api.upload(filename=tempfilename,
-                                        title=self.graphtitle,
-                                        description=self.add_search_link(description),
-                                        tags=self.period.encode('utf8'))
-        os.remove(tempfilename)
-        url = FLICKR_URL + result.find('photoid').text
+        photoid = self.flickr.upload(filename=self.temp_file,
+                                     title=self.graphtitle,
+                                     description=self.add_search_link(description),
+                                     tags=self.period)
+        os.remove(self.temp_file)
+        url = FLICKR_URL + photoid
         return url
 
     def run(self, words, description=''):
         total_count = np.sum([v.count for v in words.values()])
         num_items = self.determine_num_plot_items(total_count)
 
-        words = [w for w in self.sort_by_count(words) if w.surface > 1][:num_items]
+        words = [w for w in self.sort_by_count(words) if len(w.surface) > 1][:num_items]
         words = self.measure_distance(words)
         words = self.calc_initial_position(words)
         words = self.rescale_canvas(words)
@@ -343,11 +343,11 @@ class WordMap(app.App):
         if self.upload_flickr is True:
             url = self.upload(description)
         else:
-            if os.getenv('DISPLAY'):
-                plt.show()
-            else:
-                temp_file = tempfile.mkstemp(suffix='.png')[1]
-                plt.savefig(temp_file)
-                self.logger.debug('word-map image is stored at %s' % temp_file)
+            #if os.getenv('DISPLAY'):
+            #    plt.show()
+            #else:
+            temp_file = tempfile.mkstemp(suffix='.png')[1]
+            plt.savefig(temp_file)
+            self.logger.debug('word-map image is stored at %s' % temp_file)
             url = ''
         return url

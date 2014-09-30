@@ -12,8 +12,8 @@ def test_decode_by_guessing():
 
 def test_read_text_file():
     filename = tempfile.mkstemp()[1]
-    with open(filename, 'w') as fd:
-        fd.write(u'マミさん'.encode('utf8'))
+    with open(filename, 'w', encoding='utf8') as fd:
+        fd.write('マミさん')
 
     got = file_io.read_text_file(filename, 'utf8')
     assert_equals(got, u'マミさん')

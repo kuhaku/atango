@@ -6,5 +6,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     v.customize ["modifyvm", :id, "--memory", "2560"]
   end
   config.vm.provision "shell", path: "https://raw.githubusercontent.com/kuhaku/atango/master/setup/provision_root.sh"
+  config.vm.provision "shell", path: "https://raw.githubusercontent.com/kuhaku/atango/master/setup/mecab_install.sh"  
   config.vm.provision "shell", path: "https://raw.githubusercontent.com/kuhaku/atango/master/setup/provision_node.sh", :privileged => false
 end

@@ -6,7 +6,7 @@
 ######################################
 import tempfile
 import requests
-from misc import choice
+from .misc import choice
 from . import file_io, config
 
 
