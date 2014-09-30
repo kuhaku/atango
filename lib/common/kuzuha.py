@@ -2,7 +2,7 @@
 """Library for KUZUHA BBS
 """
 
-import urllib2
+import urllib.request
 import datetime
 import re
 from . import swjson, web, normalize
@@ -42,7 +42,7 @@ def _gen_params_by_day(date_range, now, params):
     """
     assert 0 <= date_range['day'] <= 6, ValueError
 
-    for i in xrange(date_range['day'], -1, -1):
+    for i in range(date_range['day'], -1, -1):
         dt = now - datetime.timedelta(i)
         idx = 'chk%d%02d%02d.dat' % (dt.year, dt.month, dt.day)
         params[idx] = 'checked'
@@ -129,10 +129,10 @@ def gen_params(kwd='', date_range={}):
 
 def _parse_keyword(keyword, encoding):
     if isinstance(keyword, list):
-        keyword = [urllib2.quote(x.encode(encoding, 'replace')) for x in keyword]
+        keyword = [urllib.request.quote(x.encode(encoding, 'replace')) for x in keyword]
         return u'+'.join(keyword)
     else:
-        return urllib2.quote(keyword.encode('cp932', 'replace'))
+        return urllib.request.quote(keyword.encode('cp932', 'replace'))
 
 
 def _get_qwerty_log(params):

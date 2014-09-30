@@ -2,7 +2,7 @@
 import MeCab
 import re
 from collections import Counter
-from itertools import imap
+from functools import reduce
 
 
 re_number = re.compile('[0-9,]+')
@@ -15,14 +15,14 @@ class MeCabWrapper(MeCab.Tagger):
 
     def __init__(self, mecab_args=''):
         self.mecab = MeCab.Tagger(mecab_args)
+        self.mecab.parse('')
         super(MeCabWrapper, self).__init__()
 
     def parse_to_node(self, sentence, bos_eos=False):
-        if isinstance(sentence, unicode):
-            sentence = sentence.encode('utf8')
         node = self.mecab.parseToNode(sentence)
         while node:
             if bos_eos or not node.feature.startswith('BOS/EOS'):
+                #print(node.surface.encode('utf8'), node.feature)
                 yield node
             node = node.next
 
@@ -32,13 +32,13 @@ def _is_target_pos(feature, target_pos):
 
 
 def _extract_rootform(feature, dic='IPA'):
-    return feature.split(',')[ROOTFORM_IDX[dic]].decode('utf8')
+    return feature.split(',')[ROOTFORM_IDX[dic]]
 
 
 def _extract_surface(node, rootform=False):
     if rootform:
         return _extract_rootform(node.feature)
-    return node.surface.decode('utf8')
+    return node.surface#.encode('utf8')
 
 
 def _extract_phrase(nodes, target_pos):
@@ -47,7 +47,7 @@ def _extract_phrase(nodes, target_pos):
 
     for n in nodes:
         if _is_target_pos(n.feature, target_pos):
-            phrase.append(n.surface.decode('utf8'))
+            phrase.append(n.surface)
         else:
             if len(phrase) > 1:
                 phrase_list.append(''.join(phrase))
@@ -75,4 +75,4 @@ def count_word(sentence, target_pos='noun', rootform=False, phrase=True):
 
 
 def count_doc(doc):
-    return reduce(lambda x, y: x+y, imap(count_word, doc))
+    return reduce(lambda x, y: x+y, map(count_word, doc))

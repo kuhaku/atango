@@ -27,7 +27,7 @@ def read_text_file(path, encoding=''):
         <str> text
     """
     opener = bz2.BZ2File if path.endswith('.bz2') else open
-    with opener(path, 'r') as fd:
+    with opener(path, 'rb') as fd:
         text = fd.read()
     if encoding:
         return text.decode(encoding, 'replace')
