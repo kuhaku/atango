@@ -1,5 +1,4 @@
-tweepy
-flickrapi
+twitter
 nose
 jctconv
 python-tr
@@ -9,3 +8,4 @@ numpy
 scipy
 Pillow
 matplotlib
+mecab-python3

@@ -1,32 +1,39 @@
 # -*- coding: utf-8 -*-
-import tweepy
-import flickrapi
-from . import config, app
-
+import re
+import twitter
+from . import config, misc
 
 CFG_FILE = 'api.cfg'
+re_photo_id = re.compile(r'<photoid>(?P<photoid>[0-9]+)</photoid>')
 
 
 class Twitter:
 
     def __init__(self):
         config_parser = config.read(CFG_FILE)
-        auth = tweepy.OAuthHandler(config_parser.get('Twitter', 'consumer_key'),
-                                   config_parser.get('Twitter', 'consumer_secret'))
-        auth.set_access_token(config_parser.get('Twitter', 'access_token_key'),
-                              config_parser.get('Twitter', 'access_token_secret'))
-        self.api = tweepy.API(auth_handler=auth)
+        oauth = twitter.OAuth(config_parser.get('Twitter', 'access_token_key'),
+                              config_parser.get('Twitter', 'access_token_secret'),
+                              config_parser.get('Twitter', 'consumer_key'),
+                              config_parser.get('Twitter', 'consumer_secret'))
+        self.api = twitter.Twitter(auth=oauth)
 
 
-class Flickr(app.App):
+class Flickr:
 
     def __init__(self):
-        super(Flickr, self).__init__()
         config_parser = config.read(CFG_FILE)
-        self.api = flickrapi.FlickrAPI(config_parser.get('Flickr', 'api_key'),
-                                       config_parser.get('Flickr', 'api_secret'))
-        (token, frob) = self.api.get_token_part_one(perms='write')
-        if not token:
-            self.logger.warn('Flickr API requires an authorization')
-            raw_input('Press ENTER after you authorized this program')
-        self.api.get_token_part_two((token, frob))
+        for idx in ('username', 'user_nsid', 'api_key', 'api_secret',
+                    'oauth_token_key', 'oauth_token_secret'):
+            setattr(self, idx, config_parser.get('Flickr', idx))
+
+    def upload(self, filename, title='', description='', tags=''):
+        command = ['bash', '/work/atango/bin/flickr.sh']
+        params = [title, description, tags, filename,
+                  self.username, self.user_nsid, self.oauth_token_key,
+                  self.oauth_token_secret, self.api_key, self.api_secret]
+        result = misc.command(command + params, allow_err=False)
+        match = re_photo_id.search(result[1])
+        if match:
+            return match.group('photoid')
+        else:
+            raise Exception("Didn't find flickr photoid in stdout:\n'%s'" % (result[1]))

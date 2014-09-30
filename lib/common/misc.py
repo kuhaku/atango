@@ -1,5 +1,29 @@
+# -*- coding: utf-8 -*-
+import subprocess
 import numpy as np
-from itertools import izip, imap
+
+
+def command(cmd, shell=False, allow_err=False):
+    '''
+    Args:
+        <tuple> command parameters
+        <bool>  Popen shell option (default: False)
+    Returns:
+        (<bool> succeeded, <str> stdout, <str> stderr)
+    '''
+    out = ''
+    error = ''
+    proc = subprocess.Popen(cmd, shell=shell,
+                            stdout=subprocess.PIPE,
+                            stderr=subprocess.PIPE)
+    (out, error) = proc.communicate()
+    (out, error) = (out.decode('utf8'), error.decode('utf8'))
+    result = False if error else True
+    if not allow_err and not result:
+        message = 'Command: %s\nStdErr: %s' % (str(cmd), error)
+        raise Exception(message)
+    print(str(cmd))
+    return (result, out, error)
 
 
 def choice(iterable):
@@ -22,9 +46,9 @@ def nones(num, dimension=1):
     if num < 1 or dimension < 1:
         raise ValueError('params must be more than 0')
     if dimension == 1:
-        return [None for i in xrange(num)]
+        return [None for i in range(num)]
     elif dimension > 1:
-        return [[None] * dimension for i in xrange(num)]
+        return [[None] * dimension for i in range(num)]
     elif not isinstance(num, int) or not isinstance(dimension, int):
         raise ValueError('params must be <int>')
 
@@ -38,4 +62,4 @@ def map_dict(method, d):
     Return:
         <dict> d
     """
-    return dict(izip(d.iterkeys(), imap(method, d.itervalues())))
+    return dict(zip(d.keys(), map(method, d.values())))

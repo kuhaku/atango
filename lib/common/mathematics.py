@@ -3,11 +3,11 @@ import numpy as np
 
 
 def zeros(x, y=1):
-    return [[0] * y for i in xrange(x)]
+    return [[0] * y for i in range(x)]
 
 
 def to_safe_float(num):
-    return float(str(num)[:7])
+    return float(str(num)[:10])
 
 
 def mds(D):
@@ -40,4 +40,4 @@ def mds(D):
     w1 = s[x1].real
     w2 = s[x2].real
 
-    return [calc_2D_positions(w1, w2, v, x1, x2, i) for i in xrange(N)]
+    return [calc_2D_positions(w1, w2, v, x1, x2, i) for i in range(N)]

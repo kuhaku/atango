@@ -3,7 +3,7 @@
 apt-get update
 
 # Install things for building
-apt-get install -y build-essential python-dev python-pip
+apt-get install -y build-essential python3.4-dev python-pip
 
 # Install virtualenv
 pip install virtualenv
@@ -13,10 +13,6 @@ apt-get install -y gfortran liblapack-dev libblas-dev
 
 # Install matplotlib dependencies
 apt-get install -y libtiff4-dev libjpeg8-dev zlib1g-dev libfreetype6-dev liblcms2-dev libwebp-dev
-
-# Install MeCab
-apt-get install -y mecab-ipadic-utf8
-apt-get install -y mecab libmecab-dev
 
 # Install git
 apt-get install -y git

@@ -75,7 +75,7 @@ class test_WordCount:
                 Word(surface='manko', count=-1)]
         words = dict(zip(('anko', 'manko'), vals))
         got = self.wc.del_minus_count_word(words)
-        assert_equals(got.keys(), ['anko'])
+        assert_equals(list(got.keys()), ['anko'])
 
     def test_sort_by_keys_length(self):
         vals = [Word(surface='xx', count=2),
