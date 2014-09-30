@@ -155,7 +155,7 @@ class test_WordCount:
         pass
 
     def test_add_search_link(self):
-        message = u'9~10時の＠上海:\n マミさん：36, まどマギ：18'
+        message = '9~10時の＠上海:\n マミさん：36, まどマギ：18'
         expect = ('9~10時の＠上海: <a href="http://usamin.mine.nu/cgi/swlog?b0=on&w=マミさん">'
                   'マミさん</a>：36, <a href="http://usamin.mine.nu/cgi/swlog?b0=on&w=まどマギ">'
                   'まどマギ</a>：18')

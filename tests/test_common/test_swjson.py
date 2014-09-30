@@ -34,11 +34,11 @@ class testSwJson:
 
     def test_extract_articles(self):
         got_articles = self.parser._extract_articles(self.qwerty_html)
-        assert_equals(len(got_articles), 2)
+        assert_equals(len(list(got_articles)), 2)
         got_articles = self.parser._extract_articles(self.usamin_html)
-        assert_equals(len(got_articles), 3)
+        assert_equals(len(list(got_articles)), 3)
         got_articles = self.parser._extract_articles(self.gikogicom_html)
-        assert_equals(len(got_articles), 3)
+        assert_equals(len(list(got_articles)), 3)
 
     def test_extract_name(self):
         self.parser.regex = swjson.REGEX['KUZUHA']
@@ -60,14 +60,14 @@ class testSwJson:
 
     def test_extract_post_text(self):
         self.parser.regex = swjson.REGEX['KUZUHA']
-        article = self.parser._extract_articles(self.qwerty_html)[-1]
+        article = list(self.parser._extract_articles(self.qwerty_html))[-1]
         got_post_text = self.parser._extract_post_text(article)
         assert_equals(got_post_text, u'ﾏﾐさん！(;´Д`)')
 
     def test_parse_post_text(self):
         self.parser.regex = swjson.REGEX['KUZUHA']
         html = self.parser._cleansing(self.qwerty_post_html, 'KUZUHA')
-        article = self.parser._extract_articles(html)[0]
+        article = list(self.parser._extract_articles(html))[0]
         post_text = self.parser._extract_post_text(article)
         parsed_post_text = self.parser._parse_post_text(post_text)
         assert_equals(parsed_post_text['q2'], [u'(;´Д`)'])
@@ -80,7 +80,7 @@ class testSwJson:
         self.parser.regex = swjson.REGEX['KUZUHA']
         html = self.parser._cleansing(self.qwerty_post_html, 'KUZUHA')
         posts = {}
-        for article in self.parser._extract_articles(html)[::-1]:
+        for article in list(self.parser._extract_articles(html))[::-1]:
             id = self.parser._extract_id(article)
             posts[id] = {}
             post_text = self.parser._extract_post_text(article)
@@ -94,6 +94,5 @@ class testSwJson:
         self.parser.regex = swjson.REGEX['KUZUHA']
         html = self.parser._cleansing(self.qwerty_post_html, 'KUZUHA')
         posts = self.parser._parse(html)
-        print posts[u'25721989']
         assert_equals(posts[u'25721989']['quote'], u'25721977')
         assert_equals(posts[u'25721977']['quoted_by'], [u'25721989'])

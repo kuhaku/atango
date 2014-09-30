@@ -1,25 +1,25 @@
 # -*- coding: utf-8 -*-
 import re
-import htmlentitydefs
+import html.entities
 import itertools
 import jctconv
 import tr
 
 
 # for htmlentity2unicode
-re_reference = re.compile(u"&(#x?[0-9a-f]{,32}|[a-z]{,32});", re.I)
+re_reference = re.compile("&(#x?[0-9a-f]{,32}|[a-z]{,32});", re.I)
 re_hex = re.compile('#x\d{1,32}', re.I)
 re_decimal = re.compile('#\d{1,32}', re.I)
 # for remove_emoticon
 re_emoticon = re.compile('\(.*\)')
-re_left_hand = re.compile(ur'[vヽъ／＼]\(')
-re_right_hand = re.compile(ur'\)[v／＼ノ]')
-re_face = re.compile(u'[´ﾟ][Дー][`｀ﾟ]')
+re_left_hand = re.compile(r'[vヽъ／＼]\(')
+re_right_hand = re.compile(r'\)[v／＼ノ]')
+re_face = re.compile('[´ﾟ][Дー][`｀ﾟ]')
 
 
 def shorten_repeat(text, repeat_threshould=2):
     text_length = len(text)
-    for (i, repeat_length) in itertools.product(xrange(text_length), xrange(1, text_length/2)):
+    for (i, repeat_length) in itertools.product(range(text_length), range(1, int(text_length/2))):
         substr = text[i:i+repeat_length]
         right_start = i + repeat_length
         right_end = right_start + repeat_length
@@ -73,17 +73,17 @@ def htmlentity2unicode(text):
     if '&' in text and ';' in text:
         for reference in re_reference.findall(text):
             # 実体参照 or 文字参照
-            if reference in htmlentitydefs.name2codepoint:
-                codepoint = htmlentitydefs.name2codepoint[reference]
-                included_htmlentities["&%s;" % reference] = unichr(codepoint)
+            if reference in html.entities.name2codepoint:
+                codepoint = html.entities.name2codepoint[reference]
+                included_htmlentities["&%s;" % reference] = chr(codepoint)
             # 文字参照(16進)
             elif re_hex.match(reference):
                 index = "&%s;" % reference
-                included_htmlentities[index] = unichr(int(u'0'+reference[1:], 16))
+                included_htmlentities[index] = chr(int(u'0'+reference[1:], 16))
             # 文字参照(10進)
             elif re_decimal.match(reference):
                 index = "&%s;" % reference
-                included_htmlentities[index] = unichr(int(reference[1:]))
+                included_htmlentities[index] = chr(int(reference[1:]))
     for (reference, char) in included_htmlentities.items():
         text = text.replace(reference, char)
     return text

@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 from collections import defaultdict, Counter
-from itertools import combinations, izip
+from itertools import combinations
 import numpy as np
 
 from common import app, kuzuha, normalize, config
 from common.distance import levenshtein
 from common.nlp import mecab, ngram
-import wordmap
-from word import Word
+from . import wordmap
+from .word import Word
 
 
 class WordCount(app.App):
@@ -39,7 +39,6 @@ class WordCount(app.App):
     @staticmethod
     def prepare_for_counting(text):
         text = normalize.normalize(text, emoticon=False, repeat=3)
-        text = text.encode('utf8', 'replace')
         return text.splitlines()
 
     def count(self, text):
@@ -51,7 +50,7 @@ class WordCount(app.App):
         return word.time / word.count
 
     def merge_counter(self, counter, all_words, post_time=None):
-        for word in counter.iterkeys():
+        for word in counter.keys():
             all_words[word].surface = word
             all_words[word].count += 1
             all_words[word].distribution += counter
@@ -68,13 +67,13 @@ class WordCount(app.App):
 
     def del_word(self, word, all_words):
         del all_words[word]
-        for w in all_words.iterkeys():
+        for w in all_words.keys():
             if word in all_words[w].distribution:
                 del all_words[w].distribution[word]
         return all_words
 
     def cut_ngword(self, all_words):
-        words = all_words.keys()
+        words = list(all_words.keys())
         for word in words:
             if not self.is_valid_word(word) and word in all_words:
                 all_words = self.del_word(word, all_words)
@@ -82,7 +81,7 @@ class WordCount(app.App):
 
     @staticmethod
     def sort_by_keys_length(mapping):
-        return sorted(mapping.iteritems(), key=lambda x: len(x[1].surface), reverse=True)
+        return sorted(mapping.items(), key=lambda x: len(x[1].surface), reverse=True)
 
     def decrease_duplicate_count(self, all_words):
         for (key, val) in self.sort_by_keys_length(all_words):
@@ -97,13 +96,13 @@ class WordCount(app.App):
         return all_words
 
     def del_minus_count_word(self, all_words):
-        minus_words = [k for (k, v) in all_words.iteritems() if v.count < 0]
+        minus_words = [k for (k, v) in all_words.items() if v.count < 0]
         for word in minus_words:
             self.del_word(word, all_words)
         return all_words
 
     def del_duplicate_word(self, all_words):
-        for (i, j) in combinations(all_words.iterkeys(), 2):
+        for (i, j) in combinations(all_words.keys(), 2):
             if len(i) != len(j):
                 continue
             i, j = normalize.normalize_word(i), normalize.normalize_word(j)
@@ -117,20 +116,20 @@ class WordCount(app.App):
         return all_words
 
     def to_bag_of_words(self, all_words):
-        idlist = dict(izip(all_words.keys(), xrange(len(all_words))))
+        idlist = dict(zip(all_words.keys(), range(len(all_words))))
         num_words = len(all_words)
 
-        for (word, val) in all_words.iteritems():
-            total = float(sum(val.distribution.itervalues()))
+        for (word, val) in all_words.items():
+            total = float(sum(val.distribution.values()))
             distribution = np.zeros(num_words)
-            for (w, count) in val.distribution.iteritems():
+            for (w, count) in val.distribution.items():
                 distribution[idlist[w]] += count / total
             all_words[word].distribution = distribution
         return all_words
 
     def gen_report(self, all_words):
         message = u'%s~%s時の＠上海:\n' % (self.start_hour, self.end_hour)
-        for word in sorted(all_words.itervalues(),
+        for word in sorted(all_words.values(),
                            key=lambda x: [x.count, len(x.surface)],
                            reverse=True):
             if len(message) + len(word.surface) + len(str(word.count)) + 1 < 116:
@@ -148,7 +147,7 @@ class WordCount(app.App):
 
     def run(self, keyword='', output=True, hour=1, day=False):
         log = self._get_log(keyword, {'hour': hour, 'day': day})
-        log = self._sort_by_time(filter(lambda x: 'time' in x, log.itervalues()))
+        log = self._sort_by_time(filter(lambda x: 'time' in x, log.values()))
         self.start_time = float(log[0]['time'])
         all_words = defaultdict(Word)
 
@@ -171,4 +170,4 @@ class WordCount(app.App):
 
 if __name__ == '__main__':
     wc = WordCount(plot_wordmap=True, up_flickr=False, verbose=True, debug=True)
-    print wc.run(output=True, hour=1)
+    print(wc.run(output=True, hour=1))
