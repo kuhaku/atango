@@ -13,9 +13,14 @@ This bot is just for fun.
 
 [Installation is here](https://github.com/kuhaku/atango/wiki/Installation) ([Japanese](https://github.com/kuhaku/atango/wiki/ぁ単語が動くようになるまでの手順))
 
+Currently, atango provides the following job:
+<pre>
+- wordcount and word distribution image generation
+</pre>
+
 Contributions are welcome!ヽ(´ー｀)ノ
 
-License: WTFPL
+License: [WTFPL](https://raw.githubusercontent.com/kuhaku/atango/master/LICENSE)
 
 ## Link
 * [Twitter - sw_words](https://twitter.com/sw_words/)
