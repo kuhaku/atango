@@ -28,6 +28,13 @@ class Atango(App):
             wc = WordCount(plot_wordmap=True, up_flickr=up_flickr,
                            verbose=self.verbose, debug=self.debug)
             self.output(wc.run(hour=1))
+        if job == 'url':
+            from lib.summarize.popular_url import PopularUrl
+            purl = PopularUrl()
+            for (i, message) in enumerate(purl.run(2), start=1):
+                self.output(message)
+                if i >= 3:
+                    break
         else:
             raise ValueError('"%s" is not implemented yet' % job)
 

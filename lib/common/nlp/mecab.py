@@ -22,7 +22,6 @@ class MeCabWrapper(MeCab.Tagger):
         node = self.mecab.parseToNode(sentence)
         while node:
             if bos_eos or not node.feature.startswith('BOS/EOS'):
-                #print(node.surface.encode('utf8'), node.feature)
                 yield node
             node = node.next
 
@@ -38,7 +37,7 @@ def _extract_rootform(feature, dic='IPA'):
 def _extract_surface(node, rootform=False):
     if rootform:
         return _extract_rootform(node.feature)
-    return node.surface#.encode('utf8')
+    return node.surface
 
 
 def _extract_phrase(nodes, target_pos):
@@ -76,3 +75,14 @@ def count_word(sentence, target_pos='noun', rootform=False, phrase=True):
 
 def count_doc(doc):
     return reduce(lambda x, y: x+y, map(count_word, doc))
+
+
+def wakati(text):
+    """
+    Param:
+        <str> text
+    Return:
+        <list> tokens
+    """
+    mecab_wakati = MeCab.Tagger('-Owakati')
+    return mecab_wakati.parse(text).strip().split(" ")
