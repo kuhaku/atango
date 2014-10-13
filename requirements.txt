@@ -4,6 +4,7 @@ jctconv
 python-tr
 requests
 nkf
+beautifulsoup4
 numpy
 scipy
 Pillow

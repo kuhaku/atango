@@ -1,0 +1,15 @@
+{
+  "IGNORE_URL": [
+    "http://misao.on.arena.ne.jp/c/up/",
+    "http://cal.syoboi.jp/"
+  ],
+  "REMOVE_TITLE_SUBSTR": [
+    "Twitter / ",
+    "さんはTwitterを使っています",
+    " - しょぼいカレンダー",
+    " Powered by アメブロ",
+    " - Google 検索",
+    "　NHKニュース",
+    "：朝日新聞デジタル"
+  ]
+}

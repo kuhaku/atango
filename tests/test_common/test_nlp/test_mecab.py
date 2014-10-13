@@ -44,3 +44,8 @@ def test_count_word():
 def test_count_doc():
     got = mecab.count_doc('環境\n音楽'.splitlines())
     assert_equals(got, {u'環境': 1, u'音楽': 1})
+
+
+def test_wakati():
+    actual = mecab.wakati(u'おっぱいはやわらかい')
+    assert_equals(actual, ['おっぱい', 'は', 'やわらかい'])
