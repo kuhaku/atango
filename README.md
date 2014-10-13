@@ -16,6 +16,7 @@ This bot is just for fun.
 Currently, atango provides the following job:
 <pre>
 - wordcount and word distribution image generation
+- most mentioned URL report
 </pre>
 
 Contributions are welcome!ヽ(´ー｀)ノ
