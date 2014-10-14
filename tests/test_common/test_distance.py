@@ -12,3 +12,7 @@ def test_levenshtein():
     assert_equals(got, 3)
     got = distance.levenshtein('chiko', 'chinko', 3, 1, 1)
     assert_equals(got, 3)
+
+
+def test_LCS():
+    assert_equals(len(distance.LCS('mamipai', 'tomoemami')), 3)
