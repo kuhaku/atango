@@ -17,6 +17,7 @@ Currently, atango provides the following job:
 <pre>
 - wordcount and word distribution image generation
 - most mentioned URL report
+- ome detection (Recognizing Textual Entailment)
 </pre>
 
 Contributions are welcome!ヽ(´ー｀)ノ
