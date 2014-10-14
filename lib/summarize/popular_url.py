@@ -64,17 +64,30 @@ class PopularUrl(app.App):
         return title
 
     @staticmethod
+    def extract_tweet_id(url):
+        url_parts = url.split('/')
+        if len(url_parts) >= 6:
+            return url_parts[5]
+        return None
+
+    @staticmethod
     def calc_tweet_length(tweet, title, count):
         actual_new_url_info_length = len(TWEET_FORMAT % (title, '*' * SHORT_URL_LENGTH, count))
         return len(tweet) + actual_new_url_info_length - len(DELIMITER)
 
-    def run(self, hour_range=HOUR_RANGE):
+    def run(self, hour_range=HOUR_RANGE, twitter_api=None):
         params = kuzuha.gen_params('http', {'hour': hour_range})
         posts = kuzuha.get_log_as_dict('qwerty', params, url=True)
         urls = self._count_url(posts)
 
         tweet = ''
         for (url, count) in urls.most_common():
+            if twitter_api and url.startswith('https://twitter.com/'):
+                tweet_id = self.extract_tweet_id(url)
+                if tweet_id:
+                    self.logger.info('RT: id=%s (%s)' % (tweet_id, url))
+                    twitter_api.api.statuses.retweet(id=tweet_id)
+                    continue
             title = self._get_title(url)
             new_url_info = TWEET_FORMAT % (title, url, count)
             expected_length = self.calc_tweet_length(tweet, title, count)

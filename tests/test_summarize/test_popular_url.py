@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from nose.tools import assert_equals, assert_true
+from nose.tools import assert_equals
 from summarize import popular_url
 
 
@@ -17,13 +17,22 @@ class test_PopularUrl(object):
             assert_equals(actual, desired)
         assert_equals(self.purl._shorten_title('雫...'), '雫…')
         title = '女性声優画像bot on Twitter: "内田真礼 http://t.co/s0WPLYOyYV"'
-        desired = '女性声優画像bot:"内田真礼"'
+        desired = '女性声優画像bot"内田真礼"'
         assert_equals(self.purl._shorten_title(title), desired)
 
     def test__shorten_title(self):
         pass
 
     def test__get_title(self):
+        pass
+
+    def test_extract_tweet_id(self):
+        url = 'https://twitter.com/sw_words/status/346716382630645760'
+        assert_equals(self.purl.extract_tweet_id(url), '346716382630645760')
+        url = 'https://twitter.com/sw_words/status/346716382630645760/photo/1'
+        assert_equals(self.purl.extract_tweet_id(url), '346716382630645760')
+
+    def test_calc_tweet_length(self):
         pass
 
     def test_run(self):

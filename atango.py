@@ -30,8 +30,12 @@ class Atango(App):
             self.output(wc.run(hour=1))
         if job == 'url':
             from lib.summarize.popular_url import PopularUrl
-            purl = PopularUrl()
-            for (i, message) in enumerate(purl.run(2), start=1):
+            purl = PopularUrl(verbose=self.verbose, debug=self.debug)
+            if self.debug:
+                url_report_generator = purl.run(3)
+            else:
+                url_report_generator = purl.run(3, self.twitter)
+            for (i, message) in enumerate(url_report_generator, start=1):
                 self.output(message)
                 if i >= 3:
                     break
