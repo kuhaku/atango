@@ -39,6 +39,11 @@ class Atango(App):
                 self.output(message)
                 if i >= 3:
                     break
+        elif job == 'ome':
+            from lib.summarize.ome import Ome
+            ome = Ome(verbose=self.verbose, debug=self.debug)
+            for message in ome.run(20):
+                self.output(message)        
         else:
             raise ValueError('"%s" is not implemented yet' % job)
 
