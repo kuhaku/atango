@@ -54,6 +54,7 @@ REGEX = {
 
 re_hr = re.compile('<hr/?>', re.I)
 re_q2 = re.compile('\A(&gt;|>) (&gt;|>) ')
+re_q1 = re.compile('\A(&gt;|>) ')
 re_link = re.compile('<a[^<]+</a>', re.I)
 
 
@@ -142,9 +143,9 @@ class SwJson:
     def _parse_post_text(self, pre):
         parsed_post_text = defaultdict(list)
         for line in pre.splitlines():
-            if line.startswith('&gt; &gt; '):
+            if re_q2.search(line):
                 parsed_post_text['q2'].append(re_q2.sub('', line))
-            elif line.startswith('&gt; '):
+            elif re_q1.search(line):
                 parsed_post_text['q1'].append(line[line.index(' ')+1:])
             elif line:
                 parsed_post_text['text'].append(line)
@@ -168,6 +169,8 @@ class SwJson:
     def _delete_anchor_tag(post):
         for item in ('text', 'q1', 'q2', 'author'):
             if item in post:
+                if isinstance(post[item], list):
+                    post[item] = '\n'.join(post[item])
                 post[item] = re_link.sub('', post[item])
         return post
 

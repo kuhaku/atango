@@ -2,7 +2,7 @@
 """Library for KUZUHA BBS
 """
 
-import urllib.request
+import urllib.parse
 import datetime
 import re
 from . import swjson, web, normalize
@@ -129,14 +129,12 @@ def gen_params(kwd='', date_range={}):
 
 def _parse_keyword(keyword, encoding):
     if isinstance(keyword, list):
-        keyword = [urllib.request.quote(x.encode(encoding, 'replace')) for x in keyword]
-        return u'+'.join(keyword)
-    else:
-        return urllib.request.quote(keyword.encode('cp932', 'replace'))
+        keyword = ' '.join(keyword)
+    return keyword.replace(' ', '+').encode(encoding)
 
 
 def _get_qwerty_log(params):
-    params['kwd'] = _parse_keyword(params['kwd'], 'cp932')
+    params['kwd'] = _parse_keyword(params['kwd'], 'sjis')
     html = web.open_url(QWERTY_URL, params=params)
     return html
 
