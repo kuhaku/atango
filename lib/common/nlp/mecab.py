@@ -54,7 +54,7 @@ def _extract_phrase(nodes, target_pos):
     return phrase_list
 
 
-def extract_word(sentence, target_pos=(), rootform=False, phrase=False):
+def extract_word(sentence, target_pos=POS['noun'], rootform=False, phrase=False):
     m = MeCabWrapper()
     nodes = [node for node in m.parse_to_node(sentence)]
     words = [_extract_surface(n, rootform) for n in nodes
@@ -86,3 +86,8 @@ def wakati(text):
     """
     mecab_wakati = MeCab.Tagger('-Owakati')
     return mecab_wakati.parse(text).strip().split(" ")
+
+
+def to_yomi(text):
+    mecab_yomi = MeCab.Tagger('-Oyomi')
+    return mecab_yomi.parse(text).rstrip(" \n").replace('@', '').split(" ")

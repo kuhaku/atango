@@ -28,13 +28,13 @@ class Atango(App):
             wc = WordCount(plot_wordmap=True, up_flickr=up_flickr,
                            verbose=self.verbose, debug=self.debug)
             self.output(wc.run(hour=1))
-        if job == 'url':
+        elif job == 'url':
             from lib.summarize.popular_url import PopularUrl
             purl = PopularUrl(verbose=self.verbose, debug=self.debug)
             if self.debug:
-                url_report_generator = purl.run(3)
+                url_report_generator = purl.run(2)
             else:
-                url_report_generator = purl.run(3, self.twitter)
+                url_report_generator = purl.run(2, self.twitter)
             for (i, message) in enumerate(url_report_generator, start=1):
                 self.output(message)
                 if i >= 3:
