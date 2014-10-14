@@ -85,9 +85,12 @@ class PopularUrl(app.App):
             if twitter_api and url.startswith('https://twitter.com/'):
                 tweet_id = self.extract_tweet_id(url)
                 if tweet_id:
-                    self.logger.info('RT: id=%s (%s)' % (tweet_id, url))
-                    twitter_api.api.statuses.retweet(id=tweet_id)
-                    continue
+                    try:
+                        self.logger.info('RT: id=%s (%s)' % (tweet_id, url))
+                        twitter_api.api.statuses.retweet(id=tweet_id)
+                        continue
+                    except:
+                        pass
             title = self._get_title(url)
             new_url_info = TWEET_FORMAT % (title, url, count)
             expected_length = self.calc_tweet_length(tweet, title, count)

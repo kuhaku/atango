@@ -33,7 +33,7 @@ def read(filename, encoding=''):
         config_parser.read(cfg)
         return config_parser
     elif filename.endswith('.json'):
-        return json.load(open(os.path.join(cfgdir(), filename), 'r'))
+        return json.load(open(os.path.join(cfgdir(), filename), 'r', encoding='utf-8'))
     elif filename.endswith('.txt'):
         path = os.path.join(cfgdir(), filename)
         text = file_io.read_text_file(path, encoding)
