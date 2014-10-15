@@ -18,8 +18,9 @@ body_length = TWEET_LENGTH - len(PREFIX) - len(HASH_TAG)
 
 class Ome(app.App):
 
-    def __init__(self):
+    def __init__(self, verbose=False, debug=False):
         self.synonym = normalize.SynonymUnification()
+        super(Ome, self).__init__(verbose, debug)
 
     @staticmethod
     def get_post_res_pairs(posts):
