@@ -41,9 +41,9 @@ class test_Ome(object):
         actual = self.ome.levenshtein_per_char_yomi(pair)
         assert_equals(actual, 1)
 
-    def test_lcs(self):
+    def test_lccs(self):
         pair = ['巴マミ', 'マミ']
-        actual = self.ome.lcs(pair)
+        actual = self.ome.lccs(pair)
         assert_equals(actual, 2 / 2.5)
 
     def test_is_ome(self):

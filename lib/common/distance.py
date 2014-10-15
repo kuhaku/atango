@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 from itertools import product
+from functools import reduce
+import operator
 from . import mathematics
+from .nlp import ngram
 
 
 def levenshtein(a, b, insert=1, delete=1, substitute=1):
@@ -31,33 +34,19 @@ def levenshtein(a, b, insert=1, delete=1, substitute=1):
     return d[-1][-1]
 
 
-def LCS(s1, s2):
+def LCCS(lhs, rhs, minimum_n):
     """
-    Longest Common Subsequence
+    Params:
+        <str> lhs
+        <str> rhs
+        <int> minimum_n
+    Return:
+        <str> longest_contiguous_common_subsequence
     """
-    def extract_common_chars(a, b):
-        ab_xor = set(a) ^ set(b)
-        return (sorted(set(a) - ab_xor, key=a.index), sorted(set(b) - ab_xor, key=b.index))
-
-    subseqs = []
-    (s1, s2) = extract_common_chars(s1, s2)
-    (lhs, rhs) = (s1, s2) if len(s1) < len(s2) else (s2, s1)
-    for base in range(len(lhs)):
-        for i in range(len(lhs[base:])):
-            i += 1
-            (subseq, j) = "", 0
-            if base+i >= len(lhs):
-                break
-            start = rhs.index(lhs[base])
-            for char in lhs[base:(base + i + 1)]:
-                k = 0
-                while start+j+k < len(rhs):
-                    if rhs[start+j+k] == char:
-                        subseq += char
-                        j += k + 1
-                        break
-                    k += 1
-            subseqs.append(subseq)
-    subseqs = sorted(subseqs, key=lambda x: len(x))
-    if len(subseqs) > 0:
-        return subseqs[-1]
+    if len(lhs) < minimum_n or len(rhs) < minimum_n:
+        return None
+    lhs = reduce(operator.add, (ngram.to_ngrams(lhs, minimum_n)))
+    rhs = reduce(operator.add, (ngram.to_ngrams(rhs, minimum_n)))
+    common_subsequences = set(lhs) & set(rhs)
+    if common_subsequences:
+        return sorted(common_subsequences, key=lambda x: len(x), reverse=True)[0]

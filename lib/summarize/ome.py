@@ -57,16 +57,16 @@ class Ome(app.App):
         return 0
 
     @staticmethod
-    def lcs(pair):
+    def lccs(pair):
         avg_length = sum(map(len, pair)) / 2
-        lcs = LCS(*pair)
+        lcs = LCCS(pair[0], pair[1], 2)
         if lcs:
             return len(lcs) / avg_length
         return 0
 
     def is_ome(self, text_a, text_b):
         measures = [self.levenshtein_per_char, self.levenshtein_per_word,
-                    self.levenshtein_per_char_yomi, self.lcs]
+                    self.levenshtein_per_char_yomi, self.lccs]
         pair = list(map(self.simplify, [text_a, text_b]))
         scores = np.array([measure(pair) for measure in measures])
         result = sum(scores) / len(scores)
