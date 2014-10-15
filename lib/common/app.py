@@ -3,11 +3,14 @@ import signal
 import sys
 import traceback
 import re
+import os
 import inspect
 from .logger import Logger
 
 
 TIME_LIMIT = 55
+ATANGO_DIR = '/work/atango/'
+log_dir = os.path.join(ATANGO_DIR, 'logs')
 
 
 class Timeout(Exception):
@@ -52,13 +55,27 @@ class App(object):
 
     def __init__(self, verbose=False, debug=False):
         self.appname = self.__class__.__name__
+        self.filename = inspect.getfile(self.__class__)
+
         logger = Logger(self.appname, debug=debug)
+
+        logpath = self._gen_logfile_path(self.filename)
+        logger.enable_file_handler(logpath)
+        if not os.path.exists(log_dir):
+            os.makedirs(log_dir)
+
         if verbose:
             logger.enable_stream_handler()
+
         self.verbose = verbose
         self.debug = debug
         self.logger = logger.logger
         self._decorate()
+
+    def _gen_logfile_path(self, filename):
+        logfile_name = filename.replace(ATANGO_DIR, '').replace('/', '-')
+        logfile_name += '.log'
+        return os.path.join(log_dir, logfile_name)
 
     def _decorate(self):
         """Decorate method by logger
