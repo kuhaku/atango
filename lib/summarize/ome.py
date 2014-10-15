@@ -4,7 +4,7 @@ import itertools
 from collections import defaultdict
 import numpy as np
 from common import app, kuzuha, normalize
-from common.distance import levenshtein, LCS
+from common.distance import levenshtein, LCCS
 from common.nlp import mecab
 
 
@@ -17,6 +17,9 @@ body_length = TWEET_LENGTH - len(PREFIX) - len(HASH_TAG)
 
 
 class Ome(app.App):
+
+    def __init__(self):
+        self.synonym = normalize.SynonymUnification()
 
     @staticmethod
     def get_post_res_pairs(posts):
@@ -56,6 +59,13 @@ class Ome(app.App):
             return 1 - (levenshtein(*yomi_pair) / total_yomi_length)
         return 0
 
+    def levenshtein_synonym_unify(self, pair):
+        pair = list(map(self.synonym.unify, pair))
+        total_length = sum(map(len, pair))
+        if total_length:
+            return 1 - (levenshtein(*pair) / total_length)
+        return 0
+
     @staticmethod
     def lccs(pair):
         avg_length = sum(map(len, pair)) / 2
@@ -66,7 +76,8 @@ class Ome(app.App):
 
     def is_ome(self, text_a, text_b):
         measures = [self.levenshtein_per_char, self.levenshtein_per_word,
-                    self.levenshtein_per_char_yomi, self.lccs]
+                    self.levenshtein_per_char_yomi, self.levenshtein_synonym_unify,
+                    self.lccs]
         pair = list(map(self.simplify, [text_a, text_b]))
         scores = np.array([measure(pair) for measure in measures])
         result = sum(scores) / len(scores)

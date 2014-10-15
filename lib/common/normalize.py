@@ -2,9 +2,10 @@
 import re
 import html.entities
 import itertools
+from collections import OrderedDict
 import jctconv
 import tr
-
+from . import config
 
 # for htmlentity2unicode
 re_reference = re.compile("&(#x?[0-9a-f]{,32}|[a-z]{,32});", re.I)
@@ -99,3 +100,18 @@ def remove_emoticon(text):
     text = re_emoticon.sub('', text)
     text = text.replace('()', '')
     return text
+
+
+class SynonymUnification(object):
+
+    def __init__(self):
+        self.synonym_map = OrderedDict()
+        propensity = config.read('propensity.json')
+        for (k, v) in sorted(propensity.items(), key=lambda x: len(x[0]), reverse=True):
+            self.synonym_map[k] = v
+
+    def unify(self, text):
+        for key in self.synonym_map:
+            if key in text:
+                text = text.replace(key, self.synonym_map[key])
+        return text

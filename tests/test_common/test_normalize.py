@@ -38,3 +38,13 @@ def test_remove_emoticon():
     for emoticon in emoticons:
         got = normalize.remove_emoticon(emoticon)
         assert_equals(got, '')
+
+
+class test_SynonymUnification(object):
+
+    def __init__(self):
+        self.su = normalize.SynonymUnification()
+
+    def test_unify(self):
+        text = 'ぱつぱつぱんつ'
+        assert_equals(self.su.unify(text), 'ぴっちりパンツ')
