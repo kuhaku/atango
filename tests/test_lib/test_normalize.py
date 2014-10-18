@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from nose.tools import assert_equals
-from common import normalize
+from lib import normalize
 
 
 def test_shorten_repeat():

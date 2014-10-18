@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from nose.tools import assert_equals
 from collections import Counter
-from wordcount.word import Word
+from job.wordcount.word import Word
 
 
 class test_Word:

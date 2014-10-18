@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 import os
 import json
-from configparser import ConfigParser, SafeConfigParser
+from configparser import SafeConfigParser
 from . import file_io
 
 
 def __basedir():
     wdir = os.path.abspath(os.path.dirname(__file__))
-    return os.path.normpath(os.path.join(wdir, '../../'))
+    return os.path.normpath(os.path.join(wdir, '../'))
 
 
 def __get_path(dirname):

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from nose.tools import assert_equals
-from common.nlp import ngram
+from lib.nlp import ngram
 
 
 def test_to_ngrams():

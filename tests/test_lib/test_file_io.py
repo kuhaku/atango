@@ -2,7 +2,7 @@
 from nose.tools import assert_equals
 import os
 import tempfile
-from common import file_io
+from lib import file_io
 
 
 def test_decode_by_guessing():

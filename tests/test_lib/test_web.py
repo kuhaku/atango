@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from nose.tools import assert_true
-from common import web
+from lib import web
 
 
 def test_open_url():

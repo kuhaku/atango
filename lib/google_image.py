@@ -2,8 +2,8 @@
 import re
 from collections import Counter
 from bs4 import BeautifulSoup
-from common import web, config
-from common.nlp import mecab
+from . import web, config
+from .nlp import mecab
 
 
 GOOGLE_BASE_URL = 'http://www.google.co.jp/'

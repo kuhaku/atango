@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from nose.tools import assert_equals, assert_raises
-from common import misc
+from lib import misc
 
 
 def test_choice():

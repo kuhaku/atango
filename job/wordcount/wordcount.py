@@ -3,9 +3,9 @@ from collections import defaultdict, Counter
 from itertools import combinations
 import numpy as np
 
-from common import app, kuzuha, normalize, config
-from common.distance import levenshtein
-from common.nlp import mecab, ngram
+from lib import app, kuzuha, normalize, config
+from lib.distance import levenshtein
+from lib.nlp import mecab, ngram
 from . import wordmap
 from .word import Word
 

@@ -2,8 +2,8 @@
 from nose.tools import assert_equals, assert_true
 from datetime import datetime
 from collections import Counter
-from wordcount import wordcount
-from wordcount.word import Word
+from job.wordcount import wordcount
+from job.wordcount.word import Word
 
 
 class test_WordCount:

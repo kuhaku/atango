@@ -4,8 +4,8 @@ import os.path
 from collections import Counter
 import time
 
-from common import app, web, kuzuha, config, google_image, normalize
-from common.regex import re_url, re_title, re_html_tag
+from lib import app, web, kuzuha, config, google_image, normalize
+from lib.regex import re_url, re_title, re_html_tag
 
 HOUR_RANGE = 4
 MAX_TWEET_LENGTH = 140
@@ -49,6 +49,7 @@ class PopularUrl(app.App):
         return sorted(titles, key=lambda x: len(x), reverse=True)[0].strip()  # 最長の要素を返す
 
     def _get_title(self, url):
+        self.logger.debug(url)
         root, ext = os.path.splitext(url)
         if ext in image_extensions:
             time.sleep(3)  # for avoiding to be treated as spam by Google
@@ -100,6 +101,6 @@ class PopularUrl(app.App):
                 tweet = tweet[:-len(DELIMITER)] + HASH_TAG
                 if tweet != HASH_TAG:
                     yield tweet
-                tweet = ''
+                tweet = new_url_info
         if tweet:
             yield tweet + HASH_TAG

@@ -2,7 +2,6 @@
 """Library for KUZUHA BBS
 """
 
-import urllib.parse
 import datetime
 import re
 from . import swjson, web, normalize

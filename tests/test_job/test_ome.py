@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from nose.tools import assert_equals, assert_true
 from collections import defaultdict
-from summarize.ome import Ome
+from job.ome import Ome
 
 
 class test_Ome(object):
