@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from nose.tools import assert_equals, assert_true
-from common.nlp import mecab
+from lib.nlp import mecab
 
 
 def test_is_target_pos():

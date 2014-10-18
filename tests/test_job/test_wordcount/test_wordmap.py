@@ -4,7 +4,7 @@ from datetime import datetime
 from itertools import product
 import numpy as np
 from scipy.spatial.distance import rogerstanimoto
-from wordcount import wordmap, wordcount
+from job.wordcount import wordmap, wordcount
 
 
 class test_WordCount:

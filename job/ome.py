@@ -3,9 +3,9 @@ import re
 import itertools
 from collections import defaultdict
 import numpy as np
-from common import app, kuzuha, normalize
-from common.distance import levenshtein, LCCS
-from common.nlp import mecab
+from lib import app, kuzuha, normalize
+from lib.distance import levenshtein, LCCS
+from lib.nlp import mecab
 
 
 re_kigou = re.compile('[\n\r！？!\?\.,…]')

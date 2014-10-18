@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from argparse import ArgumentParser
-from lib.common.app import App
-from lib.common.api import Twitter
+from lib.app import App
+from lib.api import Twitter
 
 
 class Atango(App):
@@ -23,13 +23,13 @@ class Atango(App):
 
     def run(self, job):
         if job == 'wordcount':
-            from lib.wordcount.wordcount import WordCount
+            from job.wordcount.wordcount import WordCount
             up_flickr = not self.debug
             wc = WordCount(plot_wordmap=True, up_flickr=up_flickr,
                            verbose=self.verbose, debug=self.debug)
             self.output(wc.run(hour=1))
         elif job == 'url':
-            from lib.summarize.popular_url import PopularUrl
+            from job.popular_url import PopularUrl
             purl = PopularUrl(verbose=self.verbose, debug=self.debug)
             if self.debug:
                 url_report_generator = purl.run(2)
@@ -40,7 +40,7 @@ class Atango(App):
                 if i >= 3:
                     break
         elif job == 'ome':
-            from lib.summarize.ome import Ome
+            from job.ome import Ome
             ome = Ome(verbose=self.verbose, debug=self.debug)
             for message in ome.run(20):
                 self.output(message)        

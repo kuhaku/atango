@@ -11,8 +11,8 @@ import matplotlib.font_manager as font_manager
 from mpl_toolkits.axes_grid1.anchored_artists import AnchoredText
 import PIL.ImageFont
 
-from common import api, config, mathematics, app
-from common.misc import map_dict
+from lib import api, config, mathematics, app
+from lib.misc import map_dict
 
 USAMIN_URL = 'http://usamin.mine.nu/cgi/swlog?b0=on&w='
 FLICKR_URL = 'https://www.flickr.com/photos/sw_words/'

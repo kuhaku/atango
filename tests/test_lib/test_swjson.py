@@ -2,7 +2,7 @@
 from nose.tools import assert_equals
 import os
 import time
-from common import swjson, file_io
+from lib import swjson, file_io
 
 
 class testSwJson:

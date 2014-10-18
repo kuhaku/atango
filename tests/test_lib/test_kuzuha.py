@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import datetime
 from nose.tools import assert_equals
-from common import kuzuha
+from lib import kuzuha
 
 
 DEFAULT_PARAMS = {

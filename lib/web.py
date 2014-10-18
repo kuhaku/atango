@@ -48,7 +48,7 @@ def open_url(url, referer=None, binary=False, params=None, post=False):
         referer = url
     headers = DEFAULT_HEADERS.copy()
     headers.update({'Referer': referer, 'User-Agent': choice(USER_AGENTS)})
-    opts = {'params': params, 'timeout': TIMEOUT, 'headers': headers, 'verify': False}
+    opts = {'params': params, 'timeout': TIMEOUT, 'headers': headers}
     if post:
         r = requests.post(url, **opts)
     else:
@@ -62,7 +62,7 @@ def decode_content(r):
     for (site, encoding) in encoding_known_sites.items():
         if site in r.url:
             return r.content.decode(encoding)
-    if r.encoding == 'ISO-8859-1':
+    if r.encoding in ('ISO-8859-1', None) :
         return file_io.decode_by_guessing(r.content)
     return r.content.decode(r.encoding)
 

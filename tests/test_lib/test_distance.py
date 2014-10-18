@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from nose.tools import assert_equals
-from common import distance
+from lib import distance
 
 
 def test_levenshtein():

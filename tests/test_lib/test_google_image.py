@@ -3,7 +3,7 @@ from nose.tools import assert_true, assert_equals
 import time
 from collections import Counter
 from bs4 import BeautifulSoup
-from common import google_image
+from lib import google_image
 
 
 # Mami-san Image

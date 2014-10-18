@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from nose.tools import assert_equals
-from summarize import popular_url
+from job import popular_url
 
 
 TITLES = (("Twitter / atango", "atango"), ("ぁ単語さんはTwitterを使っています", "ぁ単語"), 
