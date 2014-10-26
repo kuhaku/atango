@@ -64,8 +64,13 @@ def decode_content(r):
             return r.content.decode(encoding)
     if r.encoding in ('ISO-8859-1', None) :
         return file_io.decode_by_guessing(r.content)
-    return r.content.decode(r.encoding)
+    encoding = normalize_encoding(r.encoding)
+    return r.content.decode(encoding)
 
+def normalize_encoding(encoding):
+    if encoding.lower() in ('windows-31j', 'shift-jis', 'shift_jis', 'x-sjis', 'sjis'):
+        return 'cp932'
+    return encoding
 
 def download(url, store_path=None):
     if not store_path:
