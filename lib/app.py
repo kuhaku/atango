@@ -38,10 +38,12 @@ def decorator(self, function):
             signal.setitimer(signal.ITIMER_REAL, timelimit)
             signal.signal(signal.SIGALRM, overtime_handler)
 
-    def dying_tweet():
+    def dying_tweet(err_msg):
         from .api import Twitter
         twitter = Twitter()
-        dying_message = random.choice(DYING_MESSAGES)
+        dying_message = '%s %s' % (random.choice(DYING_MESSAGES), err_msg)
+        if len(dying_message) > 140:
+            dying_message = dying_message[:139] + '…'
         twitter.api.statuses.update(status=dying_message)
 
     def wrapper(*args, **kwargs):
@@ -49,7 +51,9 @@ def decorator(self, function):
             set_timer(TIME_LIMIT)
             return function(*args, **kwargs)
         except Exception as e:
-            err_msg = '%s: %s' % (e.__class__.__name__, e)
+            error_class = e.__class__.__name__
+            error_description = str(e)
+            err_msg = '%s: %s' % (error_class, error_description)
             self.logger.critical(err_msg)
             tb = traceback.extract_tb(sys.exc_info()[2])
             trace = traceback.format_list(tb)
@@ -59,7 +63,7 @@ def decorator(self, function):
                 self.logger.warn(text)
             self.logger.warn('-------------------')
             if not self.debug:
-                dying_tweet()
+                dying_tweet(err_msg)
             return sys.exit(err_msg)
     return wrapper
 

@@ -17,7 +17,6 @@ class Atango(App):
             return None
         if text:
             self.twitter.api.statuses.update(status=text)
-            self.logger.info('Posting tweet is success')
         else:
             self.logger.warn('there is not string to output')
 
