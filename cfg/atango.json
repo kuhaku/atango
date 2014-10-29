@@ -6,5 +6,16 @@
     "canvas_size": 355.0,
     "overlap_allowable_rate": 0.7,
     "min_font_size": 6
+  },
+  "Reply": {
+    "NG_SCREEN_NAME": [
+        "sw_words"
+    ],
+    "NG_WORDS": [
+        "紙が更新されました！",
+        "新聞 is out!",
+        "paper.li",
+        "レスしなくていい"
+    ]
   }
 }

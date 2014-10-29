@@ -11,12 +11,16 @@ class Atango(App):
             self.twitter = Twitter()
         super(Atango, self).__init__(verbose, debug)
 
-    def output(self, text):
-        self.logger.info('Tweet: %s' % (text))
-        if self.debug:
-            return None
+    def output(self, text, reply_id=None):
         if text:
-            self.twitter.api.statuses.update(status=text)
+            if reply_id:
+                self.logger.info('Tweet: text=%s, id=%d' % (text, reply_id))
+                if not self.debug:
+                    self.twitter.api.statuses.update(status=text, _id=reply_id)
+            else:
+                self.logger.info('Tweet: text=%s' % text)
+                if not self.debug:
+                    self.twitter.api.statuses.update(status=text)
         else:
             self.logger.warn('there is not string to output')
 
@@ -43,6 +47,12 @@ class Atango(App):
             ome = Ome(verbose=self.verbose, debug=self.debug)
             for message in ome.run(20):
                 self.output(message)        
+        elif job == 'reply':
+            from job.reply import Reply
+            reply = Reply(verbose=self.verbose, debug=self.debug)
+            self.twitter = Twitter()
+            for (message, reply_id) in reply.run(self.twitter, count=1):
+                self.output(message, reply_id)
         else:
             raise ValueError('"%s" is not implemented yet' % job)
 
