@@ -95,6 +95,8 @@ class Ome(app.App):
     def run(self, interval=20):
         params = kuzuha.gen_params('参考', {'minute': interval})
         posts = kuzuha.get_log_as_dict('qwerty', params)
+        if not posts:
+            return None
         pairs = self.get_post_res_pairs(posts)
 
         for (parent, responses) in pairs.items():

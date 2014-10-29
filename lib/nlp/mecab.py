@@ -56,6 +56,8 @@ def _extract_phrase(nodes, target_pos):
 
 def extract_word(sentence, target_pos=POS['noun'], rootform=False, phrase=False):
     m = MeCabWrapper()
+    if isinstance(target_pos, str):
+        target_pos = POS.get(target_pos, tuple())
     nodes = [node for node in m.parse_to_node(sentence)]
     words = [_extract_surface(n, rootform) for n in nodes
              if _is_target_pos(n.feature, target_pos)]

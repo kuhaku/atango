@@ -23,7 +23,7 @@ def cfgdir():
 
 
 def logdir():
-    return __get_path('logdir')
+    return __get_path('logs')
 
 
 def read(filename, encoding=''):
