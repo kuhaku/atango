@@ -16,7 +16,7 @@ class Atango(App):
             if reply_id:
                 self.logger.info('Tweet: text=%s, id=%d' % (text, reply_id))
                 if not self.debug:
-                    self.twitter.api.statuses.update(status=text, _id=reply_id)
+                    self.twitter.api.statuses.update(status=text, in_reply_to_status_id=reply_id)
             else:
                 self.logger.info('Tweet: text=%s' % text)
                 if not self.debug:
