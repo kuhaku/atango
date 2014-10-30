@@ -57,7 +57,7 @@ def _extract_phrase(nodes, target_pos):
 def extract_word(sentence, target_pos=POS['noun'], rootform=False, phrase=False):
     m = MeCabWrapper()
     if isinstance(target_pos, str):
-        target_pos = POS.get(target_pos, tuple())
+        target_pos = POS.get(target_pos, (target_pos,))
     nodes = [node for node in m.parse_to_node(sentence)]
     words = [_extract_surface(n, rootform) for n in nodes
              if _is_target_pos(n.feature, target_pos)]
@@ -69,7 +69,7 @@ def extract_word(sentence, target_pos=POS['noun'], rootform=False, phrase=False)
 def count_word(sentence, target_pos='noun', rootform=False, phrase=True):
     counter = Counter()
     if isinstance(target_pos, str):
-        target_pos = POS.get(target_pos, tuple())
+        target_pos = POS.get(target_pos, (target_pos, ))
     for word in extract_word(sentence, target_pos, rootform, phrase):
         counter[word] += 1
     return counter
