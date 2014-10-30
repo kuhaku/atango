@@ -12,9 +12,11 @@ from .logger import Logger
 TIME_LIMIT = 55
 ATANGO_DIR = '/work/atango/'
 log_dir = os.path.join(ATANGO_DIR, 'logs')
+repeat = random.randint(0, 5)
 DYING_MESSAGES = (
-    'んほぉおおおおおおお%sv(*´Д､ﾟ)v' % ('！' * random.randint(0, 5)),
-    'らめえぇぇぇぇぇぇ%sイっちゃううぅぅっv(*ﾟД､`)v' % ('♡' * random.randint(0, 5))
+    'んほぉおおおおおおお%sv(*´Д､ﾟ)v' % ('！' * repeat),
+    'らめえぇぇぇぇぇぇ%sイっちゃううぅぅっv(*ﾟД､`)v' % ('♡' * repeat),
+    'イっていい？イっていい？(*ﾟД､`)出すよ！'
 )
 
 
