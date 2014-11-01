@@ -4,6 +4,8 @@ import os
 import time
 from lib import swjson, file_io
 
+FILES = ('qwerty.html', 'qwerty_author.html', 'qwerty_post.html', 'usamin.html', 'gikogicom.html')
+
 
 class testSwJson:
 
@@ -13,16 +15,11 @@ class testSwJson:
 
     def load_test_data(self):
         wdir = os.path.abspath(os.path.dirname(__file__))
-        qwerty_path = os.path.join(wdir, 'qwerty.html')
-        self.qwerty_html = file_io.read_text_file(qwerty_path)
-        qwerty_author_path = os.path.join(wdir, 'qwerty_author.html')
-        self.qwerty_author_html = file_io.read_text_file(qwerty_author_path)
-        qwerty_post_path = os.path.join(wdir, 'qwerty_post.html')
-        self.qwerty_post_html = file_io.read_text_file(qwerty_post_path)
-        usamin_path = os.path.join(wdir, 'usamin.html')
-        self.usamin_html = file_io.read_text_file(usamin_path)
-        gikogicom_path = os.path.join(wdir, 'gikogicom.html')
-        self.gikogicom_html = file_io.read_text_file(gikogicom_path)
+        for filename in FILES:
+            attr_name = filename.replace('.', '_')
+            path = os.path.join(wdir, filename)
+            content = file_io.read_text_file(path)
+            setattr(self, attr_name, content)
 
     def test_identify_site(self):
         got = self.parser._identify_site(self.qwerty_html)
