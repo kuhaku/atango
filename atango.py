@@ -51,7 +51,7 @@ class Atango(App):
             from job.reply import Reply
             reply = Reply(verbose=self.verbose, debug=self.debug)
             self.twitter = Twitter()
-            for (message, reply_id) in reply.run(self.twitter, count=1):
+            for (message, reply_id) in reply.run(self.twitter, count=10):
                 self.output(message, reply_id)
         else:
             raise ValueError('"%s" is not implemented yet' % job)

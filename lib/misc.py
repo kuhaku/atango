@@ -63,3 +63,7 @@ def map_dict(method, d):
         <dict> d
     """
     return dict(zip(d.keys(), map(method, d.values())))
+
+
+def has_substr(iterable, substr):
+    return any(substr in item for item in iterable)
