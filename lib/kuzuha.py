@@ -129,7 +129,7 @@ def gen_params(kwd='', date_range={}):
 def _parse_keyword(keyword, encoding):
     if isinstance(keyword, list):
         keyword = ' '.join(keyword)
-    return keyword.replace(' ', '+').encode(encoding)
+    return keyword.encode(encoding)
 
 
 def _get_qwerty_log(params):
@@ -195,8 +195,8 @@ def cleansing(html, font_tag, link, site):
     return html
 
 
-def get_log_as_dict(site, params, fast=False, url=False):
-    parser = swjson.SwJson(fast=fast, url=url)
+def get_log_as_dict(site, params, fast=False, url=False, usamin_detail=False):
+    parser = swjson.SwJson(fast=fast, url=url, usamin_detail=usamin_detail)
     html = get_log(site, params)
     if html:
         return parser.to_dict(html)

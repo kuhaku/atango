@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
-from nose.tools import assert_equals
+from nose.tools import assert_equals, nottest
 import os
 import time
 from lib import swjson, file_io
 
-FILES = ('qwerty.html', 'qwerty_author.html', 'qwerty_post.html', 'usamin.html', 'gikogicom.html')
+FILES = ('qwerty.html', 'qwerty_author.html', 'qwerty_post.html', 'gikogicom.html',
+         'usamin.html', 'usamin_resno.html')
 
 
 class testSwJson:
@@ -83,13 +84,24 @@ class testSwJson:
             post_text = self.parser._extract_post_text(article)
             parsed_post_text = self.parser._parse_post_text(post_text)
             text, posts = self.parser._link_by_quote(parsed_post_text['text'], id, posts)
-        assert_equals(posts[u'25721989']['quote'], u'25721977')
-        assert_equals(posts[u'25721977']['quoted_by'], [u'25721989'])
+        assert_equals(posts[25721989]['quote'], 25721977)
+        print(posts)
+        assert_equals(posts[25721977]['quoted_by'], [25721989])
         assert_equals(text, [u'v(*´Д､ﾟ)v'])
+
+    @nottest
+    def test__extract_items(self):
+        pass
 
     def test_parse(self):
         self.parser.regex = swjson.REGEX['KUZUHA']
         html = self.parser._cleansing(self.qwerty_post_html, 'KUZUHA')
         posts = self.parser._parse(html)
-        assert_equals(posts[u'25721989']['quote'], u'25721977')
-        assert_equals(posts[u'25721977']['quoted_by'], [u'25721989'])
+        assert_equals(posts[25721989]['quote'], 25721977)
+        assert_equals(posts[25721977]['quoted_by'], [25721989])
+
+        self.parser.regex = swjson.REGEX['USAMIN']
+        self.parser.usamin_detail = True
+        posts = self.parser._parse(self.usamin_resno_html)
+        assert_equals(posts[25689385]['resnum'], 1)
+        assert_equals(posts[25689385]['thread'], 25689385)

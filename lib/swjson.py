@@ -33,13 +33,14 @@ REGEX = {
     },
     'USAMIN': {
         'pre': re.compile(r'(?<=\><pre>).+?(?=<\/pre>)', re.S),
-        'id': re.compile(r'"\d+"'),
+        'id': re.compile(r'(?<=")\d+(?=")'),
         'date': re.compile(u'<font size="\-1">(?P<Y>\d{4})/(?P<m>\d\d)/(?P<D>\d\d) \(.\) '
                            u'(?P<H>\d\d):(?P<M>\d\d):(?P<S>\d\d)'),
         'quote': re.compile(u'<A href="#(\d+)">参考：.+秒</A>'),
         'author': re.compile(u'投稿者：<b>(.+?)</b>', re.I),
         'to': re.compile(u'<FONT size="\+1" color="#ffffff"><B>＞(.+?)</B>'),
-        'resnum': re.compile(u' \d{2}:\d{2}:\d{2}　[(\d+)]　 ')
+        'resnum': re.compile('\[(\d+)\]'),
+        'thread': re.compile('s=([\d]+)">◆')
     },
     'GIKOGICOM': {
         'pre': re.compile(r'(?<=<pre class="msg">)(.+)(?=\n<\/pre>)'),
@@ -63,7 +64,7 @@ class SwJson:
     def __init__(self, **args):
         self.fast = args.get('fast', False)
         self.url = args.get('url', False)
-        self.resnum = args.get('resnum', False)
+        self.usamin_detail = args.get('usamin_detail', False)
 
     @staticmethod
     def _identify_site(html):
@@ -111,7 +112,7 @@ class SwJson:
     def _extract_id(self, post):
         id_match = self.regex['id'].search(post)
         if id_match:
-            return id_match.group(0)
+            return int(id_match.group(0))
 
     def _extract_name(self, post, person):
         name = self.regex[person].findall(post)
@@ -151,19 +152,19 @@ class SwJson:
                 parsed_post_text['text'].append(line)
         return parsed_post_text
 
-    def _link_by_quote(self, text, id, posts):
+    def _link_by_quote(self, text, _id, posts):
         quote_match = self.regex['quote'].search(text[-1])
         if quote_match:
-            quoted_post_id = quote_match.group(1)
-            posts[id]['quote'] = quoted_post_id
+            quoted_post_id = int(quote_match.group(1))
+            posts[_id]['quote'] = quoted_post_id
             if quoted_post_id not in posts:
                 posts[quoted_post_id] = {}
             if 'quoted_by' in posts[quoted_post_id]:
-                posts[quoted_post_id]['quoted_by'].append(id)
+                posts[quoted_post_id]['quoted_by'].append(_id)
             else:
-                posts[quoted_post_id]['quoted_by'] = [id]
+                posts[quoted_post_id]['quoted_by'] = [_id]
             text.pop(-1)
-        return text, posts
+        return (text, posts)
 
     @staticmethod
     def _delete_anchor_tag(post):
@@ -175,10 +176,10 @@ class SwJson:
         return post
 
     def _extract_items(self, post):
-        id = self._extract_id(post)
-        if not id:
+        _id = self._extract_id(post)
+        if not _id:
             return None
-        post_items = {'id': id}
+        post_items = {'id': _id}
 
         pre = self.regex['pre'].findall(post)[0]
         parsed_post_text = self._parse_post_text(pre)
@@ -186,8 +187,14 @@ class SwJson:
         extraction_target = {'q1': parsed_post_text.get('q1', None),
                              'q2': parsed_post_text.get('q2', None),
                              'text': parsed_post_text.get('text', None)}
-        if self.resnum:
-            extraction_target.update({'resnum': self.regex['resnum'].findall(post)[0]})
+        if self.usamin_detail:
+            for resnum in self.regex['resnum'].findall(post):
+                resnum = int(resnum)
+                if resnum > 0:
+                    extraction_target['resnum'] = resnum
+                break
+            if 'resnum' in extraction_target:
+                extraction_target['thread'] = int(self.regex['thread'].findall(post)[0])
         if self.fast is False:
             extraction_target.update(
                 {
@@ -207,41 +214,43 @@ class SwJson:
             post_items = self._extract_items(post)
             if not post_items:
                 continue
-            id = post_items.pop('id')
-            posts[id].update(post_items)
+            _id = post_items.pop('id')
+            posts[_id].update(post_items)
             if not self.fast:
-                posts[id]['time'] = self._to_unixtime(posts[id]['date'])
+                posts[_id]['time'] = self._to_unixtime(posts[_id]['date'])
 
-            if 'q1' in posts[id]:
-                posts[id]['q1'] = '\n'.join(posts[id]['q1'])
-                if posts[id]['text'] and self.fast is False:
-                    text, posts = self._link_by_quote(posts[id]['text'], id, posts)
-                    posts[id]['text'] = text
-                if 'q2' in posts[id]:
-                    posts[id]['q2'] = '\n'.join(posts[id]['q2'])
-            if 'text' in posts[id]:
-                posts[id]['text'] = '\n'.join(posts[id]['text']).strip()
+            if 'q1' in posts[_id]:
+                posts[_id]['q1'] = '\n'.join(posts[_id]['q1'])
+                if posts[_id]['text'] and self.fast is False:
+                    text, posts = self._link_by_quote(posts[_id]['text'], _id, posts)
+                    posts[_id]['text'] = text
+                if 'q2' in posts[_id]:
+                    posts[_id]['q2'] = '\n'.join(posts[_id]['q2'])
+            if 'text' in posts[_id]:
+                posts[_id]['text'] = '\n'.join(posts[_id]['text']).strip()
             if self.url is False:
-                posts[id] = self._delete_anchor_tag(posts[id])
+                posts[_id] = self._delete_anchor_tag(posts[_id])
         return posts
 
-    def to_dict(self, html):
+    def to_dict(self, html, **args):
         """
         Param:
             <str> html
         Return:
             <dict <str>> json_log
         """
+        if 'usamin_detail' in args:
+            self.usamin_detail = args['usamin_detail']
         site = self._identify_site(html)
         self.regex = REGEX[site]
         html = self._cleansing(html, site)
         return self._parse(html)
 
-    def to_json(self, html):
+    def to_json(self, html, **args):
         """
         Param:
             <str> html
         Return:
             <str> json_log
         """
-        return json.dumps(self.to_dict(html))
+        return json.dumps(self.to_dict(html, **args))
