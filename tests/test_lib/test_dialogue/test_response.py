@@ -40,3 +40,15 @@ class test_ResponseGenerator(object):
     @nottest
     def test__extract_response_from_log(self):
         pass
+
+    @nottest
+    def test_respond(self):
+        """
+        actual = self.resgen.respond('マミさんって何？')
+        print(actual)
+        assert_true(actual.startswith('マミさん'))
+        time.sleep(0.5)
+        actual = self.resgen.respond('誰がかわいい？')
+        print(actual)
+        assert_true('かわいい' in actual)
+        """

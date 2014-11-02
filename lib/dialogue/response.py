@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from lib import app, misc, normalize, swjson, regex, kuzuha, web
 from lib.nlp import mecab
+from lib.dialogue import qa
 
 
 RESPONSES = (
@@ -99,6 +100,8 @@ class ResponseGenerator(app.App):
     def respond(self, text, screen_name=None, user='貴殿'):
         text = normalize.normalize(text)
         METHODS = (
+            qa.respond_oshiete,  # XXXって何? -> XXXは***
+            qa.respond_what_who,  # (誰|何)がXXX? -> ***がXXX
             self._extract_response_from_log,  # past post as-is
             self._random_choice,  # Randomly
         )
