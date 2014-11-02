@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 import os
 import re
-from lib import app, config, regex
-from lib.dialogue import response
+from lib import app, config, regex, normalize
+from lib.dialogue import qa, dialogue_search, misc
 
 re_screen_name = re.compile('@[\w]+[ 　]*')
 re_atango = re.compile("[ぁあ]単語((ちゃん)|(先輩))")
@@ -14,7 +14,6 @@ class Reply(app.App):
         self.cfg = config.read('atango.json')['Reply']
         cfg_dir = config.cfgdir()
         self.replied_id_file = os.path.join(cfg_dir, 'latest_replied.txt')
-        self.res_gen = response.ResponseGenerator(verbose, debug)
         super(Reply, self).__init__(verbose, debug)
 
     def get_latest_replied_id(self):
@@ -48,6 +47,29 @@ class Reply(app.App):
         text = text.strip()
         return text
 
+    def _replace_name(self, text, screen_name, name):
+        if not screen_name:
+            screen_name = name
+        text = text.replace('\%sn', screen_name)
+        text = text.replace('%name', name)
+        return text
+
+    def respond(self, text, screen_name=None, user='貴殿'):
+        text = normalize.normalize(text)
+        METHODS = (
+            qa.respond_oshiete,  # XXXって何? -> XXXは***
+            qa.respond_what_who,  # (誰|何)がXXX? -> ***がXXX
+            dialogue_search.respond,  # past post as-is
+            misc._random_choice,  # Randomly
+        )
+        for method in METHODS:
+            response = method(text)
+            if response:
+                break
+        if not response:
+            response = 'ああ(;´Д`)'
+        return self._replace_name(response, screen_name, user)
+
     def run(self, twitter_api, count=10):
         mentions = twitter_api.api.statuses.mentions_timeline(count=count)
         for mention in mentions[::-1]:
@@ -57,7 +79,7 @@ class Reply(app.App):
             if not self.is_valid_mention(mention):
                 continue
             message = '@%s ' % screen_name
-            message += self.res_gen.respond(text, screen_name, name)
+            message += self.respond(text, screen_name, name)
             yield message, mention['id']
             self.update_latest_replied_id(mention['id'])
 
