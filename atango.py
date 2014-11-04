@@ -53,6 +53,12 @@ class Atango(App):
             self.twitter = Twitter()
             for (message, reply_id) in reply.run(self.twitter, count=10):
                 self.output(message, reply_id)
+        elif job == 'cputemp':
+            from job.cputemp import CpuTemperatureChecker
+            temp_checker = CpuTemperatureChecker()
+            message = temp_checker.run()
+            if message:
+                self.output(message)
         else:
             raise ValueError('"%s" is not implemented yet' % job)
 

@@ -27,6 +27,9 @@ curl -O https://raw.githubusercontent.com/kuhaku/atango/master/requirements.txt
 pip install --upgrade --timeout 30 -r requirements.txt
 rm requirements.txt
 
+# Install iStats for CPU temperature monitor
+gem install iStats
+
 # Clone Atango repository
 git clone https://github.com/kuhaku/atango.git /work/atango
 echo export PYTHONPATH=/work/atango/lib:${PYTHONPATH} >> /work/venv/atango/bin/activate
