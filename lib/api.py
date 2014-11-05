@@ -1,10 +1,19 @@
 # -*- coding: utf-8 -*-
 import re
 import twitter
+from twitter.api import TwitterHTTPError
 from . import config, misc
 
 CFG_FILE = 'api.cfg'
 re_photo_id = re.compile(r'<photoid>(?P<photoid>[0-9]+)</photoid>')
+
+
+def __str__patch(self):
+    fmt = ("." + self.format) if self.format else ""
+    return ('%i %s%s %s using params: (%s)' % (self.e.code, self.uri, fmt,
+                                               self.response_data, self.uriparts))
+
+TwitterHTTPError.__str__ = __str__patch
 
 
 class Twitter:
