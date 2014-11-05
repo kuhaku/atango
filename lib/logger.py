@@ -73,6 +73,6 @@ class Logger(object):
         handler.setFormatter(self.format)
         self.logger.addHandler(handler)
 
-    def enable_twitter_handler(self):
-        handler = TwitterHandler()
+    def enable_twitter_handler(self, debug=False):
+        handler = TwitterHandler(debug=debug)
         self.logger.addHandler(handler)
