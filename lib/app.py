@@ -5,19 +5,12 @@ import traceback
 import re
 import os
 import inspect
-import random
 from .logger import Logger
 
 
 TIME_LIMIT = 55
 ATANGO_DIR = '/work/atango/'
 log_dir = os.path.join(ATANGO_DIR, 'logs')
-repeat = random.randint(0, 5)
-DYING_MESSAGES = (
-    'んほぉおおおおおおお%sv(*´Д､ﾟ)v' % ('！' * repeat),
-    'らめえぇぇぇぇぇぇ%sイっちゃううぅぅっv(*ﾟД､`)v' % ('♡' * repeat),
-    'イっていい？イっていい？(*ﾟД､`)出すよ！'
-)
 
 
 class Timeout(Exception):
@@ -40,14 +33,6 @@ def decorator(self, function):
             signal.setitimer(signal.ITIMER_REAL, timelimit)
             signal.signal(signal.SIGALRM, overtime_handler)
 
-    def dying_tweet(err_msg):
-        from .api import Twitter
-        twitter = Twitter()
-        dying_message = '%s %s' % (random.choice(DYING_MESSAGES), err_msg)
-        if len(dying_message) > 140:
-            dying_message = dying_message[:139] + '…'
-        twitter.api.statuses.update(status=dying_message)
-
     def wrapper(*args, **kwargs):
         try:
             set_timer(TIME_LIMIT)
@@ -64,8 +49,6 @@ def decorator(self, function):
                 text = re.sub(r'\n\s*', ' ', line.rstrip())
                 self.logger.warn(text)
             self.logger.warn('-------------------')
-            if not self.debug:
-                dying_tweet(err_msg)
             return sys.exit(err_msg)
     return wrapper
 
@@ -85,6 +68,7 @@ class App(object):
 
         if verbose:
             logger.enable_stream_handler()
+        logger.enable_twitter_handler(debug=debug)
 
         self.verbose = verbose
         self.debug = debug
