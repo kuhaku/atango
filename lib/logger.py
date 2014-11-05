@@ -38,19 +38,23 @@ class TwitterHandler(handlers.BufferingHandler):
         return self.detect_max_level() >= self.send_level
 
     def format_message(self):
-        error_message = [record.msg for record in self.buffer]
-        message = '%s %s' % (random.choice(TWEET_PREFIXES), ''.join(error_message))
-        if len(message) > 140:
-            message = message[:139] + '…'
-        return message
+        error_message = []
+        for record in self.buffer:
+            if record.levelno >= self.send_level:
+                error_message.append(record.msg)
+        if error_message:
+            message = '%s %s' % (random.choice(TWEET_PREFIXES), ''.join(error_message))
+            if len(message) > 140:
+                message = message[:139] + '…'
+            return message
 
     def send(self):
         message = self.format_message()
-        self.twitter.api.statuses.update(status=message)
+        if message:
+            self.twitter.api.statuses.update(status=message)
 
     def flush(self):
-        if (self.has_send_level_log() and not self.debug and
-           not self.main_path.endswith('nosetests')):
+        if not (self.debug or self.main_path.endswith('nosetests')):
             self.send()
         self.buffer = []
 
