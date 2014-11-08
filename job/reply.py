@@ -34,9 +34,14 @@ class Reply(app.App):
         def is_ng_tweet(text):
             return any(word in text for word in self.cfg['NG_WORDS'])
 
+        def is_ng_client(client):
+            client = client.lower()
+            return client in self.cfg['NG_CLIENT']
+
         if (mention['id'] <= self.get_latest_replied_id() or
            is_ng_screen_name(mention['user']['screen_name']) or
-           is_ng_tweet(mention['text'])):
+           is_ng_tweet(mention['text']),
+           is_ng_client(mention['source'])):
             return False
         return True
 
