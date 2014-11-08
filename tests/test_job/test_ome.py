@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from nose.tools import assert_equals, assert_true
+from nose.tools import assert_equals, assert_true, nottest
 from collections import defaultdict
 from job.ome import Ome
 
@@ -62,5 +62,6 @@ class test_Ome(object):
             assert_true(actual)
 
 
+    @nottest
     def test_run(self):
         pass

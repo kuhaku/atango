@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
-from nose.tools import assert_equals
+from nose.tools import assert_equals, nottest
 from job import popular_url
 
 
 TITLES = (("Twitter / atango", "atango"), ("ぁ単語さんはTwitterを使っています", "ぁ単語"), 
           ("おっぱいブログ Powered by アメブロ", "おっぱいブログ"))
+
 
 class test_PopularUrl(object):
 
@@ -20,9 +21,11 @@ class test_PopularUrl(object):
         desired = '女性声優画像bot"内田真礼"'
         assert_equals(self.purl._shorten_title(title), desired)
 
+    @nottest
     def test__shorten_title(self):
         pass
 
+    @nottest
     def test__get_title(self):
         pass
 
@@ -32,8 +35,10 @@ class test_PopularUrl(object):
         url = 'https://twitter.com/sw_words/status/346716382630645760/photo/1'
         assert_equals(self.purl.extract_tweet_id(url), '346716382630645760')
 
+    @nottest
     def test_calc_tweet_length(self):
         pass
 
+    @nottest
     def test_run(self):
         pass

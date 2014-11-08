@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
-from nose.tools import assert_true, assert_equals
+from nose.tools import assert_true, assert_equals, assert_raises, assert_false
 import time
+import os
 from collections import Counter
 from bs4 import BeautifulSoup
 from lib import google_image
@@ -19,6 +20,12 @@ class test_GoogleSearchByImageUtils(object):
     def wait(self):
         time.sleep(0.2)  # wait for avoiding to be treated as spam by Google
 
+    def get_search_result(self):
+        wdir = os.path.abspath(os.path.dirname(__file__))
+        path = os.path.join(wdir, 'search_by_image.html')
+        with open(path, 'r') as fd:
+            return fd.read()
+
     def test_search(self):
         self.wait()
         actual = self.sbiutil.search(IMAGE_URL)
@@ -31,18 +38,20 @@ class test_GoogleSearchByImageUtils(object):
         assert_true('マミ' in actual)
 
     def test_has_captcha(self):
-        pass
+        html = '<input name="captcha"> </input>'
+        assert_raises(Exception, self.sbiutil.has_captcha, html)
+
+        soup = BeautifulSoup(self.get_search_result())
+        assert_false(self.sbiutil.has_captcha(soup))
 
     def test_extract_titles(self):
-        self.wait()
-        result_html = self.sbiutil.search(IMAGE_URL)
+        result_html = self.get_search_result()
         soup = BeautifulSoup(result_html)
         actual = self.sbiutil.extract_titles(soup)
         assert_true(any('マミ' in snippet for snippet in actual))
 
     def test_extract_snippets(self):
-        self.wait()
-        result_html = self.sbiutil.search(IMAGE_URL)
+        result_html = self.get_search_result()
         soup = BeautifulSoup(result_html)
         actual = self.sbiutil.extract_snippets(soup)
         assert_true(any('マミ' in snippet for snippet in actual))

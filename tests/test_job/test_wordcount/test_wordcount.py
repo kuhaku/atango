@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from nose.tools import assert_equals, assert_true
+from nose.tools import assert_equals, assert_true, nottest
 from datetime import datetime
 from collections import Counter
 from job.wordcount import wordcount
@@ -40,9 +40,11 @@ class test_WordCount:
         self.wc.start_time = 0
         assert_equals(self.wc.calc_avg_time(word, 7), 5)
 
+    @nottest
     def test_prepare_for_counting(self):
         pass
 
+    @nottest
     def test_count(self):
         pass
 
@@ -61,12 +63,15 @@ class test_WordCount:
         assert_true(not self.wc.is_valid_word(u'111'))
         assert_true(not self.wc.is_valid_word(u'ょゅぅ'))
 
+    @nottest
     def test_del_word(self):
         pass
 
+    @nottest
     def test_cut_ngword(self):
         pass
 
+    @nottest
     def test_decrease_duplicate_count(self):
         pass
 
@@ -86,9 +91,11 @@ class test_WordCount:
             assert_equals(got[1].surface, expect.surface)
             assert_equals(got[1].count, expect.count)
 
+    @nottest
     def test_del_duplicate_word(self):
         pass
 
+    @nottest
     def test_to_bag_of_words(self):
         pass
 
@@ -101,5 +108,6 @@ class test_WordCount:
         expect = u'0~1時の＠上海:\n word_x：2, word_y：1'
         assert_equals(got, expect)
 
+    @nottest
     def test_run(self):
         pass
