@@ -19,7 +19,6 @@ DEFAULT_KUZUHA_PARAMS = {
     'e1': '0',
     's2': '24',
     'e2': '0',
-    'date': '',
     'kwd': '',
     'ao': 'o',
     'tt': 'a',
@@ -118,11 +117,11 @@ def gen_params(kwd='', date_range={}):
         idx = 'chk%s.dat' % (date_range['date'])
         params[idx] = "checked"
     elif date_range.get('day', None):
-        params = _gen_params_by_day(date_range, now, params)
+        params.update(_gen_params_by_day(date_range, now, params))
     elif date_range.get('hour', None):
-        params = _gen_params_by_hour(date_range, now, params)
+        params.update(_gen_params_by_hour(date_range, now, params))
     elif date_range.get('minute', None):
-        params = _gen_params_by_minute(date_range, now, params)
+        params.update(_gen_params_by_minute(date_range, now, params))
     return params
 
 
@@ -142,7 +141,7 @@ def _get_gikogicom_log(params):
     if 'kwd' in params:
         params['qs'] = _parse_keyword(params['kwd'], 'cp932')
         del params['kwd']
-    else:
+    elif 'qs' in params:
         params['qs'] = _parse_keyword(params['qs'], 'cp932')
     if 'n' not in params:
         params['n'] = 'all'
