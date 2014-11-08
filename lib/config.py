@@ -31,7 +31,7 @@ def read(filename, encoding=''):
         cfg = os.path.join(cfgdir(), filename)
         config_parser = SafeConfigParser()
         config_parser.read(cfg)
-        return config_parser
+        return dict(config_parser)
     elif filename.endswith('.json'):
         return json.load(open(os.path.join(cfgdir(), filename), 'r', encoding='utf-8'))
     elif filename.endswith('.txt'):

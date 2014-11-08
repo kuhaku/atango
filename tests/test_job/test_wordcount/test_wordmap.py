@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from nose.tools import assert_equals, assert_true
+from nose.tools import assert_equals, assert_true, nottest
 from datetime import datetime
 from itertools import product
 import numpy as np
@@ -12,9 +12,11 @@ class test_WordCount:
     def __init__(self):
         self.wm = wordmap.WordMap()
 
+    @nottest
     def test_load_json(self):
         pass
 
+    @nottest
     def test_hide_unused_figure_object(self):
         pass
 
@@ -31,9 +33,11 @@ class test_WordCount:
         got = self.wm.generate_graphtitle(dt)
         assert_equals(got, '2011/2/14 0:00~1:00 qwerty')
 
+    @nottest
     def test_configure_graph(self):
         pass
 
+    @nottest
     def test_determine_num_plot_items(self):
         pass
 
@@ -139,18 +143,23 @@ class test_WordCount:
         assert_true(not got[0][3])
         assert_true(not got[3][3])
 
+    @nottest
     def test_arrange_word_position(self):
         pass
 
+    @nottest
     def test_calc_label_size(self):
         pass
 
+    @nottest
     def test_get_fontsize(self):
         pass
 
+    @nottest
     def test_adjust_label(self):
         pass
 
+    @nottest
     def test_plot_map(self):
         pass
 
@@ -162,8 +171,10 @@ class test_WordCount:
         got = self.wm.add_search_link(message)
         assert_equals(got, expect)
 
+    @nottest
     def test_upload(self):
         pass
 
+    @nottest
     def test_run(self):
         pass

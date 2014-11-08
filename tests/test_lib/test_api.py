@@ -1,0 +1,74 @@
+# -*- coding: utf-8 -*-
+from nose.tools import assert_equals, assert_true, assert_raises
+from collections import namedtuple
+from unittest.mock import patch
+from lib import api
+
+FLICKR_CONFIG_IDX = ('username', 'user_nsid', 'api_key', 'api_secret', 'oauth_token_key',
+                     'oauth_token_secret')
+FLICKR_SH_TRUE_RETURN = ('<?xml version="1.0" encoding="utf-8" ?>\n'
+                         '<rsp stat="ok">\n<photoid>92</photoid>\n</rsp>\n')
+FLICKR_SH_FALSE_RETURN = ('<?xml version="1.0" encoding="utf-8" ?>\n'
+                          '<rsp stat="ok">\n</rsp>\n')
+
+
+class TwitterHTTPErrorMock(object):
+
+    def __init__(self, format, code, uri, response_data, uriparts):
+        self.format = format
+        self.e = namedtuple('Error', 'code')(code)
+        self.uri = uri
+        self.response_data = response_data
+        self.uriparts = uriparts
+
+
+def test___str__patch():
+    m = TwitterHTTPErrorMock('', 403, 'test.json', {'msg': 'hello'}, 'mamipai')
+    setattr(m, '__str__', api.__str__patch)
+    desired = '403 test.json {\'msg\': \'hello\'} using params: (mamipai)'
+    assert_equals(m.__str__(m), desired)
+
+
+class test_Twitter:
+
+    def test___init__(self):
+        config_patcher = patch('lib.api.config.read')
+        config_mock = config_patcher.start()
+        config_mock.return_value = {
+            'Twitter': {
+                'access_token_key': 0,
+                'access_token_secret': 0,
+                'consumer_key': 0,
+                'consumer_secret': 0
+            }
+        }
+        oauth_patcher = patch('lib.api.twitter.OAuth')
+        oauth_mock = oauth_patcher.start()
+        oauth_mock.return_value = None
+        with patch('lib.api.twitter.Twitter') as twitter_mock:
+            twitter_mock.return_value = True
+            actual = api.Twitter()
+            assert_true(actual.api)
+        oauth_patcher.stop()
+        config_patcher.stop()
+
+
+class test_Flickr:
+
+    def test___init__(self):
+        with patch('lib.api.config.read') as config_mock:
+            config_mock.return_value = {
+                'Flickr': {idx: 0 for idx in FLICKR_CONFIG_IDX}
+            }
+            actual = api.Flickr()
+            for idx in FLICKR_CONFIG_IDX:
+                assert_true(hasattr(actual, idx))
+
+    def test_upload(self):
+        flickr = api.Flickr()
+        with patch('lib.api.misc.command') as command_mock:
+            command_mock.return_value = (True, FLICKR_SH_TRUE_RETURN, '')
+            assert_equals(flickr.upload('/tmp/image.png'), '92')
+
+            command_mock.return_value = (True, FLICKR_SH_FALSE_RETURN, '')
+            assert_raises(Exception, flickr.upload, '/tmp/image.png')
