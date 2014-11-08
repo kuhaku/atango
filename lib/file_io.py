@@ -14,7 +14,7 @@ def decode_by_guessing(text):
     encoding = nkf.guess(text)
     if encoding in ('BINARY', 'ISO-8859-1'):
         encoding = 'utf8'
-    return text.decode(encoding)
+    return text.decode(encoding, 'replace')
 
 
 def read_text_file(path, encoding=''):

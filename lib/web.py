@@ -61,11 +61,11 @@ def open_url(url, referer=None, binary=False, params=None, post=False):
 def decode_content(r):
     for (site, encoding) in encoding_known_sites.items():
         if site in r.url:
-            return r.content.decode(encoding)
+            return r.content.decode(encoding, 'replace')
     if r.encoding in ('ISO-8859-1', None) :
         return file_io.decode_by_guessing(r.content)
     encoding = normalize_encoding(r.encoding)
-    return r.content.decode(encoding)
+    return r.content.decode(encoding, 'replace')
 
 def normalize_encoding(encoding):
     if encoding.lower() in ('windows-31j', 'shift-jis', 'shift_jis', 'x-sjis', 'sjis'):
