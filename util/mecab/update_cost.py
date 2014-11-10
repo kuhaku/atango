@@ -12,7 +12,7 @@ def get_cost(word, mecab, line):
     cost = total_cost - former_connection_cost
     coefficient = 0.25
     if '記号,一般' in line:
-        coefficient = 0.5
+        coefficient = 0.95
     elif '名詞,固有名詞,人名,姓' in line:
         coefficient = 0.1
     return str(int(cost - np.abs(cost * coefficient)))
