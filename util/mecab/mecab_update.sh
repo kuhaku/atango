@@ -34,7 +34,7 @@ for i in {2..100}
 do
   TMPFILE=${STORE_DICDIR}/${i}.temp
   if [ -e ${TMPFILE} ]; then
-    python ${SCRIPT_DIR}/update_cost.py ${TMPFILE} ${ORIGINAL_DICDIR}
+    python ${SCRIPT_DIR}/update_cost.py ${TMPFILE} ${STORE_DICDIR}
     ${MECAB_LIBEXEC_DIR}/mecab-dict-index -d ${STORE_DICDIR} -o ${STORE_DICDIR} -f utf-8 -t utf-8 >> /dev/null
     rm ${TMPFILE}
   fi
