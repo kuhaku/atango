@@ -17,7 +17,7 @@ STORE_DICDIR="${DICDIR}/normalized"
 
 MECAB_LIBEXEC_DIR=`mecab-config --libexecdir`
 
-# Retrieve neologism from Syobocal, Wikipedia and Hatena Keyword
+# Retrieve neologism from Syobocal, Wikipedia, Hatena Keyword and more
 python ${SCRIPT_DIR}/web_neologism.py ${ORIGINAL_DICDIR}
 
 rm ${STORE_DICDIR}/*
