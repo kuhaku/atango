@@ -13,14 +13,13 @@ class Atango(App):
 
     def output(self, text, reply_id=None):
         if text:
+            params = {'status': text, 'in_reply_to_status_id': reply_id}
+            logging_msg = 'Tweet: text={status}'
             if reply_id:
-                self.logger.info('Tweet: text=%s, id=%d' % (text, reply_id))
-                if not self.debug:
-                    self.twitter.api.statuses.update(status=text, in_reply_to_status_id=reply_id)
-            else:
-                self.logger.info('Tweet: text=%s' % text)
-                if not self.debug:
-                    self.twitter.api.statuses.update(status=text)
+                logging_msg += ', id={in_reply_to_status_id}'
+            self.logger.info(logging_msg.format(**params))
+            if not self.debug:
+                self.twitter.api.statuses.update(**params)
         else:
             self.logger.warn('there is not string to output')
 
