@@ -49,6 +49,7 @@ class PopularUrl(app.App):
         return sorted(titles, key=lambda x: len(x), reverse=True)[0].strip()  # 最長の要素を返す
 
     def _get_title(self, url):
+        title = ''
         root, ext = os.path.splitext(url)
         if ext in image_extensions:
             time.sleep(3)  # for avoiding to be treated as spam by Google
@@ -58,7 +59,6 @@ class PopularUrl(app.App):
         elif not ext in ignore_extensions:
             self.logger.info('Retrieve web resource: %s' % url)
             html = web.open_url(url)
-            title = ''
             for title in re_title.findall(html):
                 title = normalize.htmlentity2unicode(title)
                 title = self._shorten_title(title)
