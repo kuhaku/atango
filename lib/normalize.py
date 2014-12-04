@@ -5,7 +5,7 @@ import itertools
 from collections import OrderedDict
 import jctconv
 import tr
-from . import config
+from . import path
 
 # for htmlentity2unicode
 re_reference = re.compile("&(#x?[0-9a-f]{,32}|[a-z]{,32});", re.I)
@@ -106,7 +106,7 @@ class SynonymUnification(object):
 
     def __init__(self):
         self.synonym_map = OrderedDict()
-        propensity = config.read('propensity.json')
+        propensity = path.read('propensity.json')
         for (k, v) in sorted(propensity.items(), key=lambda x: len(x[0]), reverse=True):
             self.synonym_map[k] = v
 

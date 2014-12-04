@@ -3,7 +3,7 @@ from collections import defaultdict, Counter
 from itertools import combinations
 import numpy as np
 
-from lib import app, kuzuha, normalize, config
+from lib import app, kuzuha, normalize, path
 from lib.distance import levenshtein
 from lib.nlp import mecab, ngram
 from . import wordmap
@@ -17,7 +17,7 @@ class WordCount(app.App):
         self.start_time = 0
         self.plot_wordmap = plot_wordmap
         self.up_flickr = up_flickr
-        self.ng_words = set(config.read('ng_words.txt'))
+        self.ng_words = set(path.read('ng_words.txt'))
         super(WordCount, self).__init__(verbose, debug)
 
     def _get_log(self, keyword, date_range):

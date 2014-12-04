@@ -3,7 +3,7 @@ from nose.tools import assert_equals, nottest
 import tempfile
 import os
 import shutil
-from lib import config
+from lib import path
 
 tempdir = tempfile.mkdtemp()
 
@@ -55,5 +55,5 @@ def test_logdir():
 
 def test_read():
     for (example_path, content) in TEST_DATA.items():
-        actual = config.read(example_path)
+        actual = path.read(example_path)
         assert_equals(str(actual), content)

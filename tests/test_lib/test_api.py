@@ -32,7 +32,7 @@ def test___str__patch():
 class test_Twitter:
 
     def test___init__(self):
-        config_patcher = patch('lib.api.config.read')
+        config_patcher = patch('lib.api.path.read')
         config_mock = config_patcher.start()
         config_mock.return_value = {
             'Twitter': {
@@ -56,7 +56,7 @@ class test_Twitter:
 class test_Flickr:
 
     def test___init__(self):
-        with patch('lib.api.config.read') as config_mock:
+        with patch('lib.api.path.read') as config_mock:
             config_mock.return_value = {
                 'Flickr': {idx: 0 for idx in FLICKR_CONFIG_IDX}
             }
