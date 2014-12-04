@@ -9,3 +9,4 @@ dist/*
 .*.un~
 setup/.vagrant/*
 logs/*
+*.shelve
