@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import os
+import shelve
 from argparse import ArgumentParser
 from lib.app import App
 from lib.api import Twitter
@@ -11,12 +13,24 @@ class Atango(App):
             self.twitter = Twitter()
         super(Atango, self).__init__(verbose, debug)
 
+    def is_duplicate_tweet(self, text):
+        homedir = os.path.abspath(os.path.dirname(__file__))
+        shelve_file = os.path.join(homedir, 'atango.shelve')
+        with shelve.open(shelve_file, flag='c') as db:
+            if db.get('latest_tweet', '') == text:
+                return True
+            db['latest_tweet'] = text
+            return False
+
     def output(self, text, reply_id=None):
         if text:
             params = {'status': text, 'in_reply_to_status_id': reply_id}
             logging_msg = 'Tweet: text={status}'
             if reply_id:
                 logging_msg += ', id={in_reply_to_status_id}'
+            if self.is_duplicate_tweet(text):
+                self.logger.warn('tweet is duplicate')
+                return None
             self.logger.info(logging_msg.format(**params))
             if not self.debug:
                 self.twitter.api.statuses.update(**params)
@@ -45,7 +59,7 @@ class Atango(App):
             from job.ome import Ome
             ome = Ome(verbose=self.verbose, debug=self.debug)
             for message in ome.run(20):
-                self.output(message)        
+                self.output(message)
         elif job == 'reply':
             from job.reply import Reply
             reply = Reply(verbose=self.verbose, debug=self.debug)
