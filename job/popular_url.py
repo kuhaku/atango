@@ -4,7 +4,7 @@ import os.path
 from collections import Counter
 import time
 
-from lib import app, web, kuzuha, path, google_image, normalize
+from lib import app, web, kuzuha, file_io, google_image, normalize
 from lib.regex import re_url, re_title, re_html_tag
 
 HOUR_RANGE = 4
@@ -18,7 +18,7 @@ re_title_delimiter = re.compile(u'[\[\(（【｜\)\]）】]|( \- )|( \| )|( ― 
 re_no_shortened_title = re.compile(u'「.+(｜|( \- )).+」')
 image_extensions = ('.jpg', '.png', '.gif', '.jpg:large', '.png:large')
 ignore_extensions = ('.zip', '.rar', '.swf', '.pdf', '.mp3', '.mp4')
-cfg = path.read('popular_url.json')
+cfg = file_io.read('popular_url.json')
 
 
 class PopularUrl(app.App):

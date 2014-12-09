@@ -7,7 +7,7 @@
 import tempfile
 import requests
 from .misc import choice
-from . import file_io, path
+from . import file_io
 
 
 TIMEOUT = 15
@@ -40,7 +40,7 @@ DEFAULT_HEADERS = {
     'DNT': '1',
     'Pragma': 'no-cache',
 }
-encoding_known_sites = path.read('site_encoding.json')
+encoding_known_sites = file_io.read('site_encoding.json')
 
 
 def open_url(url, referer=None, binary=False, params=None, post=False):

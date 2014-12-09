@@ -11,7 +11,7 @@ import matplotlib.font_manager as font_manager
 from mpl_toolkits.axes_grid1.anchored_artists import AnchoredText
 import PIL.ImageFont
 
-from lib import api, path, mathematics, app
+from lib import api, file_io, mathematics, app
 from lib.misc import map_dict
 
 USAMIN_URL = 'http://usamin.mine.nu/cgi/swlog?b0=on&w='
@@ -30,7 +30,7 @@ class WordMap(app.App):
         self.configure_graph()
 
     def load_json(self):
-        wordmap_conf = path.read('atango.json')['WordMap']
+        wordmap_conf = file_io.read('atango.json')['WordMap']
         self.font_path = wordmap_conf['font']
         self.bgcolor = wordmap_conf['bgcolor']
         self.fig_size = wordmap_conf['fig_size']

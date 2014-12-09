@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 import re
-from lib import app, config, regex, normalize
+from lib import app, file_io, path, regex, normalize
 from lib.dialogue import qa, dialogue_search, misc
 
 re_screen_name = re.compile('@[\w]+[ 　]*')
@@ -11,8 +11,8 @@ re_atango = re.compile("[ぁあ]単語((ちゃん)|(先輩))")
 class Reply(app.App):
 
     def __init__(self, verbose=False, debug=False):
-        self.cfg = config.read('atango.json')['Reply']
-        cfg_dir = config.cfgdir()
+        self.cfg = file_io.read('atango.json')['Reply']
+        cfg_dir = path.cfgdir()
         self.replied_id_file = os.path.join(cfg_dir, 'latest_replied.txt')
         super(Reply, self).__init__(verbose, debug)
 

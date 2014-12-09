@@ -2,7 +2,7 @@
 import re
 from collections import Counter
 from bs4 import BeautifulSoup
-from . import web, path
+from . import web, file_io
 from .nlp import mecab
 
 
@@ -14,7 +14,7 @@ re_best_guess = re.compile(u'この画像の最良の推測結果:.*?>(.*?)</a>'
 re_html_tag = re.compile('<[^>]+>')
 
 my_mecab = mecab.MeCabWrapper()
-ng_tags = path.read('ng_tags.json')
+ng_tags = file_io.read('ng_tags.json')
 
 
 class GoogleSearchByImageUtils(object):

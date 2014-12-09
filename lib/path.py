@@ -1,40 +1,23 @@
 # -*- coding: utf-8 -*-
 import os
-import json
-from configparser import SafeConfigParser
-from . import file_io
 
 
-def __basedir():
+def _basedir():
     wdir = os.path.abspath(os.path.dirname(__file__))
     return os.path.normpath(os.path.join(wdir, '../'))
 
 
-def __get_path(dirname):
-    return os.path.normpath(os.path.join(__basedir(), dirname))
+def _get_path(dirname):
+    return os.path.normpath(os.path.join(_basedir(), dirname))
 
 
 def datadir():
-    return __get_path('data')
+    return _get_path('data')
 
 
 def cfgdir():
-    return __get_path('cfg')
+    return _get_path('cfg')
 
 
 def logdir():
-    return __get_path('logs')
-
-
-def read(filename, encoding=''):
-    if filename.endswith('.cfg'):
-        cfg = os.path.join(cfgdir(), filename)
-        config_parser = SafeConfigParser()
-        config_parser.read(cfg)
-        return dict(config_parser)
-    elif filename.endswith('.json'):
-        return json.load(open(os.path.join(cfgdir(), filename), 'r', encoding='utf-8'))
-    elif filename.endswith('.txt'):
-        path = os.path.join(cfgdir(), filename)
-        text = file_io.read_text_file(path, encoding)
-        return text.splitlines()
+    return _get_path('logs')
