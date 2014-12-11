@@ -3,6 +3,7 @@ import MeCab
 import re
 from collections import Counter
 from functools import reduce
+from lib.multiprocess import Pool
 
 
 re_number = re.compile('[0-9,]+')
@@ -13,13 +14,8 @@ ROOTFORM_IDX = {'IPA': 6}
 
 class MeCabWrapper(MeCab.Tagger):
 
-    def __init__(self, mecab_args=''):
-        self.mecab = MeCab.Tagger(mecab_args)
-        self.mecab.parse('')
-        super(MeCabWrapper, self).__init__()
-
     def parse_to_node(self, sentence, bos_eos=False):
-        node = self.mecab.parseToNode(sentence)
+        node = MeCab._MeCab.Tagger_parseToNode(self, sentence)
         while node:
             if bos_eos or not node.feature.startswith('BOS/EOS'):
                 yield node
@@ -51,32 +47,40 @@ def _extract_phrase(nodes, target_pos):
             if len(phrase) > 1:
                 phrase_list.append(''.join(phrase))
             phrase = []
+    if len(phrase) > 1:
+        phrase_list.append(''.join(phrase))
     return phrase_list
 
 
 def extract_word(sentence, target_pos=POS['noun'], rootform=False, phrase=False):
-    m = MeCabWrapper()
     if isinstance(target_pos, str):
         target_pos = POS.get(target_pos, (target_pos,))
-    nodes = [node for node in m.parse_to_node(sentence)]
-    words = [_extract_surface(n, rootform) for n in nodes
-             if _is_target_pos(n.feature, target_pos)]
+    m = MeCabWrapper()
+    nodes = list(m.parse_to_node(sentence))
+    words = [_extract_surface(n, rootform) for n in nodes if _is_target_pos(n.feature, target_pos)]
     if phrase:
         words += _extract_phrase(nodes, target_pos)
     return words
 
 
 def count_word(sentence, target_pos='noun', rootform=False, phrase=True):
-    counter = Counter()
     if isinstance(target_pos, str):
         target_pos = POS.get(target_pos, (target_pos, ))
-    for word in extract_word(sentence, target_pos, rootform, phrase):
-        counter[word] += 1
-    return counter
+    return Counter(extract_word(sentence, target_pos, rootform, phrase))
 
 
-def count_doc(doc):
-    return reduce(lambda x, y: x+y, map(count_word, doc))
+class MeCabMultiProcessing(object):
+    pool = None
+
+    def set_pool(self):
+        self.pool = Pool(4)
+
+    def count_doc(self, doc):
+        if not self.pool:
+            self.set_pool()
+        return reduce(lambda x, y: x+y, self.pool.imap_unordered(count_word, doc))
+mmp = MeCabMultiProcessing()
+count_doc = mmp.count_doc
 
 
 def wakati(text):
