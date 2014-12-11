@@ -45,8 +45,8 @@ def LCCS(lhs, rhs, minimum_n):
     """
     if len(lhs) < minimum_n or len(rhs) < minimum_n:
         return None
-    lhs = reduce(operator.add, (ngram.to_ngrams(lhs, minimum_n)))
-    rhs = reduce(operator.add, (ngram.to_ngrams(rhs, minimum_n)))
+    lhs = reduce(operator.add, (ngram.to_ngrams(lhs, min_n=minimum_n)))
+    rhs = reduce(operator.add, (ngram.to_ngrams(rhs, min_n=minimum_n)))
     common_subsequences = set(lhs) & set(rhs)
     if common_subsequences:
         return sorted(common_subsequences, key=lambda x: len(x), reverse=True)[0]
