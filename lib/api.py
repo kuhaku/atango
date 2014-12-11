@@ -2,7 +2,7 @@
 import re
 import twitter
 from twitter.api import TwitterHTTPError
-from . import config, misc
+from . import file_io, misc
 
 CFG_FILE = 'api.cfg'
 re_photo_id = re.compile(r'<photoid>(?P<photoid>[0-9]+)</photoid>')
@@ -19,7 +19,7 @@ TwitterHTTPError.__str__ = __str__patch
 class Twitter:
 
     def __init__(self):
-        twitter_config = config.read(CFG_FILE)['Twitter']
+        twitter_config = file_io.read(CFG_FILE)['Twitter']
         oauth = twitter.OAuth(twitter_config['access_token_key'],
                               twitter_config['access_token_secret'],
                               twitter_config['consumer_key'],
@@ -30,7 +30,7 @@ class Twitter:
 class Flickr:
 
     def __init__(self):
-        config_parser = config.read(CFG_FILE)
+        config_parser = file_io.read(CFG_FILE)
         for idx in ('username', 'user_nsid', 'api_key', 'api_secret',
                     'oauth_token_key', 'oauth_token_secret'):
             setattr(self, idx, config_parser['Flickr'][idx])
