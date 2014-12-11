@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
-import os
-import shelve
 from argparse import ArgumentParser
 from lib.app import App
 from lib.api import Twitter
+from lib.db import Shelve
 
 
 class Atango(App):
@@ -11,16 +10,18 @@ class Atango(App):
     def __init__(self, verbose=False, debug=False):
         if debug is False:
             self.twitter = Twitter()
+        self.shelve = Shelve()
+        self.latest_tweets = self.shelve.get('latest_tweets', [])
         super(Atango, self).__init__(verbose, debug)
 
     def is_duplicate_tweet(self, text):
-        homedir = os.path.abspath(os.path.dirname(__file__))
-        shelve_file = os.path.join(homedir, 'atango.shelve')
-        with shelve.open(shelve_file, flag='c') as db:
-            if db.get('latest_tweet', '') == text:
-                return True
-            db['latest_tweet'] = text
-            return False
+        if text in self.latest_tweets:
+            return True
+        if len(self.latest_tweets) > 10:
+            self.latest_tweets.pop(0)
+        self.latest_tweets.append(text)
+        self.shelve['latest_tweets'] = self.latest_tweets
+        return False
 
     def output(self, text, reply_id=None):
         if text:
