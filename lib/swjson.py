@@ -221,7 +221,7 @@ class SwJson:
 
             if 'q1' in posts[_id]:
                 posts[_id]['q1'] = '\n'.join(posts[_id]['q1'])
-                if posts[_id]['text'] and self.fast is False:
+                if posts[_id].get('text') and self.fast is False:
                     text, posts = self._link_by_quote(posts[_id]['text'], _id, posts)
                     posts[_id]['text'] = text
                 if 'q2' in posts[_id]:
