@@ -6,7 +6,7 @@ import datetime
 import re
 from elasticsearch import Elasticsearch
 from . import swjson, web, normalize, file_io
-from nlp import ngram
+from .nlp import ngram
 
 # Regular Expressions
 link_u = re.compile('<A[^<]+</A>')
