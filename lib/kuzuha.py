@@ -6,7 +6,7 @@ import datetime
 import re
 from elasticsearch import Elasticsearch
 from . import swjson, web, normalize, file_io
-
+from nlp import ngram
 
 # Regular Expressions
 link_u = re.compile('<A[^<]+</A>')
@@ -205,9 +205,9 @@ def get_log_as_dict(site, params, fast=False, url=False, usamin_detail=False):
 
 def _build_sort(sort):
     sort_item = []
-    for (field, order) in sort.items():
+    for (field, order) in sort:
         if field == 'dt':
-            sort_item.append({'date': { 'order': order}})
+            sort_item.append({'dt': {'order': order}})
         else:
             sort_item.append({
                 '_script': {
@@ -219,9 +219,8 @@ def _build_sort(sort):
     return sort_item
 
 
-def search(query, field='q1', _operator='and', sort=[{'quoted_by': 'desc'}], size=500):
+def search(query, field='q1', _operator='and', sort=[('quoted_by', 'desc')], size=500):
     es = Elasticsearch([elasticsearch_setting])
-    sort_item = _build_sort(sort)
     body = {'query':
                 {'match': {
                     field: {
@@ -230,7 +229,9 @@ def search(query, field='q1', _operator='and', sort=[{'quoted_by': 'desc'}], siz
                         'minimum_should_match': '75%'}
                     }
                 },
-                'sort' : sort_item,
             'size': size}
+    sort_item = _build_sort(sort)
+    if sort_item:
+        body.update({'sort' : sort_item})
     result = es.search(index='qwerty', body=body, _source=True)
     return (x['_source'] for x in result['hits']['hits'])

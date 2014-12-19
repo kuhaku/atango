@@ -1,28 +1,30 @@
 # -*- coding: utf-8 -*-
-from nose.tools import nottest, assert_true
+from nose.tools import assert_true, assert_equals
 from lib.dialogue import qa
 
 
-@nottest
 def test__extract_oshiete_answer():
-    pass
+    posts = [{'text': 'マミは'},
+             {'text': 'マミさんはいるかなぁ？'},
+             {'text': 'マミさんはかわいい'}]
+    actual = qa._extract_oshiete_answer('マミ', posts)
+    assert_equals(actual, 'マミさんはかわいい')
 
-@nottest
+
 def test_respond_oshiete():
     text = 'マミさんって何'
     actual = qa.respond_oshiete(text)
-    print(actual)
     assert_true(actual.startswith('マミさん'))
 
-@nottest
-def test__build_what_who_query():
-    pass
 
-@nottest
-def test__extract_what_answer():
-    pass
+def test__build_what_who_query():
+    actual = qa._build_what_who_query('誰がかわいい？')
+    assert_equals(actual, 'かわいい')
+
+    actual = qa._build_what_who_query('何がおかしい')
+    assert_equals(actual, 'おかしい')
+
 
 def test_respond_what_who():
     actual = qa.respond_what_who('誰がかわいい')
-    print(actual)
-    assert_true('かわいい' in actual)
+    assert_true('がかわいい' in actual or 'はかわいい' in actual)
