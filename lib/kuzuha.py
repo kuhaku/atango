@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
-"""Library for KUZUHA BBS
-"""
+'''Library for KUZUHA BBS
+'''
 
 import datetime
 import re
-from . import swjson, web, normalize
-
+from elasticsearch import Elasticsearch
+from . import swjson, web, normalize, file_io
+from nlp import ngram
 
 # Regular Expressions
 link_u = re.compile('<A[^<]+</A>')
@@ -28,16 +29,17 @@ DEFAULT_KUZUHA_PARAMS = {
     'k': '%82%A0',
     'sv': 'on'
 }
+elasticsearch_setting = file_io.read('atango.json')['elasticsearch']
 
 
 def _gen_params_by_day(date_range, now, params):
-    """
+    '''
     Generate Kuzuha-BBS parameters by a range of days
 
     <dict<str>> date_range
     <datetime> now
     <dict<str>> params
-    """
+    '''
     assert 0 <= date_range['day'] <= 6, ValueError
 
     for i in range(date_range['day'], -1, -1):
@@ -48,13 +50,13 @@ def _gen_params_by_day(date_range, now, params):
 
 
 def _gen_params_by_hour(date_range, now, params):
-    """
+    '''
     Generate Kuzuha-BBS parameters by a range of hours
 
     <dict<str>> date_range
     <datetime> now
     <dict<str>> params
-    """
+    '''
     dt = now - datetime.timedelta(hours=date_range['hour'])
     end_hour = 24 if dt.hour > now.hour else now.hour  # for when crossing days
     params.update({'s1': str(dt.hour), 's2': str(end_hour)})
@@ -64,13 +66,13 @@ def _gen_params_by_hour(date_range, now, params):
 
 
 def _gen_params_by_minute(date_range, now, params):
-    """
+    '''
     Generate Kuzuha-BBS parameters by a range of minutes
 
     <dict<str>> date_range
     <datetime> now
     <dict<str>> params
-    """
+    '''
     start_dt = now - datetime.timedelta(minutes=date_range['minute'])
     params.update({
         's1': str(start_dt.hour),
@@ -88,13 +90,13 @@ def _gen_params_by_minute(date_range, now, params):
 
 
 def gen_params(kwd='', date_range={}):
-    """
+    '''
     Generate Kuzuha-BBS parameters by a range of times
 
     <dict<str>> date_range
     <datetime> now
     <dict<str>> params
-    """
+    '''
     if 'start_hour' not in date_range:
         date_range.update(
             {
@@ -115,7 +117,7 @@ def gen_params(kwd='', date_range={}):
     now = datetime.datetime.now()
     if date_range.get('date', None):
         idx = 'chk%s.dat' % (date_range['date'])
-        params[idx] = "checked"
+        params[idx] = 'checked'
     elif date_range.get('day', None):
         params.update(_gen_params_by_day(date_range, now, params))
     elif date_range.get('hour', None):
@@ -132,7 +134,7 @@ def _parse_keyword(keyword, encoding):
 
 
 def _get_qwerty_log(params):
-    params['kwd'] = _parse_keyword(params['kwd'], 'sjis')
+    params['kwd'] = _parse_keyword(params['kwd'], 'cp932')
     html = web.open_url(QWERTY_URL, params=params)
     return html
 
@@ -199,3 +201,37 @@ def get_log_as_dict(site, params, fast=False, url=False, usamin_detail=False):
     html = get_log(site, params)
     if html:
         return parser.to_dict(html)
+
+
+def _build_sort(sort):
+    sort_item = []
+    for (field, order) in sort:
+        if field == 'dt':
+            sort_item.append({'dt': {'order': order}})
+        else:
+            sort_item.append({
+                '_script': {
+                    'type': 'string',
+                    'script': "doc['log.%s'].size()" % field,
+                    'order': order
+                }
+            })
+    return sort_item
+
+
+def search(query, field='q1', _operator='and', sort=[('quoted_by', 'desc')], size=500):
+    es = Elasticsearch([elasticsearch_setting])
+    body = {'query':
+                {'match': {
+                    field: {
+                        'query': query,
+                        'operator': _operator,
+                        'minimum_should_match': '75%'}
+                    }
+                },
+            'size': size}
+    sort_item = _build_sort(sort)
+    if sort_item:
+        body.update({'sort' : sort_item})
+    result = es.search(index='qwerty', body=body, _source=True)
+    return (x['_source'] for x in result['hits']['hits'])

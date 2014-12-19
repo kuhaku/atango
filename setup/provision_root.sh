@@ -2,7 +2,7 @@
 
 apt-get update
 
-# Install things for building
+# Install building tool
 apt-get install -y build-essential python3.4-dev python-pip
 
 # Install virtualenv
@@ -16,6 +16,15 @@ apt-get install -y libtiff4-dev libjpeg8-dev zlib1g-dev libfreetype6-dev liblcms
 
 # Install git
 apt-get install -y git
+
+# Install Java7
+add-apt-repository ppa:webupd8team/java
+apt-get install oracle-java7-installer
+
+# Install Elasticsearch
+https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-1.4.2.deb
+dpkg -i elasticsearch-1.4.2.deb
+service elasticsearch start
 
 # Set Japan timezone
 ln -sf /usr/share/zoneinfo/Japan /etc/localtime

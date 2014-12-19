@@ -1,4 +1,8 @@
 {
+  "elasticsearch":{
+    "host": "192.168.100.2",
+    "port": 9200
+  },
   "WordMap": {
     "font": "/Library/Fonts/Microsoft/MS Gothic.ttf",
     "bgcolor": "#004040",

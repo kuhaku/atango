@@ -14,17 +14,18 @@ NG_SUBSTRS = ('すか', 'ょうか', 'だろう', 'っていう', 'かなぁ', '
 NOT_FOUND_MESSAGE = 'ごめん(;´Д`)%s知らない'
 
 
-def _extract_oshiete_answer(query, posts, case_marking_particle):
-    extract_rule = re.compile('(%s%s%s.{2,})' % (query, NOUN_SUFFIXES, case_marking_particle))
-
-    for post in posts.values():
-        text = post['text']
-        text = normalize.normalize(text.strip())
-        if extract_rule.search(text):
-            answer = extract_rule.search(text.strip()).group(1)
-            if not answer or len(answer) < 4 or any(w in answer for w in NG_SUBSTRS):
-                continue
-            return answer
+def _extract_oshiete_answer(query, posts):
+    for case_marking_particle in (u'って', u'は', u'の', ''):
+        extract_rule = re.compile('(%s%s%s.{2,})' % (query, NOUN_SUFFIXES,
+                                                     case_marking_particle))
+        for post in posts:
+            text = post['text']
+            text = normalize.normalize(text.strip())
+            if extract_rule.search(text):
+                answer = extract_rule.search(text.strip()).group(1)
+                if not answer or len(answer) < 4 or any(w in answer for w in NG_SUBSTRS):
+                    continue
+                return answer
 
 
 def respond_oshiete(text):
@@ -32,14 +33,8 @@ def respond_oshiete(text):
     if not oshiete_match:
         return None
     query = oshiete_match.group('query')
-    params = {'w': query}
-    posts = kuzuha.get_log_as_dict('usamin', params)
-    answer = None
-    for case_marking_particle in (u'って', u'は', u'の', ''):
-        answer = _extract_oshiete_answer(query, posts, case_marking_particle)
-        if answer:
-            break
-    return answer if answer else NOT_FOUND_MESSAGE % query
+    posts = list(kuzuha.search(query, field='text', size=5))
+    return _extract_oshiete_answer(query, posts) or NOT_FOUND_MESSAGE % query
 
 
 def _build_what_who_query(text):
@@ -58,27 +53,15 @@ def _build_what_who_query(text):
     return query
 
 
-def _extract_what_answer(substr, posts):
-    for post in posts.values():
-        post = post['text']
-        if substr in post:
-            if len(post) >= 4:
-                return post
-
-
 def respond_what_who(text):
     """
     何がXXX？ -> YYYがXXX
     e.g. 何がおかしい？ -> 頭がおかしい
     """
 
-    query = _build_what_who_query(text)
-    if query:
-        params = {'w': query}
-        posts = kuzuha.get_log_as_dict('usamin', params)
-        if not posts:
-            return None
-        for particle in ('が', 'は'):
-            answer = _extract_what_answer(particle + query, posts)
-            if answer:
-                return answer
+    predicate = _build_what_who_query(text)
+    if predicate:
+        query = 'が%s は%s' % (predicate, predicate)
+        for post in kuzuha.search(query, field='text', sort=[('dt', 'desc')], _operator='or', size=10):  
+            if len(post['text']) >= 4:
+                return post['text']
