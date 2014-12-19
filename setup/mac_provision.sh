@@ -22,6 +22,16 @@ curl -O https://raw.githubusercontent.com/kuhaku/atango/master/setup/mecab_insta
 bash mecab_install.sh
 rm mecab_install.sh
 
+# Install Java7
+brew tap phinze/homebrew-cask
+brew install brew-cask
+brew tap caskroom/versions
+brew cask install java7
+
+# Install Elasticsearch
+brew install elasticsearch
+ln -sfv /usr/local/opt/elasticsearch/*.plist ~/Library/LaunchAgents
+
 # Install Python libs
 curl -O https://raw.githubusercontent.com/kuhaku/atango/master/requirements.txt
 pip install --upgrade --timeout 30 -r requirements.txt
