@@ -58,7 +58,6 @@ class test_Ome(object):
         )
         for pair in pairs:
             actual = self.ome.is_ome(*pair)
-            print(pair)
             assert_true(actual)
 
 
