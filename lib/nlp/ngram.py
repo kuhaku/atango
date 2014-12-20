@@ -13,7 +13,7 @@ class Ngramer(object):
     def to_ngrams(self, item, max_n=0, min_n=2):
         if max_n < 1:
             max_n = len(item)
-        args = zip_longest([item]*(max_n - 1), range(min_n, max_n+1))
+        args = zip_longest([item]*((max_n + 1) - min_n), range(min_n, max_n+1))
         if not self.pool:
             self.set_pool()
         return list(self.pool.imap(_to_ngram_unpack, args))
