@@ -3,7 +3,7 @@ import re
 import os.path
 from collections import Counter
 import time
-
+from bs4 import BeautifulSoup
 from lib import app, web, kuzuha, file_io, google_image, normalize
 from lib.regex import re_url, re_title, re_html_tag
 
@@ -59,9 +59,10 @@ class PopularUrl(app.App):
         elif not ext in ignore_extensions:
             self.logger.info('Retrieve web resource: %s' % url)
             html = web.open_url(url)
-            for title in re_title.findall(html):
-                title = normalize.htmlentity2unicode(title)
-                title = self._shorten_title(title)
+            soup = BeautifulSoup(html)
+            title = soup.title.string
+            title = normalize.htmlentity2unicode(title)
+            title = self._shorten_title(title)
         return title
 
     @staticmethod
@@ -102,4 +103,6 @@ class PopularUrl(app.App):
                     yield tweet
                 tweet = new_url_info
         if tweet:
+            if tweet.endswith(DELIMITER):
+                tweet = tweet[:-len(DELIMITER)]
             yield tweet + HASH_TAG
