@@ -25,7 +25,7 @@ class PopularUrl(app.App):
 
     def _count_url(self, posts):
         urls = Counter()
-        for post in posts.values():
+        for post in posts:
             for item in ('text', 'q1'):
                 if not item in post:
                     continue
@@ -77,8 +77,7 @@ class PopularUrl(app.App):
         return len(tweet) + actual_new_url_info_length - len(DELIMITER)
 
     def run(self, hour_range=HOUR_RANGE, twitter_api=None):
-        params = kuzuha.gen_params('http', {'hour': hour_range})
-        posts = kuzuha.get_log_as_dict('qwerty', params, url=True)
+        posts = kuzuha.search('http', _filter=kuzuha.build_date_filter_by({'hours': hour_range}))
         urls = self._count_url(posts)
 
         tweet = ''
