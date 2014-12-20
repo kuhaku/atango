@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from datetime import datetime, timedelta
 import time
 from collections import defaultdict, Counter
 from itertools import combinations
@@ -24,13 +23,9 @@ class WordCount(app.App):
         super(WordCount, self).__init__(verbose, debug)
 
     def _get_log(self, hours=1):
-        now = datetime.now()
-        hours_ago = now - timedelta(hours=hours)
-        start_dt = datetime(hours_ago.year, hours_ago.month, hours_ago.day, hours_ago.hour, 0, 0)
-        end_dt = datetime(hours_ago.year, hours_ago.month, hours_ago.day, hours_ago.hour, 59, 59)
-        _filter = kuzuha.build_date_filter(start_dt, end_dt)
-        self.start_hour = hours_ago.hour
-        self.end_hour = now.hour
+        _filter = kuzuha.build_hour_filter(hours)
+        self.start_hour = int(_filter['range']['dt']['gte'][11:13])
+        self.end_hour = int(_filter['range']['dt']['lte'][11:13]) + 1
         return kuzuha.search(_filter=_filter)
 
     def compute_unixtime(self, posts):

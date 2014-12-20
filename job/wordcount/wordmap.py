@@ -94,7 +94,7 @@ class WordMap(app.App):
     @staticmethod
     def determine_num_plot_items(total_count):
         if total_count > 300:
-            num_items = 50
+            num_items = 40
         elif total_count > 250:
             num_items = 30
         elif total_count > 150:
@@ -118,7 +118,7 @@ class WordMap(app.App):
             words[i].distance = np.zeros(num_words)
             for j in range(num_words):
                 cos_dist = rogerstanimoto(words[i].distribution, words[j].distribution)
-                time_dist = np.abs(words[i].time - words[j].time)
+                time_dist = np.abs(words[i].time - words[j].time) / 3600
                 words[i].distance[j] = cos_dist * time_dist
         return words
 

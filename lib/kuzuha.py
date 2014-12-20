@@ -214,6 +214,14 @@ def build_date_filter_by_range(date_range={}):
     return build_date_filter(start_dt, end_dt)
 
 
+def build_hour_filter(hours=1):
+    now = datetime.now()
+    hours_ago = now - timedelta(hours=hours)
+    start_dt = datetime(hours_ago.year, hours_ago.month, hours_ago.day, hours_ago.hour, 0, 0)
+    end_dt = datetime(hours_ago.year, hours_ago.month, hours_ago.day, hours_ago.hour, 59, 59)
+    return build_date_filter(start_dt, end_dt)
+
+
 def _build_sort(sort):
     sort_item = []
     for (field, order) in sort:
