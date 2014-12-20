@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
-'''Library for KUZUHA BBS
-'''
-
-import datetime
+from datetime import datetime, timedelta
 import re
 from elasticsearch import Elasticsearch
 from . import swjson, web, normalize, file_io
@@ -42,7 +39,7 @@ def _gen_params_by_day(date_range, now, params):
     assert 0 <= date_range['day'] <= 6, ValueError
 
     for i in range(date_range['day'], -1, -1):
-        dt = now - datetime.timedelta(i)
+        dt = now - timedelta(i)
         idx = 'chk%d%02d%02d.dat' % (dt.year, dt.month, dt.day)
         params[idx] = 'checked'
     return params
@@ -56,7 +53,7 @@ def _gen_params_by_hour(date_range, now, params):
     <datetime> now
     <dict<str>> params
     '''
-    dt = now - datetime.timedelta(hours=date_range['hour'])
+    dt = now - timedelta(hours=date_range['hour'])
     end_hour = 24 if dt.hour > now.hour else now.hour  # for when crossing days
     params.update({'s1': str(dt.hour), 's2': str(end_hour)})
     idx = 'chk%d%02d%02d.dat' % (dt.year, dt.month, dt.day)
@@ -72,7 +69,7 @@ def _gen_params_by_minute(date_range, now, params):
     <datetime> now
     <dict<str>> params
     '''
-    start_dt = now - datetime.timedelta(minutes=date_range['minute'])
+    start_dt = now - timedelta(minutes=date_range['minute'])
     params.update({
         's1': str(start_dt.hour),
         'e1': str(start_dt.minute),
@@ -113,7 +110,7 @@ def gen_params(kwd='', date_range={}):
         'e2': str(date_range['end_minute']),
         'kwd': kwd
     })
-    now = datetime.datetime.now()
+    now = datetime.now()
     if date_range.get('date', None):
         idx = 'chk%s.dat' % (date_range['date'])
         params[idx] = 'checked'
@@ -212,8 +209,8 @@ def build_date_filter(start_dt=None, end_dt=None):
 
 
 def build_date_filter_by(date_range={}):
-    end_dt = datetime.datetime.now()
-    start_dt = end_dt - datetime.timedelta(**date_range)
+    end_dt = datetime.now()
+    start_dt = end_dt - timedelta(**date_range)
     return build_date_filter(start_dt, end_dt)
 
 
