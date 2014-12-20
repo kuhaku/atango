@@ -10,9 +10,8 @@ class test_Ome(object):
         self.ome = Ome()
 
     def test_get_post_res_pairs(self):
-        posts = {'1': {'q1': '浜松って何があんの？(;´Д`)', 'text': 'うなぎ'},
-                 '2': {'q1': '浜松って何があんの？(;´Д`)', 'text': 'うなぎ(;´Д`)'}
-                }
+        posts = ({'q1': '浜松って何があんの？(;´Д`)', 'text': 'うなぎ'},
+                 {'q1': '浜松って何があんの？(;´Д`)', 'text': 'うなぎ(;´Д`)'})
         actual = self.ome.get_post_res_pairs(posts)
         desired = defaultdict(list)
         desired['浜松って何があんの？(;´Д`)'] = ['うなぎ', 'うなぎ(;´Д`)']
