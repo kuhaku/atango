@@ -15,4 +15,4 @@ def test_levenshtein():
 
 
 def test_LCCS():
-    assert_equals(len(distance.LCCS('mamipai', 'tomoemami', 6)), 4)
+    assert_equals(len(distance.LCCS('mamipai', 'tomoemami', 4)), 4)
