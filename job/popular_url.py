@@ -42,7 +42,7 @@ class PopularUrl(app.App):
         title = re_url.sub('', title)
         title = title.replace(u'...', u'…')
         title = title.replace(' "', '"')
-        if re_no_shortened_title.search(title):
+        if len(title) < 15 or re_no_shortened_title.search(title):
             return title
         titles = [substr for substr in re_title_delimiter.split(title)]
         titles = filter(lambda x: x, titles)  # 0文字の要素をカット
