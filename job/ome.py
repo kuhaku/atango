@@ -25,8 +25,8 @@ class Ome(app.App):
     @staticmethod
     def get_post_res_pairs(posts):
         pairs = defaultdict(list)
-        for post in posts.values():
-            if 'q1' in post:
+        for post in posts:
+            if 'q1' in post and 'text' in post:
                 text = post['text'].replace('\n', '')
                 parent = post['q1'].replace('\n', '')
                 pairs[parent].append(text)
@@ -93,10 +93,7 @@ class Ome(app.App):
         return text
 
     def run(self, interval=20):
-        params = kuzuha.gen_params('参考', {'minute': interval})
-        posts = kuzuha.get_log_as_dict('qwerty', params)
-        if not posts:
-            return None
+        posts = kuzuha.search('', _filter=kuzuha.build_date_filter_by({'minutes': interval}))
         pairs = self.get_post_res_pairs(posts)
 
         for (parent, responses) in pairs.items():

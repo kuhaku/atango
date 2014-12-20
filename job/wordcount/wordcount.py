@@ -1,13 +1,16 @@
 # -*- coding: utf-8 -*-
+from datetime import datetime, timedelta
+import time
 from collections import defaultdict, Counter
 from itertools import combinations
 import numpy as np
-
-from lib import app, kuzuha, normalize, file_io
+from lib import app, kuzuha, normalize, file_io, regex
 from lib.distance import levenshtein
 from lib.nlp import mecab, ngram
 from . import wordmap
 from .word import Word
+
+SUTEGANA = tuple('ぁぃぅぇぉっゃゅょゎァィゥェォヵㇰヶㇱㇲッㇳㇴㇵㇶㇷㇹㇺャュョㇻㇼㇽㇾㇿヮ')
 
 
 class WordCount(app.App):
@@ -20,11 +23,21 @@ class WordCount(app.App):
         self.ng_words = set(file_io.read('ng_words.txt'))
         super(WordCount, self).__init__(verbose, debug)
 
-    def _get_log(self, keyword, date_range):
-        kuzuha_params = kuzuha.gen_params(keyword, date_range=date_range)
-        self.start_hour = kuzuha_params['s1']
-        self.end_hour = kuzuha_params['s2']
-        return kuzuha.get_log_as_dict("qwerty", kuzuha_params)
+    def _get_log(self, hours=1):
+        now = datetime.now()
+        hours_ago = now - timedelta(hours=hours)
+        start_dt = datetime(hours_ago.year, hours_ago.month, hours_ago.day, hours_ago.hour, 0, 0)
+        end_dt = datetime(hours_ago.year, hours_ago.month, hours_ago.day, hours_ago.hour, 59, 59)
+        _filter = kuzuha.build_date_filter(start_dt, end_dt)
+        self.start_hour = hours_ago.hour
+        self.end_hour = now.hour
+        return kuzuha.search(_filter=_filter)
+
+    def compute_unixtime(self, posts):
+        posts = list(posts)
+        for (i, post) in enumerate(posts):
+            posts[i]['time'] = int(time.mktime(time.strptime(post['dt'], '%Y-%m-%dT%H:%M:%S')))
+        return posts
 
     @staticmethod
     def _sort_by_time(log):
@@ -38,6 +51,7 @@ class WordCount(app.App):
 
     @staticmethod
     def prepare_for_counting(text):
+        text = regex.re_a_tag.sub('', text)
         text = normalize.normalize(text, emoticon=False, repeat=3)
         return text.splitlines()
 
@@ -60,8 +74,7 @@ class WordCount(app.App):
         return all_words
 
     def is_valid_word(self, word):
-        if (word in self.ng_words or word.isnumeric() or
-           word.startswith((u'っ', u'ゃ', u'ゅ', u'ょ'))):
+        if (word in self.ng_words or word.isnumeric() or word.startswith(SUTEGANA)):
             return False
         return True
 
@@ -86,13 +99,13 @@ class WordCount(app.App):
     def decrease_duplicate_count(self, all_words):
         for (key, val) in self.sort_by_keys_length(all_words):
             for ngrams in ngram.to_ngrams(key, len(key)):
-                for ng in filter(lambda x: x in all_words, set(ngrams)):
-                    if key == ng:
+                for n_gram in filter(lambda x: x in all_words, set(ngrams)):
+                    if key == n_gram:
                         continue
-                    elif val.count == all_words[ng].count:
-                        all_words = self.del_word(ng, all_words)
-                    else:
-                        all_words[key].count -= all_words[ng].count
+                    elif val.count == all_words[n_gram].count:
+                        all_words = self.del_word(n_gram, all_words)
+                    #else:
+                    #    all_words[key].count -= all_words[n_gram].count
         return all_words
 
     def del_minus_count_word(self, all_words):
@@ -120,15 +133,15 @@ class WordCount(app.App):
         num_words = len(all_words)
 
         for (word, val) in all_words.items():
-            total = float(sum(val.distribution.values()))
+            total = sum(val.distribution.values())
             distribution = np.zeros(num_words)
             for (w, count) in val.distribution.items():
-                distribution[idlist[w]] += count / total
+                distribution[idlist[w]] = count / total
             all_words[word].distribution = distribution
         return all_words
 
     def gen_report(self, all_words):
-        message = u'%s~%s時の＠上海:\n' % (self.start_hour, self.end_hour)
+        message = u'%d~%d時の＠上海:\n' % (self.start_hour, self.end_hour)
         for word in sorted(all_words.values(),
                            key=lambda x: [x.count, len(x.surface)],
                            reverse=True):
@@ -139,15 +152,17 @@ class WordCount(app.App):
                 all_words = self.to_bag_of_words(all_words)
                 wmap = wordmap.WordMap(upload_flickr=self.up_flickr, verbose=self.verbose,
                                        debug=self.debug)
-                message += u' ' + wmap.run(all_words, message[:-1])
+                message = message[:-1]
+                message += u' ' + wmap.run(all_words, message)
                 return message
             else:
                 break
         return message[:-1]
 
-    def run(self, keyword='', output=True, hour=1, day=False):
-        log = self._get_log(keyword, {'hour': hour, 'day': day})
-        log = self._sort_by_time(filter(lambda x: 'time' in x, log.values()))
+    def run(self, hour=1):
+        log = self._get_log(hour)
+        log = self.compute_unixtime(log)
+        log = self._sort_by_time(filter(lambda x: 'time' in x, log))
         self.start_time = float(log[0]['time'])
         all_words = defaultdict(Word)
 
@@ -170,4 +185,4 @@ class WordCount(app.App):
 
 if __name__ == '__main__':
     wc = WordCount(plot_wordmap=True, up_flickr=False, verbose=True, debug=True)
-    print(wc.run(output=True, hour=1))
+    print(wc.run(hour=1))
