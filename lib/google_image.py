@@ -13,11 +13,9 @@ re_best_guess = re.compile(u'この画像の最良の推測結果:.*?>(.*?)</a>'
                            re.IGNORECASE | re.MULTILINE)
 re_html_tag = re.compile('<[^>]+>')
 
-my_mecab = mecab.MeCabWrapper()
-ng_tags = file_io.read('ng_tags.json')
-
 
 class GoogleSearchByImageUtils(object):
+    ng_tags = file_io.read('ng_tags.json')
 
     @staticmethod
     def search(image_url):
@@ -86,7 +84,7 @@ class GoogleSearchByImageUtils(object):
             most_common_kwds= []
             length = 0
         for (keyword, count) in keywords.most_common():
-            if not (keyword in ng_tags or any(keyword in kwds for kwds in most_common_kwds)):
+            if not (keyword in self.ng_tags or any(keyword in kwds for kwds in most_common_kwds)):
                 length += len(keyword)
                 if length <= max_length:
                     most_common_kwds.append(keyword)
