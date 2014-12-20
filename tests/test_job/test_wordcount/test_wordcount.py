@@ -12,7 +12,7 @@ class test_WordCount:
         self.wc = wordcount.WordCount()
 
     def test_get_log(self):
-        self.wc._get_log('', {'hour': 1})
+        self.wc._get_log(1)
         now = datetime.now()
         if now.hour == 0:
             expect_start_hour = 23
@@ -20,8 +20,8 @@ class test_WordCount:
         else:
             expect_start_hour = now.hour - 1
             expect_end_hour = now.hour
-        assert_equals(self.wc.start_hour, str(expect_start_hour))
-        assert_equals(self.wc.end_hour, str(expect_end_hour))
+        assert_equals(self.wc.start_hour, expect_start_hour)
+        assert_equals(self.wc.end_hour, expect_end_hour)
 
     def test_sort_by_time(self):
         posts = [{'time': 1}, {'time': 2}]
