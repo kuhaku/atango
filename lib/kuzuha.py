@@ -6,7 +6,6 @@ import datetime
 import re
 from elasticsearch import Elasticsearch
 from . import swjson, web, normalize, file_io
-from .nlp import ngram
 
 # Regular Expressions
 link_u = re.compile('<A[^<]+</A>')
@@ -203,6 +202,21 @@ def get_log_as_dict(site, params, fast=False, url=False, usamin_detail=False):
         return parser.to_dict(html)
 
 
+def build_date_filter(start_dt=None, end_dt=None):
+    dt_range = {}
+    if start_dt:
+        dt_range['gte'] = start_dt.strftime('%Y-%m-%dT%H:%M:%S')
+    if end_dt:
+        dt_range['lte'] = end_dt.strftime('%Y-%m-%dT%H:%M:%S')
+    return {'range': {'dt': dt_range}}
+
+
+def build_date_filter_by(date_range={}):
+    end_dt = datetime.datetime.now()
+    start_dt = end_dt - datetime.timedelta(**date_range)
+    return build_date_filter(start_dt, end_dt)
+
+
 def _build_sort(sort):
     sort_item = []
     for (field, order) in sort:
@@ -219,17 +233,30 @@ def _build_sort(sort):
     return sort_item
 
 
-def search(query, field='q1', _operator='and', sort=[('quoted_by', 'desc')], size=500):
+def search(query='', field='q1', _operator='and', sort=[('quoted_by', 'desc')], _filter={},
+           size=500):
     es = Elasticsearch([elasticsearch_setting])
-    body = {'query':
-                {'match': {
-                    field: {
-                        'query': query,
-                        'operator': _operator,
-                        'minimum_should_match': '75%'}
-                    }
-                },
-            'size': size}
+    if query:
+        es_query = {
+            'match': {
+                field: {
+                    'query': query,
+                    'operator': _operator,
+                    'minimum_should_match': '75%'
+                }
+            }
+        }
+    else:
+        es_query = {"match_all": {}}
+    body = {
+        "query": {
+            "filtered": {
+                "query": es_query,
+                "filter": _filter
+            }
+        },
+        'size': size
+    }
     sort_item = _build_sort(sort)
     if sort_item:
         body.update({'sort' : sort_item})
