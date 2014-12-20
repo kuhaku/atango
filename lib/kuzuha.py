@@ -208,7 +208,7 @@ def build_date_filter(start_dt=None, end_dt=None):
     return {'range': {'dt': dt_range}}
 
 
-def build_date_filter_by(date_range={}):
+def build_date_filter_by_range(date_range={}):
     end_dt = datetime.now()
     start_dt = end_dt - timedelta(**date_range)
     return build_date_filter(start_dt, end_dt)

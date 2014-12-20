@@ -77,7 +77,7 @@ class PopularUrl(app.App):
         return len(tweet) + actual_new_url_info_length - len(DELIMITER)
 
     def run(self, hour_range=HOUR_RANGE, twitter_api=None):
-        posts = kuzuha.search('http', _filter=kuzuha.build_date_filter_by({'hours': hour_range}))
+        posts = kuzuha.search('http', _filter=kuzuha.build_date_filter_by_range({'hours': hour_range}))
         urls = self._count_url(posts)
 
         tweet = ''

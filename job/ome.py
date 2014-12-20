@@ -93,7 +93,7 @@ class Ome(app.App):
         return text
 
     def run(self, interval=20):
-        posts = kuzuha.search('', _filter=kuzuha.build_date_filter_by({'minutes': interval}))
+        posts = kuzuha.search('', _filter=kuzuha.build_date_filter_by_range({'minutes': interval}))
         pairs = self.get_post_res_pairs(posts)
 
         for (parent, responses) in pairs.items():
