@@ -5,7 +5,7 @@ from collections import Counter
 import time
 from bs4 import BeautifulSoup
 from lib import app, web, kuzuha, file_io, google_image, normalize
-from lib.regex import re_url, re_title, re_html_tag
+from lib.regex import re_url, re_html_tag
 
 HOUR_RANGE = 4
 MAX_TWEET_LENGTH = 140
