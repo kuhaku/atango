@@ -3,7 +3,7 @@ import re
 import itertools
 from collections import defaultdict
 import numpy as np
-from lib import app, kuzuha, normalize
+from lib import app, kuzuha, normalize, regex
 from lib.distance import levenshtein, LCCS
 from lib.nlp import mecab
 
@@ -24,11 +24,13 @@ class Ome(app.App):
 
     @staticmethod
     def get_post_res_pairs(posts):
+        def cleansing(s):
+            return regex.re_a_tag.sub('', s.replace('\n', ''))
         pairs = defaultdict(list)
         for post in posts:
             if 'q1' in post and 'text' in post:
-                text = post['text'].replace('\n', '')
-                parent = post['q1'].replace('\n', '')
+                text = cleansing(post['text'])
+                parent = cleansing(post['q1'])
                 pairs[parent].append(text)
         return pairs
 
