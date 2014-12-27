@@ -27,7 +27,7 @@ class Reply(app.App):
         with open(self.replied_id_file, 'w') as fd:
             fd.write(str(reply_id))
 
-    def is_valid_mention(self, mention):
+    def is_valid_tweet(self, mention):
 
         def is_ng_screen_name(screen_name):
             screen_name = screen_name.lower()
@@ -65,7 +65,7 @@ class Reply(app.App):
         text = text.replace('%name', name)
         return text
 
-    def respond(self, text, screen_name=None, user='貴殿'):
+    def make_response(self, text, screen_name=None, user='貴殿'):
         text = normalize.normalize(text)
         METHODS = (
             qa.respond_oshiete,  # XXXって何? -> XXXは***
@@ -86,18 +86,16 @@ class Reply(app.App):
         response['text'] = self.replace_name(response['text'], screen_name, user)
         return response
 
-    def run(self, count=10):
-        mentions = self.twitter.api.statuses.mentions_timeline(count=count)
-        for mention in mentions[::-1]:
-            text = self.normalize(mention['text'])
-            screen_name = mention['user']['screen_name']
-            name = mention['user']['name']
-            self.logger.debug('{id} {user[screen_name]} {text} {created_at}'.format(**mention))
-            (valid, reason) = self.is_valid_mention(mention)
-            if not valid:
-                self.logger.debug('skip because this tweet %s' % reason)
-                continue
-            response = self.respond(text, screen_name, name)
-            response['text'] = '@%s ' % screen_name + response['text']
-            response['id'] = mention['id']
-            yield response
+    def respond(self, mention):
+        text = self.normalize(mention['text'])
+        screen_name = mention['user']['screen_name']
+        name = mention['user']['name']
+        self.logger.debug('{id} {user[screen_name]} {text} {created_at}'.format(**mention))
+        (valid, reason) = self.is_valid_tweet(mention)
+        if not valid:
+            self.logger.debug('skip because this tweet %s' % reason)
+            return
+        response = self.make_response(text, screen_name, name)
+        response['text'] = '@%s ' % screen_name + response['text']
+        response['id'] = mention['id']
+        return response

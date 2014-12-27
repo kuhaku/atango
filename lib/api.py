@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 import re
+import base64
 import twitter
-from cached_property import cached_property
 from twitter.api import TwitterHTTPError
+from cached_property import cached_property
 from . import file_io, misc
+from .logger import logger
 from .db import ShareableShelf
 
 CFG_FILE = 'api.cfg'
@@ -18,7 +20,7 @@ def __str__patch(self):
 TwitterHTTPError.__str__ = __str__patch
 
 
-class Twitter:
+class Twitter(object):
 
     def __init__(self):
         self.shelf = ShareableShelf('atango.shelf')        
@@ -33,6 +35,15 @@ class Twitter:
                               twitter_config['consumer_secret'])
         return twitter.Twitter(auth=oauth)
 
+    @cached_property
+    def stream_api(self):
+        twitter_config = file_io.read(CFG_FILE)['Twitter']
+        oauth = twitter.OAuth(twitter_config['access_token_key'],
+                              twitter_config['access_token_secret'],
+                              twitter_config['consumer_key'],
+                              twitter_config['consumer_secret'])
+        return twitter.TwitterStream(auth=oauth, domain='userstream.twitter.com')
+
     def is_duplicate_tweet(self, tweet):
         if tweet in self.latest_tweets:
             return True
@@ -41,6 +52,28 @@ class Twitter:
         self.latest_tweets.append(tweet)
         self.shelf['latest_tweets'] = self.latest_tweets
         return False
+
+    def post(self, text, reply_id=None, image=None, debug=False):
+        if text:
+            params = {'status': text, 'in_reply_to_status_id': reply_id}
+            logging_msg = 'Tweet: text={status}'
+            if reply_id:
+                logging_msg += ', id={in_reply_to_status_id}'
+            logger.info(logging_msg.format(**params))
+            if not debug:
+                if self.is_duplicate_tweet(text):
+                    logger.warn('tweet is duplicate')
+                    return
+                if image:
+                    with open(image, "rb") as imagefile:
+                        params["media[]"] = base64.b64encode(imagefile.read())
+                        params["_base64"] = True
+                    params['in_reply_to_status_id'] = str(reply_id)
+                    self.api.statuses.update_with_media(**params)
+                else:
+                    self.api.statuses.update(**params)
+        else:
+            logger.warn('there is not string to output')
 
 
 class Flickr:

@@ -31,7 +31,7 @@ class test_Reply(object):
         finally:
             os.remove(self.rep.replied_id_file)
 
-    def test_is_valid_mention(self):
+    def test_is_valid_tweet(self):
         TWEET_MOCK = {
             'id': 0,
             'user': {'screen_name': ''},
@@ -40,20 +40,20 @@ class test_Reply(object):
         }
         tweet = TWEET_MOCK.copy()
         self.rep.get_latest_replied_id = lambda: 1
-        assert_equals(self.rep.is_valid_mention(tweet), (False, 'is old'))
+        assert_equals(self.rep.is_valid_tweet(tweet), (False, 'is old'))
         tweet['id'] = 2
-        assert_equals(self.rep.is_valid_mention(tweet), (True, 'OK'))
+        assert_equals(self.rep.is_valid_tweet(tweet), (True, 'OK'))
 
         tweet['user']['screen_name'] = 'sw_words'
-        assert_equals(self.rep.is_valid_mention(tweet), (False, 'is NG screen name'))
+        assert_equals(self.rep.is_valid_tweet(tweet), (False, 'is NG screen name'))
 
         tweet['user']['screen_name'] = ''
         tweet['text'] = 'レスしなくていい'
-        assert_equals(self.rep.is_valid_mention(tweet), (False, 'has NG word'))
+        assert_equals(self.rep.is_valid_tweet(tweet), (False, 'has NG word'))
 
         tweet['text'] = ''
         tweet['source'] = 'paper.li'
-        assert_equals(self.rep.is_valid_mention(tweet), (False, 'is written by NG source'))
+        assert_equals(self.rep.is_valid_tweet(tweet), (False, 'is written by NG source'))
 
     def test_normalize(self):
         tweet = '@sw_words ぁ単語は糞だな http://omanko'

@@ -4,7 +4,6 @@ from logging import handlers
 import sys
 import random
 import __main__
-from lib.api import Twitter
 
 FORMAT = '%(asctime)s [%(levelname)s] %(message)s'
 DT_FMT = '%Y-%m-%d %H:%M:%S'
@@ -21,7 +20,8 @@ TWEET_PREFIXES = (
 
 class TwitterHandler(handlers.BufferingHandler):
     def __init__(self, send_level=logging.CRITICAL):
-        self.twitter = Twitter()
+        from lib import api
+        self.twitter = api.Twitter()
         self.main_path = getattr(__main__, '__file__', 'UNKNOWN')
         self.send_level = send_level
         handlers.BufferingHandler.__init__(self, CAPACITY)

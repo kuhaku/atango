@@ -22,7 +22,6 @@ def command(cmd, shell=False, allow_err=False):
     if not allow_err and not result:
         message = 'Command: %s\nStdErr: %s' % (str(cmd), error)
         raise Exception(message)
-    print(str(cmd))
     return (result, out, error)
 
 

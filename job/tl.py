@@ -6,7 +6,7 @@ from job import reply
 
 class TimeLineReply(reply.Reply):
 
-    def respond(self, text, screen_name=None, user='貴殿'):
+    def make_response(self, text, screen_name=None, user='貴殿'):
         text = normalize.normalize(text)
         METHODS = (
             misc.respond_by_rule,
@@ -25,25 +25,20 @@ class TimeLineReply(reply.Reply):
         response['text'] = self.replace_name(response['text'], screen_name, user)
         return response
 
-    def run(self, count=30):
-        mentions = self.twitter.api.statuses.home_timeline(count=count)
-        for mention in mentions[::-1]:
-            text = mention['text']
-            text = self.normalize(text)
-            screen_name = mention['user']['screen_name']
-            name = mention['user']['name']
-            self.logger.debug('{id} {user[screen_name]} {text} {created_at}'.format(**mention))
-            (valid, reason) = self.is_valid_mention(mention)
-            if not valid:
-                self.logger.debug('skip because this tweet %s' % reason)
-                continue
-            if '@' in text or '#' in text or 'RT' in text or 'http' in text:
-                self.logger.debug('skip because this tweet has NG susbstr')
-                continue
-            response = self.respond(text, screen_name, name)
-            if response and response.get('text'):
-                response['text'] = '@%s ' % screen_name + response['text']
-                response['id'] = mention['id']
-                if not self.debug:
-                    self.update_latest_replied_id(mention['id'])
-                return response
+    def respond(self, tweet):
+        text = tweet['text']
+        text = self.normalize(text)
+        screen_name = tweet['user']['screen_name']
+        name = tweet['user']['name']
+        self.logger.debug('{id} {user[screen_name]} {text} {created_at}'.format(**tweet))
+        (valid, reason) = self.is_valid_tweet(tweet)
+        if not valid:
+            self.logger.debug('skip because this tweet %s' % reason)
+            return
+        response = self.make_response(text, screen_name, name)
+        if response and response.get('text'):
+            response['text'] = '@%s ' % screen_name + response['text']
+            response['id'] = tweet['id']
+            if not self.debug:
+                self.update_latest_replied_id(tweet['id'])
+            return response
