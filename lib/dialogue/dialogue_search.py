@@ -27,7 +27,7 @@ def _validate_post(post):
 def _extract_response_by_search(query, or_flag):
     validated_query = _validate_query(query)
     if not validated_query:
-        return None
+        return
     _operator = 'or' if or_flag else 'and'
     _filter = {
         "script" : {
@@ -44,12 +44,11 @@ def _extract_response_by_search(query, or_flag):
 def respond(text):
     """Extract a past post responding a post similar to given text
     """
-    query = mecab.extract_word(text, 'content_word')
-    response = _extract_response_by_search(query, False)
+    response = _extract_response_by_search([text], False)
     if response:
         return response
 
-    query = mecab.extract_word(text, 'noun')
-    response = _extract_response_by_search(query, True)
+    query = mecab.extract_word(text, 'content_word')
+    response = _extract_response_by_search(query, False)
     if response:
         return response

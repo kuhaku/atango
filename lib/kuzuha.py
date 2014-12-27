@@ -2,6 +2,7 @@
 from datetime import datetime, timedelta
 import re
 from elasticsearch import Elasticsearch
+from lib.logger import logger
 from . import swjson, web, normalize, file_io
 
 # Regular Expressions
@@ -265,5 +266,6 @@ def search(query='', field='q1', _operator='and', sort=[('quoted_by', 'desc')], 
     sort_item = _build_sort(sort)
     if sort_item:
         body.update({'sort' : sort_item})
+    logger.debug(body)
     result = es.search(index='qwerty', body=body, _source=True)
     return (x['_source'] for x in result['hits']['hits'])
