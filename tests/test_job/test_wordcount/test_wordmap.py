@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from nose.tools import assert_equals, assert_true, nottest
+from nose.tools import assert_equals, assert_true, nottest, assert_almost_equal
 from datetime import datetime
 from itertools import product
 import numpy as np
@@ -24,6 +24,7 @@ class test_WordCount:
         dt = datetime(2011, 2, 14, 1, 0)
         got = self.wm.get_count_period(dt)
         assert_equals(got, '0:00~1:00')
+
         dt = datetime(2011, 2, 14, 0, 0)
         got = self.wm.get_count_period(dt)
         assert_equals(got, '23:00~24:00')
@@ -57,8 +58,8 @@ class test_WordCount:
                  wordcount.Word(distribution=np.array([0, 1, 1]), time=30)]
         got = self.wm.measure_distance(words)
         assert_equals(got[0].distance[0], 0)
-        assert_equals(got[0].distance[1], 5)
-        assert_equals(got[1].distance[0], 5)
+        assert_almost_equal(got[0].distance[1], 0.502777, 5)
+        assert_almost_equal(got[1].distance[0], 0.502777, 5)
 
     def test_calc_initial_position(self):
         input = (wordcount.Word(distance=np.array([1, 1, 1, 1])),

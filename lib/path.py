@@ -21,3 +21,9 @@ def cfgdir():
 
 def logdir():
     return _get_path('logs')
+
+
+def mkdir(path):
+    if not os.path.exists(path):
+        os.makedirs(path)
+        return True

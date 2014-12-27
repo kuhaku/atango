@@ -23,9 +23,10 @@ def _extract_oshiete_answer(query, posts):
             text = normalize.normalize(text.strip())
             if extract_rule.search(text):
                 answer = extract_rule.search(text.strip()).group(1)
-                if not answer or len(answer) < 4 or any(w in answer for w in NG_SUBSTRS):
+                if not answer or any(w in answer for w in NG_SUBSTRS):
                     continue
-                return answer
+                if 3 < len(answer) < 120:
+                    return answer
 
 
 def respond_oshiete(text):

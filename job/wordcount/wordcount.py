@@ -166,7 +166,7 @@ class WordCount(app.App):
             if not self.is_valid_post(post):
                 continue
 
-            for index in ('text', 'q1'):
+            for index in ('text', 'q1', 'q2'):
                 if index in post and post[index]:
                     counter += self.count(post[index])
             all_words = self.merge_counter(counter, all_words, post['time'])

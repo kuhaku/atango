@@ -19,7 +19,7 @@ def _validate_post(post):
     if 'author' in post:
         return False
     post['text'] = regex.re_a_tag.sub('', post['text'])
-    if len(post['text']) < 125 and 'はい' != post['text']:
+    if len(post['text']) < 125 and 'はい' != post['text'] and 'はい(;´Д`)' != post['text']:
         return post['text']
     return False
 

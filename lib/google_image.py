@@ -105,7 +105,7 @@ class GoogleImageSearch(object):
 def search(q, best_kwds_max_length=50):
     sbiutil = GoogleImageSearch()
     result = {}
-    if q.startswith('http'):
+    if isinstance(q, str) and q.startswith('http'):
         result['result_page'] = sbiutil.search_by_url(q)
         result['best_guess'] = sbiutil.extract_best_guess_tag(result['result_page'])
         soup_result_page = BeautifulSoup(result['result_page'])
@@ -120,5 +120,5 @@ def search(q, best_kwds_max_length=50):
         result['result_page'] = sbiutil.search_by_word(q)
         soup_result_page = BeautifulSoup(result['result_page'])
         if not sbiutil.has_captcha(soup_result_page):
-            sbiutil.extract_all_image_urls(soup_result_page)
+            result['images'] = sbiutil.extract_all_image_urls(soup_result_page)
     return result

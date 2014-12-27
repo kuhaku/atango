@@ -4,7 +4,8 @@ import os.path
 from collections import Counter
 import time
 from bs4 import BeautifulSoup
-from lib import app, web, kuzuha, file_io, google_image, normalize
+from twitter.api import TwitterHTTPError
+from lib import app, api, web, kuzuha, file_io, google_image, normalize
 from lib.regex import re_url, re_html_tag
 
 HOUR_RANGE = 4
@@ -22,6 +23,10 @@ cfg = file_io.read('popular_url.json')
 
 
 class PopularUrl(app.App):
+
+    def __init__(self, verbose=False, debug=False):
+        self.twitter = api.Twitter()
+        super(PopularUrl, self).__init__(verbose, debug)
 
     def _count_url(self, posts):
         urls = Counter()
@@ -77,21 +82,20 @@ class PopularUrl(app.App):
         actual_new_url_info_length = len(TWEET_FORMAT % (title, '*' * SHORT_URL_LENGTH, count))
         return len(tweet) + actual_new_url_info_length - len(DELIMITER)
 
-    def run(self, hour_range=HOUR_RANGE, twitter_api=None):
+    def run(self, hour_range=HOUR_RANGE):
         posts = kuzuha.search('http', _filter=kuzuha.build_date_filter_by_range({'hours': hour_range}))
-        urls = self._count_url(posts)
-
         tweet = ''
-        for (url, count) in urls.most_common():
-            if twitter_api and url.startswith('https://twitter.com/'):
+        for (url, count) in self._count_url(posts).most_common():
+            if url.startswith('https://twitter.com/'):
                 tweet_id = self.extract_tweet_id(url)
                 if tweet_id:
-                    try:
-                        self.logger.info('RT: id=%s (%s)' % (tweet_id, url))
-                        twitter_api.api.statuses.retweet(id=tweet_id)
-                        continue
-                    except:
-                        pass
+                    self.logger.info('RT: id=%s (%s)' % (tweet_id, url))
+                    if not self.debug:
+                        try:
+                            self.twitter.api.statuses.retweet(id=tweet_id)
+                        except TwitterHTTPError as e:
+                            self.logger.warn('%s %s' % (type(e), str(e)))
+                    continue
             title = self._get_title(url)
             new_url_info = TWEET_FORMAT % (title, url, count)
             expected_length = self.calc_tweet_length(tweet, title, count)

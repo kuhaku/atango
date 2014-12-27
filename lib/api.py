@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 import re
 import twitter
+from cached_property import cached_property
 from twitter.api import TwitterHTTPError
 from . import file_io, misc
+from .db import ShareableShelf
 
 CFG_FILE = 'api.cfg'
 re_photo_id = re.compile(r'<photoid>(?P<photoid>[0-9]+)</photoid>')
@@ -19,12 +21,26 @@ TwitterHTTPError.__str__ = __str__patch
 class Twitter:
 
     def __init__(self):
+        self.shelf = ShareableShelf('atango.shelf')        
+        self.latest_tweets = self.shelf.get('latest_tweets', [])
+
+    @cached_property
+    def api(self):
         twitter_config = file_io.read(CFG_FILE)['Twitter']
         oauth = twitter.OAuth(twitter_config['access_token_key'],
                               twitter_config['access_token_secret'],
                               twitter_config['consumer_key'],
                               twitter_config['consumer_secret'])
-        self.api = twitter.Twitter(auth=oauth)
+        return twitter.Twitter(auth=oauth)
+
+    def is_duplicate_tweet(self, tweet):
+        if tweet in self.latest_tweets:
+            return True
+        if len(self.latest_tweets) > 10:
+            self.latest_tweets.pop(0)
+        self.latest_tweets.append(tweet)
+        self.shelf['latest_tweets'] = self.latest_tweets
+        return False
 
 
 class Flickr:

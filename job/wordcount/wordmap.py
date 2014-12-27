@@ -43,11 +43,7 @@ class WordMap(app.App):
         u"""
         図の目盛りやラベルを隠す
         """
-        for tick in ax.yaxis.get_major_ticks():
-            tick.tick1On = False
-            tick.label1On = False
-            tick.tick2On = False
-        for tick in ax.xaxis.get_major_ticks():
+        for tick in ax.yaxis.get_major_ticks() + ax.xaxis.get_major_ticks():
             tick.tick1On = False
             tick.label1On = False
             tick.tick2On = False
@@ -61,7 +57,7 @@ class WordMap(app.App):
             <str> period of word count
         """
         if dt.hour == 0:
-            return '%d:00~%d:00' % (23, 24)
+            return '23:00~24:00'
         else:
             return '%d:00~%d:00' % (dt.hour - 1, dt.hour)
 
@@ -119,7 +115,7 @@ class WordMap(app.App):
             for j in range(num_words):
                 cos_dist = rogerstanimoto(words[i].distribution, words[j].distribution)
                 time_dist = np.abs(words[i].time - words[j].time) / 3600
-                words[i].distance[j] = cos_dist * time_dist
+                words[i].distance[j] = cos_dist + time_dist
         return words
 
     def calc_initial_position(self, words):
@@ -313,7 +309,7 @@ class WordMap(app.App):
         result = items[0][:-1]
         for item in [item.split('：') for item in items[1:]]:
             result += ' <a href="%s%s">%s</a>：%s' % (USAMIN_URL, item[0], item[0], item[1])
-        return result#.encode('utf8', 'replace')
+        return result
 
     def upload(self, description):
         """
@@ -343,9 +339,6 @@ class WordMap(app.App):
         if self.upload_flickr is True:
             url = self.upload(description)
         else:
-            #if os.getenv('DISPLAY'):
-            #    plt.show()
-            #else:
             temp_file = tempfile.mkstemp(suffix='.png')[1]
             plt.savefig(temp_file)
             self.logger.debug('word-map image is stored at %s' % temp_file)

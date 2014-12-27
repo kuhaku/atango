@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 import os
 import re
-from lib import app, file_io, path, regex, normalize
+from lib import app, api, file_io, path, regex, normalize
 from lib.dialogue import qa, dialogue_search, misc
 
 re_screen_name = re.compile('@[\w]+[ 　]*')
-re_atango = re.compile("[ぁあ]単語((ちゃん)|(先輩))")
+re_atango = re.compile("[ぁあ]単語((ちゃん)|(先輩))?")
 
 
 class Reply(app.App):
@@ -14,6 +14,7 @@ class Reply(app.App):
         self.cfg = file_io.read('atango.json')['Reply']
         cfg_dir = path.cfgdir()
         self.replied_id_file = os.path.join(cfg_dir, 'latest_replied.txt')
+        self.twitter = api.Twitter()
         super(Reply, self).__init__(verbose, debug)
 
     def get_latest_replied_id(self):
@@ -29,6 +30,7 @@ class Reply(app.App):
     def is_valid_mention(self, mention):
 
         def is_ng_screen_name(screen_name):
+            screen_name = screen_name.lower()
             return screen_name in self.cfg['NG_SCREEN_NAME']
 
         def is_ng_tweet(text):
@@ -38,15 +40,16 @@ class Reply(app.App):
             client = client.lower()
             return client in self.cfg['NG_CLIENT']
 
+        reason = 'OK'
         if mention['id'] <= self.get_latest_replied_id():
-            return False
+            reason = 'is old'
         elif is_ng_screen_name(mention['user']['screen_name']):
-            return False
+            reason = 'is NG screen name'
         elif is_ng_tweet(mention['text']):
-            return False
+            reason = 'has NG word'
         elif is_ng_client(mention['source']):
-            return False
-        return True
+            reason = 'is written by NG source'
+        return (True, reason) if reason == 'OK' else (False, reason)
 
     def normalize(self, text):
         text = re_screen_name.sub('', text)
@@ -55,7 +58,7 @@ class Reply(app.App):
         text = text.strip()
         return text
 
-    def _replace_name(self, text, screen_name, name):
+    def replace_name(self, text, screen_name, name):
         if not screen_name:
             screen_name = name
         text = text.replace('\%sn', screen_name)
@@ -68,29 +71,33 @@ class Reply(app.App):
             qa.respond_oshiete,  # XXXって何? -> XXXは***
             qa.respond_what_who,  # (誰|何)がXXX? -> ***がXXX
             dialogue_search.respond,  # past post as-is
+            misc.respond_by_rule,  # Rule-based response
             misc._random_choice,  # Randomly
         )
         for method in METHODS:
+            self.logger.debug('execute %s' % method.__name__)
             response = method(text)
             if response:
                 break
         if not response:
-            response = 'ああ(;´Д`)'
-        return self._replace_name(response, screen_name, user)
+            response = {'text': 'ああ(;´Д`)'}
+        if isinstance(response, str):
+            response = {'text': response}
+        response['text'] = self.replace_name(response['text'], screen_name, user)
+        return response
 
-    def run(self, twitter_api, count=10):
-        mentions = twitter_api.api.statuses.mentions_timeline(count=count)
+    def run(self, count=10):
+        mentions = self.twitter.api.statuses.mentions_timeline(count=count)
         for mention in mentions[::-1]:
             text = self.normalize(mention['text'])
             screen_name = mention['user']['screen_name']
             name = mention['user']['name']
-            if not self.is_valid_mention(mention):
+            self.logger.debug('{id} {user[screen_name]} {text} {created_at}'.format(**mention))
+            (valid, reason) = self.is_valid_mention(mention)
+            if not valid:
+                self.logger.debug('skip because this tweet %s' % reason)
                 continue
-            message = '@%s ' % screen_name
-            message += self.respond(text, screen_name, name)
-            yield message, mention['id']
-            self.update_latest_replied_id(mention['id'])
-
-if __name__ == '__main__':
-    r = Reply()
-    r.run()
+            response = self.respond(text, screen_name, name)
+            response['text'] = '@%s ' % screen_name + response['text']
+            response['id'] = mention['id']
+            yield response

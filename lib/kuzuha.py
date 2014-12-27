@@ -239,7 +239,7 @@ def _build_sort(sort):
 
 
 def search(query='', field='q1', _operator='and', sort=[('quoted_by', 'desc')], _filter={},
-           size=500):
+           size=1000):
     es = Elasticsearch([elasticsearch_setting])
     if query:
         es_query = {
@@ -247,7 +247,7 @@ def search(query='', field='q1', _operator='and', sort=[('quoted_by', 'desc')], 
                 field: {
                     'query': query,
                     'operator': _operator,
-                    'minimum_should_match': '75%'
+                    'minimum_should_match': '95%'
                 }
             }
         }
