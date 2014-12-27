@@ -13,19 +13,24 @@
   },
   "Reply": {
     "NG_SCREEN_NAME": [
-        "sw_words",
-        "sw15bot"
+      "sw_words",
+      "sw15bot",
+      "tagutagu_bot"
     ],
     "NG_WORDS": [
-        "紙が更新されました！",
-        "新聞 is out!",
-        "Times is out!",
-        "paper.li",
-        "レスしなくていい"
+      "紙が更新されました！",
+      "新聞 is out!",
+      "Times is out!",
+      "paper.li",
+      "レスしなくていい"
     ],
     "NG_CLIENT": [
-        "paper.li",
-        "twittbot.net"
+      "paper.li",
+      "twittbot.net"
+    ],
+    "PRESENT": [
+      "プレゼント",
+      "クリスマス"
     ]
   }
 }
