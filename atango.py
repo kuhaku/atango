@@ -77,8 +77,8 @@ class Atango(object):
             if message:
                 self.output(message)
         elif job == 'dialogue':
-            from job.tl import Reply
-            reply = Reply(verbose=self.verbose, debug=self.debug)
+            from job.tl import TimeLineReply
+            reply = TimeLineReply(verbose=self.verbose, debug=self.debug)
             while True:
                 print(reply.respond(input()))
         else:
