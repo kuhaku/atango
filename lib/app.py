@@ -5,8 +5,8 @@ import traceback
 import re
 import os
 import inspect
-from .logger import Logger
-
+from . import path
+from .logger import logger
 
 TIME_LIMIT = 55
 ATANGO_DIR = '/work/atango/'
@@ -57,28 +57,31 @@ class App(object):
 
     def __init__(self, verbose=False, debug=False):
         self.appname = self.__class__.__name__
-        self.filename = inspect.getfile(self.__class__)
-
-        logger = Logger(self.appname, debug=debug)
-
-        logpath = self._gen_logfile_path(self.filename)
-        logger.enable_file_handler(logpath)
-        if not os.path.exists(log_dir):
-            os.makedirs(log_dir)
-
-        if verbose:
-            logger.enable_stream_handler()
-        logger.enable_twitter_handler(debug=debug)
 
         self.verbose = verbose
         self.debug = debug
-        self.logger = logger.logger
+        self.logger = self.setup_logger(verbose, debug)
         self._decorate()
 
     def _gen_logfile_path(self, filename):
         logfile_name = filename.replace(ATANGO_DIR, '').replace('/', '-')
         logfile_name += '.log'
         return os.path.join(log_dir, logfile_name)
+
+    def setup_logger(self, verbose, debug):
+        filename = inspect.getfile(self.__class__)
+        logpath = self._gen_logfile_path(filename)
+        logger.enable_file_handler(logpath)
+        path.mkdir(log_dir)
+
+        if verbose:
+            logger.enable_stream_handler()
+
+        if debug:
+            logger.enable_debug()
+        else:
+            logger.enable_twitter_handler()
+        return logger
 
     def _decorate(self):
         """Decorate method by logger

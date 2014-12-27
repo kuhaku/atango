@@ -8,6 +8,7 @@ from lib.api import Twitter
 
 FORMAT = '%(asctime)s [%(levelname)s] %(message)s'
 DT_FMT = '%Y-%m-%d %H:%M:%S'
+METHODS = 'addHandler setLevel debug info warn error critical propagate'
 ROTATE_SETTING = {'backupCount': 30, 'when': 'midnight'}
 CAPACITY = 10000
 repeat = random.randint(0, 5)
@@ -19,12 +20,10 @@ TWEET_PREFIXES = (
 
 
 class TwitterHandler(handlers.BufferingHandler):
-
-    def __init__(self, send_level=logging.CRITICAL, debug=False):
+    def __init__(self, send_level=logging.CRITICAL):
         self.twitter = Twitter()
         self.main_path = getattr(__main__, '__file__', 'UNKNOWN')
         self.send_level = send_level
-        self.debug = debug
         handlers.BufferingHandler.__init__(self, CAPACITY)
 
     def detect_max_level(self):
@@ -54,18 +53,34 @@ class TwitterHandler(handlers.BufferingHandler):
             self.twitter.api.statuses.update(status=message)
 
     def flush(self):
-        if not (self.debug or self.main_path.endswith('nosetests')):
+        if not self.main_path.endswith('nosetests'):
             self.send()
         self.buffer = []
 
 
 class Logger(object):
+    format = logging.Formatter(FORMAT, DT_FMT)
 
-    def __init__(self, name=None, propagate=False, debug=False):
+    def __init__(self, name=None, debug=False):
         self.logger = logging.getLogger(name)
         self.logger.setLevel(logging.DEBUG if debug else logging.INFO)
-        self.logger.propagate = propagate
-        self.format = logging.Formatter(FORMAT, DT_FMT)
+        self.logger.propagate = False
+
+        self._delegate_methods('logger', METHODS.split())
+
+    def enable_debug(self):
+        self.logger.setLevel(logging.DEBUG)
+
+    def disable_debug(self):
+        self.logger.setLevel(logging.INFO)
+
+    def _delegate_methods(self, attr, methods):
+        for method_name in methods:
+            method = getattr(getattr(self, attr), method_name)
+            setattr(self, method_name, method)
+
+    def set_propagate(self, val=True):
+        self.logger.propagate = val
 
     def enable_stream_handler(self, stream=sys.stdout):
         handler = logging.StreamHandler(stream)
@@ -78,5 +93,8 @@ class Logger(object):
         self.logger.addHandler(handler)
 
     def enable_twitter_handler(self, debug=False):
-        handler = TwitterHandler(debug=debug)
+        handler = TwitterHandler()
         self.logger.addHandler(handler)
+
+
+logger = Logger('atango')
