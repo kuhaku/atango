@@ -22,8 +22,9 @@ class Crawler(object):
 
     def is_duplicate_launch(self):
         result = misc.command('ps aux|grep crawler', True)
+        logger.debug(result[1])
         ignore_grep = filter(lambda x: 'grep' not in x, result[1].splitlines())
-        return len(list(ignore_grep)) != 1
+        return len(list(ignore_grep)) > 2
 
     def respond(self, instance, tweet):
         response = instance.respond(tweet)
