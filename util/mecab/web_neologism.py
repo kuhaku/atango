@@ -70,10 +70,10 @@ class WebNeologism(object):
     def is_contained_in_mecab_dic(self, word):
         for (i, node) in enumerate(self.mecab_unk.parse_to_node(word)):
             if UNK in node.feature:
-                print(word, node.surface, 'UNK')
+                #print(word, node.surface, 'UNK')
                 return False
         if i > 1:
-            print(word, i)
+            #print(word, i)
             return False
         return True
 
