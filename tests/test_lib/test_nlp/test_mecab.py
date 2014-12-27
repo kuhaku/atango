@@ -49,3 +49,6 @@ def test_count_doc():
 def test_wakati():
     actual = mecab.wakati(u'おっぱいはやわらかい')
     assert_equals(actual, ['おっぱい', 'は', 'やわらかい'])
+
+def test_has_demonstrative():
+    assert_true(mecab.has_demonstrative('ああいう話は嫌い'))

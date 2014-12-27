@@ -63,6 +63,6 @@ def respond_what_who(text):
     predicate = _build_what_who_query(text)
     if predicate:
         query = 'が%s は%s' % (predicate, predicate)
-        for post in kuzuha.search(query, field='text', sort=[('dt', 'desc')], _operator='or', size=10):  
-            if len(post['text']) >= 4:
+        for post in kuzuha.search(query, field='text', sort=[('dt', 'desc')], _operator='or', size=50):  
+            if 120 > len(post['text']) > 4 and not mecab.has_demonstrative(post['text']):
                 return post['text']
