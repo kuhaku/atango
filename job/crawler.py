@@ -45,7 +45,7 @@ class Crawler(object):
             if 'text' in tweet:
                 if tweet['text'].startswith('@sw_words'):
                     self.respond(self.reply_responder, tweet)
-                elif np.random.randint(100) == 0 and self.is_valid_tweet(tweet['text']):
+                elif np.random.randint(100) < 10 and self.is_valid_tweet(tweet['text']):
                     self.respond(self.tl_responder, tweet)
             if time.time() - last_time > TWO_MINUTES:
                 mentions = self.twitter.api.statuses.mentions_timeline(count=200)
