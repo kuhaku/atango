@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import time
 import signal
-from pprint import pprint
 import numpy as np
 from lib.logger import logger
 from lib.api import Twitter
@@ -43,7 +42,6 @@ class Crawler(object):
             return
         last_time = time.time()
         for tweet in self.twitter.stream_api.user():
-            logger.debug(pprint(tweet))
             if 'text' in tweet:
                 if tweet['text'].startswith('@sw_words'):
                     self.respond(self.reply_responder, tweet)
