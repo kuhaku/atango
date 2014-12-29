@@ -29,23 +29,10 @@ class Atango(object):
             ome = Ome(verbose=self.verbose, debug=self.debug)
             for message in ome.run(20):
                 self.twitter.post(message, debug=self.debug)
-        elif job == 'reply':
-            from job.reply import Reply
-            reply = Reply(verbose=self.verbose, debug=self.debug)
-            for result in reply.run(count=10):
-                self.twitter.post(result['text'], result['id'], result.get('media[]'),
-                                  debug=self.debug)
-                if not self.debug:
-                    reply.update_latest_replied_id(result['id'])
-        elif job == 'tl':
-            from job.tl import TimeLineReply
-            reply = TimeLineReply(verbose=self.verbose, debug=self.debug)
-            result = reply.run(count=10)
-            if result:
-                self.twitter.post(result['text'], result['id'], result.get('media[]'),
-                                  debug=self.debug)
-                if not self.debug:
-                    reply.update_latest_replied_id(result['id'])
+        elif job == 'markov':
+            from job.markov import MarkovTweet
+            mt = MarkovTweet(verbose=self.verbose, debug=self.debug)
+            self.twitter.post(mt.run(60), debug=self.debug)
         elif job == 'crawler':
             from job.crawler import Crawler
             crawler = Crawler(verbose=self.verbose, debug=self.debug)
