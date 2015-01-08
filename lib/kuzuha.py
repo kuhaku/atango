@@ -248,7 +248,7 @@ def search(query='', field='q1', _operator='and', sort=[('quoted_by', 'desc')], 
                 field: {
                     'query': query,
                     'operator': _operator,
-                    'minimum_should_match': '95%'
+                    'minimum_should_match': '85%'
                 }
             }
         }
