@@ -4,18 +4,21 @@ import signal
 import numpy as np
 from lib.logger import logger
 from lib.api import Twitter
-from lib import misc
+from lib import db, misc
 from job.tl import TimeLineReply
 from job.reply import Reply
 
 TWO_MINUTES = 120
 ONE_DAY = 60 * 60 * 24
 
+
 class Crawler(object):
     def __init__(self, verbose=False, debug=False):
         self.tl_responder = TimeLineReply(verbose=verbose, debug=debug)
         self.reply_responder = Reply(verbose=verbose, debug=debug)
         self.twitter = Twitter()
+        self.db = db.ShareableShelf()
+        self.db['latest_tl_replied'] = ''
         self.debug = debug
         signal.setitimer(signal.ITIMER_REAL, ONE_DAY)
 
@@ -25,13 +28,15 @@ class Crawler(object):
         ignore_grep = filter(lambda x: 'grep' not in x, result[1].splitlines())
         return len(list(ignore_grep)) > 2
 
-    def respond(self, instance, tweet):
+    def respond(self, instance, tweet, tl=False):
         response = instance.respond(tweet)
         if response:
             self.twitter.post(response['text'], response['id'], response.get('media[]'),
                               debug=self.debug)
             if not self.debug:
                 self.tl_responder.update_latest_replied_id(response['id'])
+                if tl:
+                    self.db['latest_tl_replied'] = response['text'].split(' ')[0]
 
     def is_valid_tweet(self, text):
         return not ('@' in text or '#' in text or 'RT' in text or 'http' in text)
@@ -45,8 +50,9 @@ class Crawler(object):
             if 'text' in tweet:
                 if tweet['text'].startswith('@sw_words'):
                     self.respond(self.reply_responder, tweet)
-                elif np.random.randint(100) < 3 and self.is_valid_tweet(tweet['text']):
-                    self.respond(self.tl_responder, tweet)
+                elif (np.random.randint(100) < 3 and self.is_valid_tweet(tweet['text']) and
+                      self.db['latest_tl_replied'] != tweet['user']['screen_name']):
+                    self.respond(self.tl_responder, tweet, tl=True)
             if time.time() - last_time > TWO_MINUTES:
                 mentions = self.twitter.api.statuses.mentions_timeline(count=200)
                 for mention in mentions[::-1]:
