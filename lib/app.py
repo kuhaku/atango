@@ -55,13 +55,15 @@ def decorator(self, function):
 
 class App(object):
 
-    def __init__(self, verbose=False, debug=False):
+    def __init__(self, verbose=False, debug=False, daemon=False, child=False):
         self.appname = self.__class__.__name__
-
         self.verbose = verbose
         self.debug = debug
-        self.logger = self.setup_logger(verbose, debug)
-        self._decorate()
+
+        if not child:
+            self.logger = self.setup_logger(verbose, debug)
+        if not daemon:
+            self._decorate()
 
     def _gen_logfile_path(self, filename):
         logfile_name = filename.replace(ATANGO_DIR, '').replace('/', '-')

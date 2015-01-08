@@ -2,6 +2,7 @@
 import os
 import re
 from lib import app, api, file_io, path, regex, normalize
+from lib.logger import logger
 from lib.dialogue import qa, dialogue_search, misc
 
 re_screen_name = re.compile('@[\w]+[ 　]*')
@@ -10,12 +11,14 @@ re_atango = re.compile("[ぁあ]単語((ちゃん)|(先輩))?")
 
 class Reply(app.App):
 
-    def __init__(self, verbose=False, debug=False):
+    def __init__(self, verbose=False, debug=False, daemon=False):
         self.cfg = file_io.read('atango.json')['Reply']
         cfg_dir = path.cfgdir()
         self.replied_id_file = os.path.join(cfg_dir, 'latest_replied.txt')
         self.twitter = api.Twitter()
-        super(Reply, self).__init__(verbose, debug)
+        if daemon:
+            self.logger = logger
+        super(Reply, self).__init__(verbose, debug, daemon, child=daemon)
 
     def get_latest_replied_id(self):
         if not os.path.exists(self.replied_id_file):

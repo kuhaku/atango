@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 import time
-import signal
 import numpy as np
 from lib.logger import logger
 from lib.api import Twitter
-from lib import db, misc
+from lib import app, db, misc
 from job.tl import TimeLineReply
 from job.reply import Reply
 
@@ -12,15 +11,15 @@ TWO_MINUTES = 120
 ONE_DAY = 60 * 60 * 24
 
 
-class Crawler(object):
+class Crawler(app.App):
+
     def __init__(self, verbose=False, debug=False):
-        self.tl_responder = TimeLineReply(verbose=verbose, debug=debug)
-        self.reply_responder = Reply(verbose=verbose, debug=debug)
+        self.tl_responder = TimeLineReply(verbose=verbose, debug=debug, daemon=True)
+        self.reply_responder = Reply(verbose=verbose, debug=debug, daemon=True)
         self.twitter = Twitter()
         self.db = db.ShareableShelf()
         self.db['latest_tl_replied'] = ''
-        self.debug = debug
-        signal.setitimer(signal.ITIMER_REAL, ONE_DAY)
+        super(Crawler, self).__init__(verbose, debug, daemon=True)
 
     def is_duplicate_launch(self):
         result = misc.command('ps aux|grep crawler', True)
@@ -58,4 +57,3 @@ class Crawler(object):
                 for mention in mentions[::-1]:
                     self.respond(self.reply_responder, mention)
                 last_time = time.time()
-            signal.setitimer(signal.ITIMER_REAL, ONE_DAY)
