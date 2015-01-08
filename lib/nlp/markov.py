@@ -20,7 +20,7 @@ class MarkovGenerater(object):
                 prev, interest = interest, word
         return (markov_dict, unique_words)
 
-    def generate(self, words):
+    def generate(self, words, min_length):
         (markov_dict, unique_words) = self.generate_markov_model(words)
         word_ids = defaultdict(lambda: len(word_ids))
         for x in unique_words:
@@ -34,7 +34,7 @@ class MarkovGenerater(object):
                 (prev, interest)  = '', BOS
             word = misc.choice(markov_dict[(prev, interest)])
             prev, interest = interest, word
-            if word == EOS and 20 < len(sentence) < 140:
+            if word == EOS and min_length < len(sentence) < 140:
                 if sentence.count('(;´Д`)') == 2 and sentence[-6:] == '(;´Д`)':
                     sentence = sentence[:-6]
                 return sentence
