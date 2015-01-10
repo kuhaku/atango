@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from lib import normalize
 from lib.dialogue import qa, dialogue_search, misc
+from lib.logger import logger
 from job import reply
 
 
@@ -30,15 +31,13 @@ class TimeLineReply(reply.Reply):
         text = self.normalize(text)
         screen_name = tweet['user']['screen_name']
         name = tweet['user']['name']
-        self.logger.debug('{id} {user[screen_name]} {text} {created_at}'.format(**tweet))
+        logger.debug('{id} {user[screen_name]} {text} {created_at}'.format(**tweet))
         (valid, reason) = self.is_valid_tweet(tweet)
         if not valid:
-            self.logger.debug('skip because this tweet %s' % reason)
+            logger.debug('skip because this tweet %s' % reason)
             return
         response = self.make_response(text, screen_name, name)
         if response and response.get('text'):
             response['text'] = '@%s ' % screen_name + response['text']
             response['id'] = tweet['id']
-            if not self.debug:
-                self.update_latest_replied_id(tweet['id'])
             return response

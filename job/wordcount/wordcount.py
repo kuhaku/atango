@@ -6,6 +6,7 @@ import numpy as np
 from lib import app, kuzuha, normalize, file_io, regex
 from lib.distance import levenshtein
 from lib.nlp import mecab, ngram
+from lib.logger import logger
 from . import wordmap
 from .word import Word
 
@@ -14,13 +15,12 @@ SUTEGANA = tuple('ぁぃぅぇぉっゃゅょゎァィゥェォヵㇰヶㇱㇲ�
 
 class WordCount(app.App):
 
-    def __init__(self, plot_wordmap=True, up_flickr=False, verbose=False, debug=False):
+    def __init__(self, plot_wordmap=True, up_flickr=False):
         self.all_words = defaultdict(Word)
         self.start_time = 0
         self.plot_wordmap = plot_wordmap
         self.up_flickr = up_flickr
         self.ng_words = set(file_io.read('ng_words.txt'))
-        super(WordCount, self).__init__(verbose, debug)
 
     def _get_log(self, hours=1):
         _filter = kuzuha.build_hour_filter(hours)
@@ -51,8 +51,13 @@ class WordCount(app.App):
         return text.splitlines()
 
     def count(self, text):
+        if isinstance(text, list):
+            text = '\n'.join(text)
         text = self.prepare_for_counting(text)
-        return mecab.count_doc(text)
+        if text:
+            return mecab.count_doc(text)
+        else:
+            return Counter()
 
     def calc_avg_time(self, word, post_time):
         word.time += (post_time - self.start_time)
@@ -64,8 +69,7 @@ class WordCount(app.App):
             all_words[word].count += 1
             all_words[word].distribution += counter
             if self.plot_wordmap:
-                all_words[word].time = self.calc_avg_time(all_words[word],
-                                                          post_time)
+                all_words[word].time = self.calc_avg_time(all_words[word], post_time)
         return all_words
 
     def is_valid_word(self, word):
@@ -140,13 +144,13 @@ class WordCount(app.App):
         for word in sorted(all_words.values(),
                            key=lambda x: [x.count, len(x.surface)],
                            reverse=True):
+            logger.info('%s\t%d' % (word.surface, word.count))
             if len(message) + len(word.surface) + len(str(word.count)) + 1 < 116:
                 if len(word.surface) > 1:
                     message = u'%s %s：%d,' % (message, word.surface, word.count)
             elif self.plot_wordmap:
                 all_words = self.to_bag_of_words(all_words)
-                wmap = wordmap.WordMap(upload_flickr=self.up_flickr, verbose=self.verbose,
-                                       debug=self.debug)
+                wmap = wordmap.WordMap(upload_flickr=self.up_flickr)
                 message = message[:-1]
                 message += u' ' + wmap.run(all_words, message)
                 return message
@@ -155,7 +159,7 @@ class WordCount(app.App):
         return message[:-1]
 
     def run(self, hour=1):
-        log = self._get_log(hour)
+        log = self._get_log(72)
         log = self.compute_unixtime(log)
         log = self._sort_by_time(filter(lambda x: 'time' in x, log))
         self.start_time = float(log[0]['time'])
@@ -176,8 +180,3 @@ class WordCount(app.App):
         all_words = self.del_minus_count_word(all_words)
         all_words = self.del_duplicate_word(all_words)
         return self.gen_report(all_words)
-
-
-if __name__ == '__main__':
-    wc = WordCount(plot_wordmap=True, up_flickr=False, verbose=True, debug=True)
-    print(wc.run(hour=1))

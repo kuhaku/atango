@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 import platform
-from lib import app, misc
+from lib import misc
 
 THRESHOLD = 80
 MESSAGE_FORMAT = 'もう駄目だ(　ﾟДﾟ　)爆発する CPU Temperature: %.3f℃'
 
 
-class CpuTemperatureChecker(app.App):
+class CpuTemperatureChecker(object):
 
     def get_mac_temperature(self):
         cmd_result = misc.command('istats cpu temp', True)

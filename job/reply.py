@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
-import os
 import re
-from lib import app, api, file_io, path, regex, normalize
+from lib import api, file_io, regex, normalize
 from lib.logger import logger
 from lib.dialogue import qa, dialogue_search, misc
 
@@ -9,26 +8,11 @@ re_screen_name = re.compile('@[\w]+[ 　]*')
 re_atango = re.compile("[ぁあ]単語((ちゃん)|(先輩))?")
 
 
-class Reply(app.App):
+class Reply(object):
 
-    def __init__(self, verbose=False, debug=False, daemon=False):
+    def __init__(self):
         self.cfg = file_io.read('atango.json')['Reply']
-        cfg_dir = path.cfgdir()
-        self.replied_id_file = os.path.join(cfg_dir, 'latest_replied.txt')
         self.twitter = api.Twitter()
-        if daemon:
-            self.logger = logger
-        super(Reply, self).__init__(verbose, debug, daemon, child=daemon)
-
-    def get_latest_replied_id(self):
-        if not os.path.exists(self.replied_id_file):
-            return 0
-        with open(self.replied_id_file, 'r') as fd:
-            return int(fd.readlines()[0].rstrip())
-
-    def update_latest_replied_id(self, reply_id):
-        with open(self.replied_id_file, 'w') as fd:
-            fd.write(str(reply_id))
 
     def is_valid_tweet(self, mention):
 
@@ -44,7 +28,7 @@ class Reply(app.App):
             return client in self.cfg['NG_CLIENT']
 
         reason = 'OK'
-        if mention['id'] <= self.get_latest_replied_id():
+        if mention['id'] <= self.twitter.get_latest_replied_id():
             reason = 'is old'
         elif is_ng_screen_name(mention['user']['screen_name']):
             reason = 'is NG screen name'
@@ -78,7 +62,7 @@ class Reply(app.App):
             misc._random_choice,  # Randomly
         )
         for method in METHODS:
-            self.logger.debug('execute %s' % method.__name__)
+            logger.debug('execute %s' % method.__name__)
             response = method(text)
             if response:
                 break
@@ -93,10 +77,10 @@ class Reply(app.App):
         text = self.normalize(mention['text'])
         screen_name = mention['user']['screen_name']
         name = mention['user']['name']
-        self.logger.debug('{id} {user[screen_name]} {text} {created_at}'.format(**mention))
+        logger.debug('{id} {user[screen_name]} {text} {created_at}'.format(**mention))
         (valid, reason) = self.is_valid_tweet(mention)
         if not valid:
-            self.logger.debug('skip because this tweet %s' % reason)
+            logger.debug('skip because this tweet %s' % reason)
             return
         response = self.make_response(text, screen_name, name)
         response['text'] = '@%s ' % screen_name + response['text']

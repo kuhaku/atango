@@ -5,8 +5,9 @@ from collections import Counter
 import time
 from bs4 import BeautifulSoup
 from twitter.api import TwitterHTTPError
-from lib import app, api, web, kuzuha, file_io, google_image, normalize
+from lib import api, web, kuzuha, file_io, google_image, normalize
 from lib.regex import re_url, re_html_tag
+from lib.logger import logger
 
 HOUR_RANGE = 4
 MAX_TWEET_LENGTH = 140
@@ -22,11 +23,11 @@ ignore_extensions = ('.zip', '.rar', '.swf', '.pdf', '.mp3', '.mp4')
 cfg = file_io.read('popular_url.json')
 
 
-class PopularUrl(app.App):
+class PopularUrl(object):
 
-    def __init__(self, verbose=False, debug=False):
+    def __init__(self, debug=False):
         self.twitter = api.Twitter()
-        super(PopularUrl, self).__init__(verbose, debug)
+        self.debug = debug
 
     def _count_url(self, posts):
         urls = Counter()
@@ -62,7 +63,7 @@ class PopularUrl(app.App):
             keywords = filter(lambda x: not x.isdigit(), results['best_keywords'])
             title = ''.join(keywords)
         elif not ext in ignore_extensions:
-            self.logger.info('Retrieve web resource: %s' % url)
+            logger.info('Retrieve web resource: %s' % url)
             html = web.open_url(url)
             soup = BeautifulSoup(html)
             title = soup.title.string
@@ -89,12 +90,12 @@ class PopularUrl(app.App):
             if url.startswith('https://twitter.com/'):
                 tweet_id = self.extract_tweet_id(url)
                 if tweet_id:
-                    self.logger.info('RT: id=%s (%s)' % (tweet_id, url))
+                    logger.info('RT: id=%s (%s)' % (tweet_id, url))
                     if not self.debug:
                         try:
                             self.twitter.api.statuses.retweet(id=tweet_id)
                         except TwitterHTTPError as e:
-                            self.logger.warn('%s %s' % (type(e), str(e)))
+                            logger.warn('%s %s' % (type(e), str(e)))
                     continue
             title = self._get_title(url)
             new_url_info = TWEET_FORMAT % (title, url, count)

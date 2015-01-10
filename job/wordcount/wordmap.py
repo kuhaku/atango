@@ -11,17 +11,17 @@ import matplotlib.font_manager as font_manager
 from mpl_toolkits.axes_grid1.anchored_artists import AnchoredText
 import PIL.ImageFont
 
-from lib import api, file_io, mathematics, app
+from lib import api, file_io, mathematics
 from lib.misc import map_dict
+from lib.logger import logger
 
 USAMIN_URL = 'http://usamin.mine.nu/cgi/swlog?b0=on&w='
 FLICKR_URL = 'https://www.flickr.com/photos/sw_words/'
 
 
-class WordMap(app.App):
+class WordMap(object):
 
-    def __init__(self, upload_flickr=False, verbose=False, debug=False):
-        super(WordMap, self).__init__(verbose, debug)
+    def __init__(self, upload_flickr=False):
         self.upload_flickr = upload_flickr
         if upload_flickr:
             self.flickr = api.Flickr()
@@ -58,8 +58,7 @@ class WordMap(app.App):
         """
         if dt.hour == 0:
             return '23:00~24:00'
-        else:
-            return '%d:00~%d:00' % (dt.hour - 1, dt.hour)
+        return '%d:00~%d:00' % (dt.hour - 1, dt.hour)
 
     def generate_graphtitle(self, dt):
         """
@@ -90,14 +89,12 @@ class WordMap(app.App):
     @staticmethod
     def determine_num_plot_items(total_count):
         if total_count > 300:
-            num_items = 40
+            return 40
         elif total_count > 250:
-            num_items = 30
+            return 30
         elif total_count > 150:
-            num_items = 20
-        else:
-            num_items = 10
-        return num_items
+            return 20
+        return 10
 
     @staticmethod
     def sort_by_count(words):
@@ -124,9 +121,9 @@ class WordMap(app.App):
         """
         D = np.array([word.distance for word in words])
         positions = mathematics.mds(D)
-        self.logger.debug('initial positions by MDS are following:')
+        logger.debug('initial positions by MDS are following:')
         for (i, position) in enumerate(positions):
-            self.logger.debug('%s, %s, %s' % (words[i].surface, position['x'], position['y']))
+            logger.debug('%s, %s, %s' % (words[i].surface, position['x'], position['y']))
             words[i].x = position['x']
             words[i].y = position['y']
         return words
@@ -135,12 +132,12 @@ class WordMap(app.App):
     def get_minmax(words):
         all_x = [word.x for word in words]
         all_y = [word.y for word in words]
-        minmax = {}
-        minmax['minx'] = np.abs(min(all_x))
-        minmax['maxx'] = np.abs(max(all_x))
-        minmax['miny'] = np.abs(min(all_y))
-        minmax['maxy'] = np.abs(max(all_y))
-        return minmax
+        return {
+            'minx': np.abs(min(all_x)),
+            'maxx': np.abs(max(all_x)),
+            'miny': np.abs(min(all_y)),
+            'maxy': np.abs(max(all_y))
+        }
 
     def rescale_canvas(self, words):
         """
@@ -253,11 +250,11 @@ class WordMap(app.App):
             label = self.enhance_overlap_rate(label, item_sizes,
                                               self.overlap_allowable_rate)
 
-            self.logger.debug('%s' % word.surface)
-            self.logger.debug('%s' % label)
+            logger.debug('%s' % word.surface)
+            logger.debug('%s' % label)
             label = self.eliminate_overwrap(canvas, label)
 
-            self.logger.debug('%s' % label)
+            logger.debug('%s' % label)
             for idx in ('x', 'y'):
                 label[idx] = map_dict(int, label[idx])
             canvas = self.put_label_on_canvas(canvas, label)
@@ -295,7 +292,7 @@ class WordMap(app.App):
             if word.count < 1 or labelsize < self.min_font_size:
                 continue
             (x, y) = self.adjust_label(int(labelsize), word.surface, word.x, word.y)
-            self.logger.debug('%s %f %f %s' % (word.surface, word.x, word.y, labelsize))
+            logger.debug('%s %f %f %s' % (word.surface, word.x, word.y, labelsize))
             args = {'size': labelsize, 'color': 'white', 'ha': 'center', 'va': 'center',
                     'bbox': self.bbox, 'fontproperties': self.prop}
             plt.text(word.x, word.y, word.surface, **args)
@@ -341,6 +338,6 @@ class WordMap(app.App):
         else:
             temp_file = tempfile.mkstemp(suffix='.png')[1]
             plt.savefig(temp_file)
-            self.logger.debug('word-map image is stored at %s' % temp_file)
+            logger.debug('word-map image is stored at %s' % temp_file)
             url = ''
         return url

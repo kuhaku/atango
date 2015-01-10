@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-from lib import app, kuzuha, normalize, regex
+from lib import kuzuha, normalize, regex
 from lib.nlp import mecab, markov
 
 BOS = '\x00'
 EOS = '\x01'
 
 
-class MarkovTweet(app.App):
+class MarkovTweet(object):
 
     def run(self, interval=60, min_length=40):
         m_generator = markov.MarkovGenerater()

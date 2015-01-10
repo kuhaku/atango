@@ -3,7 +3,7 @@ import re
 import itertools
 from collections import defaultdict
 import numpy as np
-from lib import app, kuzuha, normalize, regex
+from lib import kuzuha, normalize, regex
 from lib.distance import levenshtein, LCCS
 from lib.nlp import mecab
 
@@ -16,11 +16,10 @@ TWEET_LENGTH = 140
 body_length = TWEET_LENGTH - len(PREFIX) - len(HASH_TAG)
 
 
-class Ome(app.App):
+class Ome(object):
 
-    def __init__(self, verbose=False, debug=False):
+    def __init__(self):
         self.synonym = normalize.SynonymUnification()
-        super(Ome, self).__init__(verbose, debug)
 
     @staticmethod
     def get_post_res_pairs(posts):

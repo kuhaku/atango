@@ -4,16 +4,35 @@ import sys
 import traceback
 import re
 import os
-import inspect
-from . import path
+from . import path, api, misc
 from .logger import logger
 
 TIME_LIMIT = 55
-ATANGO_DIR = '/work/atango/'
-log_dir = os.path.join(ATANGO_DIR, 'logs')
+ATANGO_DIR = os.environ.get('ATANGO_HOME', '/work/atango/')
+LOG_DIR = os.path.join(ATANGO_DIR, 'logs')
+
+DYING_MESSAGE = (
+    'ぎゃああああ！(;´Д`)しんでしまう！',
+    'うおーっ！！\nわたしは　さけびごえを　あげ　ほのおの　なかへ\n'
+    'ホップ　ステップ　ジャンプ…\n'
+    'かーるいす！！\n'
+    'わたしは　もえつきてしまった。',
+    'いどのなかに　からだを　なげいれた。\n'
+    'ふかい！！ どこまで　おちるんだ！！\n'
+    'ドシーン！！　ギャーッ！！ \n'
+    'いどは　おもっていたよりも　ふかかったようだ。\n'
+    'わたしは…　からだじゅうの　ほねを　おってしんでしまった。',
+    'わたしは　はなを　つまみ　あぶらのなかへとびこんだ。\nあづーっ！！\n'
+    'わたしは　とけてしまった。\nああ！！　わたしは　ゾンビにも　なれないのか…。',
+    'わたしは　あぶらに　たいまつを　ちかづけた。\n'
+    'ほのおは　めらめらと　もえあがり　わたしが　もっていた\nたいまつに　'
+    'ひが　うつってしまった！\nあつい！！　わたしは　もえつきてしまった。',
+    'ざんねん！　わたしの　ぼうけんは　これで　おわってしまった！',
+)
+SYGTERM_MESSAGE = '\nぁ単語 received SIGTERM.'
 
 
-class Timeout(Exception):
+class ForcedTermination(Exception):
 
     def __init__(self, reason='', response=None):
         self.reason = str(reason)
@@ -21,22 +40,41 @@ class Timeout(Exception):
         Exception.__init__(self, reason)
 
 
-def decorator(self, function):
-    def overtime_handler(*args):
-        classname = self.__class__.__name__
-        methodname = function.__name__
-        message = 'exceeds %d seconds when executing %s.%s' % (TIME_LIMIT, classname, methodname)
-        raise Timeout(message)
+class App(object):
 
-    def set_timer(timelimit):
-        if signal.getitimer(signal.ITIMER_REAL)[0] == 0:
-            signal.setitimer(signal.ITIMER_REAL, timelimit)
-            signal.signal(signal.SIGALRM, overtime_handler)
+    def _gen_logfile_path(self, jobname):
+        filename = jobname + '.log'
+        return os.path.join(LOG_DIR, filename)
 
-    def wrapper(*args, **kwargs):
+    def setup_logger(self, jobname):
+        logpath = self._gen_logfile_path(jobname)
+        logger.enable_file_handler(logpath)
+        path.mkdir(LOG_DIR)
+
+        if self.verbose:
+            logger.enable_stream_handler()
+        if self.debug:
+            logger.enable_debug()
+        else:
+            logger.enable_twitter_handler()
+        self.logger = logger
+
+    def set_timer(self, timelimit):
+        def overtime_handler(self, *args):
+            message = 'exceeds %d seconds' % (TIME_LIMIT)
+            raise TimeoutError(message)
+
+        signal.setitimer(signal.ITIMER_REAL, timelimit)
+        signal.signal(signal.SIGALRM, overtime_handler)
+
+    def execute(self, func, *args, **kwargs):
         try:
-            set_timer(TIME_LIMIT)
-            return function(*args, **kwargs)
+            self.set_timer(TIME_LIMIT)
+            return func(*args, **kwargs)
+        except TimeoutError as e:
+            error_description = str(e)
+            err_msg = 'TimeoutError: %s' % (error_description)
+            self.logger.warn(err_msg)
         except Exception as e:
             error_class = e.__class__.__name__
             error_description = str(e)
@@ -50,44 +88,16 @@ def decorator(self, function):
                 self.logger.warn(text)
             self.logger.warn('-------------------')
             return sys.exit(err_msg)
-    return wrapper
 
+    def main(self, job):
+        def sigkill_handler(self, *args):
+            message = misc.choice(DYING_MESSAGE) + SYGTERM_MESSAGE
+            raise ForcedTermination(message)
 
-class App(object):
-
-    def __init__(self, verbose=False, debug=False, daemon=False, child=False):
-        self.appname = self.__class__.__name__
-        self.verbose = verbose
-        self.debug = debug
-
-        if not child:
-            self.logger = self.setup_logger(verbose, debug)
-        if not daemon:
-            self._decorate()
-
-    def _gen_logfile_path(self, filename):
-        logfile_name = filename.replace(ATANGO_DIR, '').replace('/', '-')
-        logfile_name += '.log'
-        return os.path.join(log_dir, logfile_name)
-
-    def setup_logger(self, verbose, debug):
-        filename = inspect.getfile(self.__class__)
-        logpath = self._gen_logfile_path(filename)
-        logger.enable_file_handler(logpath)
-        path.mkdir(log_dir)
-
-        if verbose:
-            logger.enable_stream_handler()
-
-        if debug:
-            logger.enable_debug()
-        else:
-            logger.enable_twitter_handler()
-        return logger
-
-    def _decorate(self):
-        """Decorate method by logger
-        """
-        for (name, method) in inspect.getmembers(self, inspect.ismethod):
-            if not name.startswith('_'):
-                setattr(self, name, decorator(self, method))
+        signal.signal(signal.SIGTERM, sigkill_handler)
+        try:
+            self.run(job)
+        except ForcedTermination as e:
+            logger.warn('ぁ単語 received SIGTERM')
+            twitter = api.Twitter()
+            twitter.post(str(e))

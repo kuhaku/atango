@@ -3,7 +3,7 @@ import time
 import numpy as np
 from lib.logger import logger
 from lib.api import Twitter
-from lib import app, db, misc
+from lib import db, misc
 from job.tl import TimeLineReply
 from job.reply import Reply
 
@@ -11,15 +11,15 @@ TWO_MINUTES = 120
 ONE_DAY = 60 * 60 * 24
 
 
-class Crawler(app.App):
+class Crawler(object):
 
-    def __init__(self, verbose=False, debug=False):
-        self.tl_responder = TimeLineReply(verbose=verbose, debug=debug, daemon=True)
-        self.reply_responder = Reply(verbose=verbose, debug=debug, daemon=True)
+    def __init__(self, debug=False):
+        self.tl_responder = TimeLineReply()
+        self.reply_responder = Reply()
         self.twitter = Twitter()
         self.db = db.ShareableShelf()
         self.db['latest_tl_replied'] = ''
-        super(Crawler, self).__init__(verbose, debug, daemon=True)
+        self.debug = debug
 
     def is_duplicate_launch(self):
         result = misc.command('ps aux|grep crawler', True)
@@ -33,7 +33,7 @@ class Crawler(app.App):
             self.twitter.post(response['text'], response['id'], response.get('media[]'),
                               debug=self.debug)
             if not self.debug:
-                self.tl_responder.update_latest_replied_id(response['id'])
+                self.twitter.update_latest_replied_id(response['id'])
                 if tl:
                     self.db['latest_tl_replied'] = response['text'].split(' ')[0]
 
@@ -42,8 +42,8 @@ class Crawler(app.App):
 
     def run(self):
         if self.is_duplicate_launch():
-            logger.warn('crawler is duplicate')
-            return
+            logger.debug('crawler is duplicate')
+            return -1
         last_time = time.time()
         for tweet in self.twitter.stream_api.user():
             if 'text' in tweet:

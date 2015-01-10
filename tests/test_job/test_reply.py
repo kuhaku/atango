@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-import tempfile
-import os
+from unittest import mock
 from nose.tools import assert_equals, nottest
 from job.reply import Reply
 
@@ -10,27 +9,6 @@ class test_Reply(object):
     def __init__(self):
         self.rep = Reply()
 
-    def test_get_latest_replied_id(self):
-        self.rep.replied_id_file = '/this_is_no_existing_file/'
-        assert_equals(self.rep.get_latest_replied_id(), 0)
-
-        self.rep.replied_id_file = tempfile.mkstemp()[1]
-        with open(self.rep.replied_id_file, 'w') as fd:
-            fd.write('100')
-        try:
-            assert_equals(self.rep.get_latest_replied_id(), 100)
-        finally:
-            os.remove(self.rep.replied_id_file)
-
-    def test_update_latest_replied_id(self):
-        self.rep.replied_id_file = tempfile.mkstemp()[1]
-        try:
-            self.rep.update_latest_replied_id(1000)
-            with open(self.rep.replied_id_file, 'r') as fd:
-                assert_equals(fd.read(), '1000')
-        finally:
-            os.remove(self.rep.replied_id_file)
-
     def test_is_valid_tweet(self):
         TWEET_MOCK = {
             'id': 0,
@@ -39,21 +17,22 @@ class test_Reply(object):
             'source': ''
         }
         tweet = TWEET_MOCK.copy()
-        self.rep.get_latest_replied_id = lambda: 1
-        assert_equals(self.rep.is_valid_tweet(tweet), (False, 'is old'))
-        tweet['id'] = 2
-        assert_equals(self.rep.is_valid_tweet(tweet), (True, 'OK'))
+        with mock.patch('lib.api.Twitter.get_latest_replied_id') as m:
+            m.return_value = 1
+            assert_equals(self.rep.is_valid_tweet(tweet), (False, 'is old'))
+            tweet['id'] = 2
+            assert_equals(self.rep.is_valid_tweet(tweet), (True, 'OK'))
 
-        tweet['user']['screen_name'] = 'sw_words'
-        assert_equals(self.rep.is_valid_tweet(tweet), (False, 'is NG screen name'))
+            tweet['user']['screen_name'] = 'sw_words'
+            assert_equals(self.rep.is_valid_tweet(tweet), (False, 'is NG screen name'))
 
-        tweet['user']['screen_name'] = ''
-        tweet['text'] = 'レスしなくていい'
-        assert_equals(self.rep.is_valid_tweet(tweet), (False, 'has NG word'))
+            tweet['user']['screen_name'] = ''
+            tweet['text'] = 'レスしなくていい'
+            assert_equals(self.rep.is_valid_tweet(tweet), (False, 'has NG word'))
 
-        tweet['text'] = ''
-        tweet['source'] = 'paper.li'
-        assert_equals(self.rep.is_valid_tweet(tweet), (False, 'is written by NG source'))
+            tweet['text'] = ''
+            tweet['source'] = 'paper.li'
+            assert_equals(self.rep.is_valid_tweet(tweet), (False, 'is written by NG source'))
 
     def test_normalize(self):
         tweet = '@sw_words ぁ単語は糞だな http://omanko'

@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 from argparse import ArgumentParser
 from lib.api import Twitter
-from lib.db import ShareableShelf
+from lib.app import App
 
-class Atango(object):
+
+class Atango(App):
 
     def __init__(self, verbose=False, debug=False):
         self.twitter = Twitter()
@@ -11,36 +12,33 @@ class Atango(object):
         self.debug = debug
 
     def run(self, job):
+        self.setup_logger(job)
         if job == 'wordcount':
             from job.wordcount.wordcount import WordCount
             up_flickr = not self.debug
-            wc = WordCount(plot_wordmap=True, up_flickr=up_flickr,
-                           verbose=self.verbose, debug=self.debug)
-            self.twitter.post(wc.run(hour=1), debug=self.debug)
+            wc = WordCount(plot_wordmap=True, up_flickr=up_flickr)
+            self.twitter.post(self.execute(wc.run, hour=1), debug=self.debug)
         elif job == 'url':
             from job.popular_url import PopularUrl
-            pop_url = PopularUrl(verbose=self.verbose, debug=self.debug)
-            for (i, message) in enumerate(pop_url.run(2), start=1):
+            pop_url = PopularUrl(debug=self.debug)
+            for (i, message) in enumerate(self.execute(pop_url.run, 2), start=1):
                 self.twitter.post(message, debug=self.debug)
                 if i >= 3:
                     break
         elif job == 'ome':
             from job.ome import Ome
-            ome = Ome(verbose=self.verbose, debug=self.debug)
-            for message in ome.run(20):
+            ome = Ome()
+            for message in self.execute(ome.run, 20):
                 self.twitter.post(message, debug=self.debug)
         elif job == 'markov':
             from job.markov import MarkovTweet
-            mt = MarkovTweet(verbose=self.verbose, debug=self.debug)
-            self.twitter.post(mt.run(60), debug=self.debug)
+            mt = MarkovTweet()
+            result = self.execute(mt.run, 60)
+            self.twitter.post(result, debug=self.debug)
         elif job == 'crawler':
             from job.crawler import Crawler
-            crawler = Crawler(verbose=self.verbose, debug=self.debug)
+            crawler = Crawler(debug=self.debug)
             crawler.run()
-        elif job == 'friends':
-            friends = self.twitter.api.friends.ids(screen_name='sw_words', count=5000)
-            shelf = ShareableShelf('twitter.shelf')
-            shelf['friends'] = set(friends['ids'])
         elif job == 'cputemp':
             from job.cputemp import CpuTemperatureChecker
             temp_checker = CpuTemperatureChecker()
@@ -51,7 +49,7 @@ class Atango(object):
             from job.tl import TimeLineReply
             reply = TimeLineReply(verbose=self.verbose, debug=self.debug)
             while True:
-                print(reply.respond(input()))
+                print(reply.make_response(input(), '', ''))
         else:
             raise ValueError('"%s" is not implemented yet' % job)
 
@@ -65,4 +63,4 @@ if __name__ == '__main__':
                         action='store_true', default=False)
     args = parser.parse_args()
     atango = Atango(args.verbose, args.debug)
-    atango.run(args.job.lower())
+    atango.main(args.job.lower())

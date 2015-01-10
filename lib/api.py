@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 import re
 import base64
+import os
 import twitter
 from twitter.api import TwitterHTTPError
 from cached_property import cached_property
-from . import file_io, misc
+from . import file_io, misc, path
 from .logger import logger
 from .db import ShareableShelf
 
@@ -25,24 +26,34 @@ class Twitter(object):
     def __init__(self):
         self.shelf = ShareableShelf('atango.shelf')        
         self.latest_tweets = self.shelf.get('latest_tweets', [])
+        cfg_dir = path.cfgdir()
+        self.replied_id_file = os.path.join(cfg_dir, 'latest_replied.txt')
+
+    def _get_oauth(self):
+        twitter_config = file_io.read(CFG_FILE)['Twitter']
+        oauth = twitter.OAuth(twitter_config['access_token_key'],
+                              twitter_config['access_token_secret'],
+                              twitter_config['consumer_key'],
+                              twitter_config['consumer_secret'])
+        return oauth
 
     @cached_property
     def api(self):
-        twitter_config = file_io.read(CFG_FILE)['Twitter']
-        oauth = twitter.OAuth(twitter_config['access_token_key'],
-                              twitter_config['access_token_secret'],
-                              twitter_config['consumer_key'],
-                              twitter_config['consumer_secret'])
-        return twitter.Twitter(auth=oauth)
+        return twitter.Twitter(auth=self._get_oauth())
 
     @cached_property
     def stream_api(self):
-        twitter_config = file_io.read(CFG_FILE)['Twitter']
-        oauth = twitter.OAuth(twitter_config['access_token_key'],
-                              twitter_config['access_token_secret'],
-                              twitter_config['consumer_key'],
-                              twitter_config['consumer_secret'])
-        return twitter.TwitterStream(auth=oauth, domain='userstream.twitter.com')
+        return twitter.TwitterStream(auth=self._get_oauth(), domain='userstream.twitter.com')
+
+    def get_latest_replied_id(self):
+        if not os.path.exists(self.replied_id_file):
+            return 0
+        with open(self.replied_id_file, 'r') as fd:
+            return int(fd.readlines()[0].rstrip())
+
+    def update_latest_replied_id(self, reply_id):
+        with open(self.replied_id_file, 'w') as fd:
+            fd.write(str(reply_id))
 
     def is_duplicate_tweet(self, tweet):
         if tweet in self.latest_tweets:

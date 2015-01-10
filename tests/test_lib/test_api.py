@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import tempfile
+import os
 from nose.tools import assert_equals, assert_true, assert_raises
 from collections import namedtuple
 from unittest.mock import patch
@@ -51,6 +53,29 @@ class test_Twitter:
             assert_true(actual.api)
         oauth_patcher.stop()
         config_patcher.stop()
+
+    def test_get_latest_replied_id(self):
+        twi = api.Twitter()
+        twi.replied_id_file = '/this_is_no_existing_file/'
+        assert_equals(twi.get_latest_replied_id(), 0)
+
+        twi.replied_id_file = tempfile.mkstemp()[1]
+        with open(twi.replied_id_file, 'w') as fd:
+            fd.write('100')
+        try:
+            assert_equals(twi.get_latest_replied_id(), 100)
+        finally:
+            os.remove(twi.replied_id_file)
+
+    def test_update_latest_replied_id(self):
+        twi = api.Twitter()
+        twi.replied_id_file = tempfile.mkstemp()[1]
+        try:
+            twi.update_latest_replied_id(1000)
+            with open(twi.replied_id_file, 'r') as fd:
+                assert_equals(fd.read(), '1000')
+        finally:
+            os.remove(twi.replied_id_file)
 
 
 class test_Flickr:
