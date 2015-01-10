@@ -17,7 +17,8 @@ def _validate_query(query):
 
 
 def _validate_post(post):
-    if 'author' in post:
+    if ('author' in post or 'q1' not in post or len(post['q1']) > 140 or
+         'text' not in post or post['text'] is None):
         return False
     post['text'] = regex.re_a_tag.sub('', post['text'].rstrip())
     if len(post['text']) < 125 and 'はい' != post['text'] and 'はい(;´Д`)' != post['text']:
@@ -38,8 +39,6 @@ def _extract_response_by_search(query, or_flag):
     }
     posts = kuzuha.search(validated_query, _operator=_operator, _filter=_filter, size=200)
     for post in sorted(posts, key=lambda x: len(x['q1'])):
-        if len(post['q1']) > 140:
-            return
         response = _validate_post(post)
         if response:
             return response
