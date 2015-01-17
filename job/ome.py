@@ -4,6 +4,7 @@ import itertools
 from collections import defaultdict
 import numpy as np
 from lib import kuzuha, normalize, regex
+from lib.logger import logger
 from lib.distance import levenshtein, LCCS
 from lib.nlp import mecab
 
@@ -98,10 +99,13 @@ class Ome(object):
         pairs = self.get_post_res_pairs(posts)
 
         for (parent, responses) in pairs.items():
-            if len(responses) > 1:
+            if len(responses) >= 2:
                 ome_posts = set()
+                logger.info('ROOT POST: %s' % parent)
                 for (lhs, rhs) in itertools.combinations(responses, 2):
+                    logger.info('Compare "%s" with "%s"' % (lhs, rhs))
                     if lhs and rhs and self.is_ome(lhs, rhs):
+                        logger.info('"%s" and "%s" are OME' % (lhs, rhs))
                         ome_posts |= {lhs, rhs}
                 if len(ome_posts) > 1:
                     num_posts = len(ome_posts) + 1  # childs + parent

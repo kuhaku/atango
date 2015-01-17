@@ -59,6 +59,7 @@ class PopularUrl(object):
         root, ext = os.path.splitext(url)
         if ext in image_extensions:
             time.sleep(3)  # for avoiding to be treated as spam by Google
+            logger.info('Search by google: %s' % url)
             results = google_image.search(url, best_kwds_max_length=18)
             keywords = filter(lambda x: not x.isdigit(), results['best_keywords'])
             title = ''.join(keywords)
@@ -85,7 +86,8 @@ class PopularUrl(object):
         return len(tweet) + actual_new_url_info_length - len(DELIMITER)
 
     def run(self, hour_range=HOUR_RANGE):
-        posts = kuzuha.search('http', _filter=kuzuha.build_date_filter_by_range({'hours': hour_range}))
+        date_range = kuzuha.build_date_filter_by_range({'hours': hour_range})
+        posts = kuzuha.search('http', _filter=date_range)
         tweet = ''
         for (url, count) in self._count_url(posts).most_common():
             if url.startswith('https://twitter.com/'):
