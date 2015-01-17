@@ -7,6 +7,8 @@ from . import path
 
 ERRNO_35 = '[Errno 35] Resource temporarily unavailable'
 WAIT_INTERVAL = 0.001
+KEYS = ('cache', 'clear', 'close', 'dict', 'get', 'items', 'keyencoding', 'keys', 'pop', 'popitem', 'setdefault', 'sync', 'update', 'values', 'writeback')
+
 
 def transaction(self, attr_name):
     def execute(*args, **kwargs):
@@ -53,17 +55,9 @@ class ShareableShelf(object):
         self.decorate()
 
     def decorate(self):
-        while True:
-            try:
-                with shelve.open(**self.shelve_params) as db:
-                    for attr in dir(db):
-                        if not attr.startswith('__') and attr not in ('keys', 'values', 'items'):
-                            setattr(self, attr, transaction(self, attr))
-            except error as e:
-                if str(e) == ERRNO_35:
-                    time.sleep(WAIT_INTERVAL)
-                    continue
-                raise error(str(e))
+        for attr in KEYS:
+                if not attr.startswith('__') and attr not in ('keys', 'values', 'items'):
+                    setattr(self, attr, transaction(self, attr))
         for attr in ('keys', 'values', 'items'):
             setattr(self, attr, generator_as_list_transaction(self, attr))
 
@@ -71,7 +65,8 @@ class ShareableShelf(object):
         while True:
             try:
                 with shelve.open(**self.shelve_params) as db:
-                    return key in db
+                    result = key in db
+                return result
             except error as e:
                 if str(e) == ERRNO_35:
                     time.sleep(WAIT_INTERVAL)
@@ -83,7 +78,7 @@ class ShareableShelf(object):
             try:
                 with shelve.open(**self.shelve_params) as db:
                     del db[key]
-                    break
+                break
             except error as e:
                 if str(e) == ERRNO_35:
                     time.sleep(WAIT_INTERVAL)
@@ -94,7 +89,8 @@ class ShareableShelf(object):
         while True:
             try:
                 with shelve.open(**self.shelve_params) as db:
-                    return db[key]
+                    val = db[key]
+                return val
             except error as e:
                 if str(e) == ERRNO_35:
                     time.sleep(WAIT_INTERVAL)
@@ -106,7 +102,7 @@ class ShareableShelf(object):
             try:
                 with shelve.open(**self.shelve_params) as db:
                     db[key] = val
-                    break
+                break
             except error as e:
                 if str(e) == ERRNO_35:
                     time.sleep(WAIT_INTERVAL)
