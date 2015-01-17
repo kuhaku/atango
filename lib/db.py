@@ -53,10 +53,17 @@ class ShareableShelf(object):
         self.decorate()
 
     def decorate(self):
-        with shelve.open(**self.shelve_params) as db:
-            for attr in dir(db):
-                if not attr.startswith('__') and attr not in ('keys', 'values', 'items'):
-                    setattr(self, attr, transaction(self, attr))
+        while True:
+            try:
+                with shelve.open(**self.shelve_params) as db:
+                    for attr in dir(db):
+                        if not attr.startswith('__') and attr not in ('keys', 'values', 'items'):
+                            setattr(self, attr, transaction(self, attr))
+            except error as e:
+                if str(e) == ERRNO_35:
+                    time.sleep(WAIT_INTERVAL)
+                    continue
+                raise error(str(e))
         for attr in ('keys', 'values', 'items'):
             setattr(self, attr, generator_as_list_transaction(self, attr))
 
