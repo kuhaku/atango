@@ -4,10 +4,11 @@
 # Library for retrieving web contents
 #
 ######################################
+import re
 import tempfile
 import requests
 from .misc import choice
-from . import file_io
+from . import file_io, mycodecs
 
 
 TIMEOUT = 15
@@ -41,6 +42,8 @@ DEFAULT_HEADERS = {
     'Pragma': 'no-cache',
 }
 encoding_known_sites = file_io.read('site_encoding.json')
+header_encoding_pattern = re.compile(r'charset=([\w\-0-9]+)', re.I)
+meta_encoding_pattern = re.compile(r'<meta [^>]*charset="?([^">\s]+)', re.I)
 
 
 def open_url(url, referer=None, binary=False, params=None, post=False):
@@ -58,19 +61,27 @@ def open_url(url, referer=None, binary=False, params=None, post=False):
     return decode_content(r)
 
 
+def extract_encoding_by_request(r):
+    encoding = None
+    content_type = r.headers.get('Content-Type')
+    if content_type:
+        m = header_encoding_pattern.search(content_type)
+        if m:
+            encoding = m.group(1)
+    if not encoding:
+        m = meta_encoding_pattern.search(r.content)
+        if m:
+            encoding = m.group(1)
+    return encoding
+
+
 def decode_content(r):
     for (site, encoding) in encoding_known_sites.items():
         if site in r.url:
-            return r.content.decode(encoding, 'replace')
-    if r.encoding in ('ISO-8859-1', None) :
-        return file_io.decode_by_guessing(r.content)
-    encoding = normalize_encoding(r.encoding)
-    return r.content.decode(encoding, 'replace')
+            return mycodecs.decode(r.content, encoding, 'replace')
+    encoding = extract_encoding_by_request(r)
+    return mycodecs.decode(r.content, encoding, 'replace')
 
-def normalize_encoding(encoding):
-    if encoding.lower() in ('windows-31j', 'shift-jis', 'shift_jis', 'x-sjis', 'sjis'):
-        return 'cp932'
-    return encoding
 
 def download(url, store_path=None):
     if not store_path:

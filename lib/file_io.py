@@ -1,24 +1,9 @@
 # -*- coding: utf-8 -*-
 import bz2
-import nkf
 import os
 import json
 from configparser import SafeConfigParser
-from . import path
-
-
-def decode_by_guessing(text):
-    """
-    decode unicode string by guessing character encoding
-    Param:
-        <str> text
-    Return:
-        <str> text
-    """
-    encoding = nkf.guess(text)
-    if encoding in ('BINARY', 'ISO-8859-1'):
-        encoding = 'utf8'
-    return text.decode(encoding, 'replace')
+from . import path, mycodecs
 
 
 def read_text_file(filename, encoding=''):
@@ -35,7 +20,7 @@ def read_text_file(filename, encoding=''):
         text = fd.read()
     if encoding:
         return text.decode(encoding, 'replace')
-    return decode_by_guessing(text)
+    return mycodecs.decode(text, encoding, 'replace')
 
 
 def read(filename, encoding=''):
