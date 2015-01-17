@@ -15,6 +15,8 @@ class MarkovTweet(object):
 
         words = []
         for post in posts:
+            if 'text' not in post:
+                continue
             text = regex.re_a_tag.sub('', post['text'])
             text = normalize.normalize(text)
             if 'アニメ時報' in text:
