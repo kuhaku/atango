@@ -42,8 +42,8 @@ DEFAULT_HEADERS = {
     'Pragma': 'no-cache',
 }
 encoding_known_sites = file_io.read('site_encoding.json')
-header_encoding_pattern = re.compile(r'charset=([\w\-0-9]+)', re.I)
-meta_encoding_pattern = re.compile(r'<meta [^>]*charset="?([^">\s]+)', re.I)
+header_encoding_pattern = re.compile('charset=([\w\-0-9]+)', re.I)
+meta_encoding_pattern = re.compile(b'<meta [^>]*charset="?([^">\s]+)', re.I)
 
 
 def open_url(url, referer=None, binary=False, params=None, post=False):
