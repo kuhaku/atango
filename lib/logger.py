@@ -8,7 +8,7 @@ import __main__
 FORMAT = '%(asctime)s [%(levelname)s] %(message)s'
 DT_FMT = '%Y-%m-%d %H:%M:%S'
 METHODS = 'addHandler setLevel debug info warn error critical propagate'
-ROTATE_SETTING = {'backupCount': 30, 'when': 'midnight'}
+ROTATE_SETTING = {'backupCount': 30, 'when': 'midnight', 'encoding': 'utf8'}
 CAPACITY = 10000
 repeat = random.randint(0, 5)
 TWEET_PREFIXES = (
