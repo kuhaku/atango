@@ -67,8 +67,9 @@ class PopularUrl(object):
             html = web.open_url(url)
             soup = BeautifulSoup(html)
             title = soup.title.string
-            title = normalize.htmlentity2unicode(title)
-            title = self._shorten_title(title)
+            if title:
+                title = normalize.htmlentity2unicode(title)
+                title = self._shorten_title(title)
         return title
 
     @staticmethod
