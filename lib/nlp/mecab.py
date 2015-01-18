@@ -96,7 +96,10 @@ def wakati(text):
 
 def to_yomi(text):
     mecab_yomi = MeCab.Tagger('-Oyomi')
-    return mecab_yomi.parse(text).rstrip(" \n").replace('@', '').split(" ")
+    yomi = mecab_yomi.parse(text)
+    if yomi:
+        return yomi.rstrip(" \n").split(" ")
+    return ['']
 
 def has_demonstrative(text):
     mecab = MeCabWrapper('-d /usr/local/lib/mecab/dic/jumandic')
