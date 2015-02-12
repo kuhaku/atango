@@ -19,7 +19,7 @@ TWEET_FORMAT = '%s %s %d件' + DELIMITER
 re_title_delimiter = re.compile(u'[\[\(（【｜\)\]）】]|( \- )|( \| )|( ― )|( : )')
 re_no_shortened_title = re.compile(u'「.+(｜|( \- )).+」')
 image_extensions = ('.jpg', '.png', '.gif', '.jpg:large', '.png:large')
-ignore_extensions = ('.zip', '.rar', '.swf', '.pdf', '.mp3', '.mp4')
+ignore_extensions = ('.zip', '.rar', '.swf', '.pdf', '.mp3', '.mp4', '.wmv')
 cfg = file_io.read('popular_url.json')
 
 
