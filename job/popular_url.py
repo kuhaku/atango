@@ -67,8 +67,8 @@ class PopularUrl(object):
             logger.info('Retrieve web resource: %s' % url)
             html = web.open_url(url)
             soup = BeautifulSoup(html)
-            title = soup.title.string
-            if title:
+            if soup.title and soup.title.string:
+                title = soup.title.string
                 title = normalize.htmlentity2unicode(title)
                 title = self._shorten_title(title)
         return title
