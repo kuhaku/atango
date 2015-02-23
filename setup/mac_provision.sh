@@ -52,6 +52,7 @@ brew install open-jtalk
 
 # Install node.js for demo
 brew install node
+npm install execsyncs
 
 # Install iStats for CPU temperature monitor
 gem install iStats
