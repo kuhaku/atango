@@ -21,7 +21,8 @@ class Crawler(object):
         self.db['latest_tl_replied'] = ''
         self.debug = debug
 
-    def is_duplicate_launch(self):
+    @staticmethod
+    def is_duplicate_launch():
         result = misc.command('ps aux|grep crawler', True)
         logger.debug(result[1])
         ignore_grep = filter(lambda x: 'grep' not in x, result[1].splitlines())
@@ -49,7 +50,7 @@ class Crawler(object):
             if 'text' in tweet:
                 if tweet['text'].startswith('@sw_words'):
                     self.respond(self.reply_responder, tweet)
-                elif (np.random.randint(100) < 3 and self.is_valid_tweet(tweet['text']) and
+                elif (np.random.randint(100) < 2 and self.is_valid_tweet(tweet['text']) and
                       self.db['latest_tl_replied'] != tweet['user']['screen_name']):
                     self.respond(self.tl_responder, tweet, tl=True)
             if time.time() - last_time > TWO_MINUTES:
