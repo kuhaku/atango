@@ -1,0 +1,52 @@
+@charset "utf-8";
+h1 {
+  font-family: "ヒラギノ角ゴ Pro W3","Hiragino Kaku Gothic Pro","HiraKaku Pro-W3",Arial,Helvetica,sans-serif;
+}
+p.info {
+  color: red;
+  font-size: 450%;
+  font-family: "ヒラギノ角ゴ Pro W3","Hiragino Kaku Gothic Pro","HiraKaku Pro-W3",Arial,Helvetica,sans-serif;
+  margin: 0%;
+}
+div#contents {
+  width: 95%;
+  margin: 0 auto;
+}
+body {
+  background: #004040;
+  color: white;
+}
+pre {
+  font-size: 220%;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow: auto;
+}
+button {
+  font-family: "Lucida Sans", Arial;
+  font-size: 250%;
+  font-weight: bold;
+  margin: 1%;
+}
+p {
+  font-size: 170%;
+}
+em {
+  background: yellow;
+  color: black;
+  font-weight : bold;
+  font-family: "ＭＳ ゴシック","MS Gothic","Osaka－等幅","Osaka-Mono",monospace;
+  font-style: normal;
+  font-size: 200%;
+}
+a:link {color : #eeffee;}
+a:visited {color: #dddddd;}
+a:hover {color: #ff0000;}
+table {
+  margin: 1%;
+  border-top: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+}
+td, th {
+  text-align: right;
+}
