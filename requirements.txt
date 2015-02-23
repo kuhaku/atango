@@ -12,3 +12,5 @@ matplotlib
 mecab-python3
 elasticsearch
 cached-property
+redis
+uwsgi
