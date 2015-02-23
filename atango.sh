@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # For cron
 
 ATANGO_DIR=/work/atango
@@ -7,6 +7,7 @@ ATANGO_DIR=/work/atango
 . /work/venv/atango/bin/activate
 
 PYTHONPATH=${ATANGO_DIR}:${PYTHONPATH}
+PATH=/usr/sbin:${PATH}
 LANG="ja_JP.UTF-8"
 
 # Execute Atango Job
