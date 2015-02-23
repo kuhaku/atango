@@ -9,7 +9,8 @@ MESSAGE_FORMAT = 'もう駄目だ(　ﾟДﾟ　)爆発する CPU Temperature: %
 
 class CpuTemperatureChecker(object):
 
-    def get_mac_temperature(self):
+    @staticmethod
+    def get_mac_temperature():
         cmd_result = misc.command('istats cpu temp', True)
         return float(cmd_result[1].split(' ')[2][:-2])
 
