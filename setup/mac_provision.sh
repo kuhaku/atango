@@ -18,7 +18,7 @@ virtualenv -p python3 /work/venv/atango
 . /work/venv/atango/bin/activate
 
 # Install MeCab
-curl -O https://raw.githubusercontent.com/kuhaku/atango/master/setup/mecab_install.sh
+curl -k -O https://raw.githubusercontent.com/kuhaku/atango/master/setup/mecab_install.sh
 bash mecab_install.sh
 rm mecab_install.sh
 
@@ -30,16 +30,28 @@ brew cask install java7
 
 # Install Elasticsearch
 brew install elasticsearch
-ln -sfv /usr/local/opt/elasticsearch/*.plist ~/Library/LaunchAgents
+
+# Install Redis
+brew install redis
 
 # Install Python libs
-curl -O https://raw.githubusercontent.com/kuhaku/atango/master/requirements.txt
+curl -k -O https://raw.githubusercontent.com/kuhaku/atango/master/requirements.txt
 pip install --upgrade --timeout 30 -r requirements.txt
 rm requirements.txt
 
-# Install iStats for CPU temperature monitor
-gem install iStats
-
 # Clone Atango repository
 git clone https://github.com/kuhaku/atango.git /work/atango
-echo export PYTHONPATH=/work/atango/lib:${PYTHONPATH} >> /work/venv/atango/bin/activate
+
+# Install nginx
+brew install nginx
+cp /work/atango/settings/nginx.conf /usr/local/etc/nginx/nginx.conf
+
+# Install open-jtalk
+wget -O /usr/local/Library/Formula/open-jtalk.rb https://raw.githubusercontent.com/yawara/homebrew/open-jtalk/Library/Formula/open-jtalk.rb
+brew install open-jtalk
+
+# Install node.js for demo
+brew install node
+
+# Install iStats for CPU temperature monitor
+gem install iStats
