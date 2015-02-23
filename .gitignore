@@ -10,3 +10,7 @@ dist/*
 setup/.vagrant/*
 logs/*
 *.shelve
+*.shelf
+.coverage
+*のコピー*
+*.bak
