@@ -12,11 +12,11 @@ do
 done
 
 TMPWAVFILE=/tmp/out.wav
-rm -f ${TMPWAVFILE}
-touch ${TMPWAVFILE}
+if [ -e ${TMPWAVFILE} ]; then
+  rm ${TMPWAVFILE}
+fi
 
-echo "${MESSAGE}"
-echo "${MESSAGE}" | nkf -w | open_jtalk \
+echo "${MESSAGE}" | /usr/local/bin/nkf -w | /usr/local/bin/open_jtalk \
  -m /usr/local/share/openjtalk/nitech_jp_atr503_m001.htsvoice \
  -x /usr/local/lib/mecab/dic/ojt-naist-jdic \
  -ow ${TMPWAVFILE} \

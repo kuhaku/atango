@@ -32,19 +32,21 @@ function get_atango_response(final_transcript){
   console.log(final_transcript);
   httpObj = new XMLHttpRequest();
   function alertContents(httpObj){
-	if ((httpObj.readyState == 4) && (httpObj.status == 200)){
-	  console.log(httpObj.responseText);
+	  if ((httpObj.readyState == 4) && (httpObj.status == 200)){
+	    console.log(httpObj.responseText);
+
       fukidashi2 = new TTweet(700, 64, TTweet.BOTTOM, TTweet.CENTER, 'yellow');
       fukidashi2.x = 150;
       fukidashi2.y = 700;
       fukidashi2.text(httpObj.responseText);
       game.rootScene.addChild(fukidashi2);
+
       var audio = new Audio();
       audio.autoplay = true;
       audio.src = 'http://localhost:12000/text=' + httpObj.responseText;
       audio.load();
       audio.play();
-      audio.pause();
+
       cnt++;
       document.getElementById("utterance").innerText = cnt;
       document.getElementById("info").innerText = "もっとはなそう！";
@@ -54,14 +56,14 @@ function get_atango_response(final_transcript){
         koro.addModelMotion("yawn", yawn);
         koro.play("yawn");
       });  
-	} else{
+	  } else{
       var laugh = new MMD.Motion(MOTION_PATH['laugh']);
       laugh.load(function() {
         laugh.loop = true;
         koro.addModelMotion("laugh", laugh);
         koro.play("laugh");
       });
-	}
+	  }
   }
   httpObj.onreadystatechange = function(){alertContents(httpObj);};
   if (httpObj){
