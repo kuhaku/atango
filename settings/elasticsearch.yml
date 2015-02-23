@@ -1,0 +1,29 @@
+################################### Cluster ###################################
+
+cluster.name: elasticsearch_mami
+
+#################################### Node #####################################
+
+node.name: "Mami Tomoe"
+node.master: true
+node.data: true
+
+#################################### Index ####################################
+
+index.number_of_shards: 1
+index.number_of_replicas: 0
+
+#################################### Paths ####################################
+
+path.data: /usr/local/var/elasticsearch/
+path.work: /tmp/elasticsearch/
+path.logs: /usr/local/var/log/elasticsearch/
+path.plugins: /usr/local/var/lib/elasticsearch/plugins
+
+################################### Memory ####################################
+
+bootstrap.mlockall: true
+
+############################## Network And HTTP ###############################
+
+http.port: 9200
