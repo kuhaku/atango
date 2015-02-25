@@ -8,7 +8,6 @@ from lib import kuzuha, normalize
 from lib.nlp import mecab
 
 re_oshiete = re.compile('(?P<query>.*[^っ])((って)|(とは)|(について)|(のこと)|(を)|(には))(、)?([何誰]|(教えて)|(どこ)|(どう))')
-re_xtsu = re.compile('っ$')
 NOUN_SUFFIXES = '(ちゃん)?(君)?(さん)?(先生)?'
 NG_SUBSTRS = ('すか', 'ょうか', 'だろう', 'っていう', 'かなぁ', '?', '？', '2萌え')
 NOT_FOUND_MESSAGE = 'ごめん(;´Д`)%s知らない'
@@ -63,6 +62,6 @@ def respond_what_who(text):
     predicate = _build_what_who_query(text)
     if predicate:
         query = 'が%s は%s' % (predicate, predicate)
-        for post in kuzuha.search(query, field='text', sort=[('dt', 'desc')], _operator='or', size=50):  
+        for post in kuzuha.search(query, field='text', sort=[('dt', 'desc')], _operator='or', size=50):
             if 120 > len(post['text']) > 4 and not mecab.has_demonstrative(post['text']):
                 return post['text']
