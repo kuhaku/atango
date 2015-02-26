@@ -112,7 +112,7 @@ class Ome(object):
                     max_length = (body_length - num_posts*2) // num_posts
                     parent = self.shorten(parent, max_length)
                     message = '%s『%s』' % (PREFIX, parent)
-                    for ome_post in ome_posts:
+                    for ome_post in sorted(ome_posts):
                         ome_post = self.shorten(ome_post, max_length)
                         message += '「%s」' % ome_post
                     message += HASH_TAG
