@@ -101,7 +101,7 @@ class Ome(object):
         for (parent, responses) in pairs.items():
             if len(responses) >= 2:
                 ome_posts = set()
-                logger.info('ROOT POST: %s' % parent)
+                logger.info('MENTIONED POST: %s' % parent)
                 for (lhs, rhs) in itertools.combinations(responses, 2):
                     logger.info('Compare "%s" with "%s"' % (lhs, rhs))
                     if lhs and rhs and self.is_ome(lhs, rhs):
