@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import calendar
 import glob
+from datetime import datetime, timedelta
+import random
 from flask import Flask, request, make_response, Markup, render_template, url_for
 from elasticsearch import Elasticsearch
 import woothee
@@ -160,7 +162,7 @@ def now_or_past():
                 highscore = score
             db.set('win:%s' % identifier, 0)
         post_dt = Markup(parse_dt(post_dt) + gen_usamin_link(_id))
-        return render_template('index.html', post_dt=post_dt, css=determine_css(ua),
+        return render_template('now_or_past.html', post_dt=post_dt, css=determine_css(ua),
                                highscore=highscore, post=Markup(post), answer=Markup(answer),
                                sound=sound)
 
@@ -223,7 +225,7 @@ def now_or_past():
     log = get_log()
     post = parse_log(log)
     encrypted_id = int(log['_id']) ^ identifier
-    return render_template('index.html', post=Markup(post),
+    return render_template('now_or_past.html', post=Markup(post),
                            _id=encrypted_id, css=determine_css(ua))
 
 
