@@ -6,8 +6,8 @@ import random
 from flask import Flask, request, make_response, Markup, render_template, url_for
 from elasticsearch import Elasticsearch
 import woothee
-import redis
 from lib import normalize, misc
+from .db import redis
 from job.reply import Reply
 from job.cputemp import CpuTemperatureChecker
 
@@ -27,7 +27,6 @@ NUM_RANKING = 20
 ELASTICSEARCH_SETTING = [{'host': '192.168.100.2', 'port': 9200}]
 ELASTICSEARCH_IDX = 'qwerty'
 ELASTICSEARCH_DT_FORMAT = '%Y-%m-%dT%H:%M:%S'
-REDIS_SETTING = {'host': 'localhost', 'port': 6379, 'db': 0}
 
 
 @app.route("/api/dialogue/")
@@ -121,7 +120,7 @@ def now_or_past():
             return _input == 'now'
 
     def is_highscore(score):
-        db = redis.StrictRedis(**REDIS_SETTING)
+        db = redis.db('now_or_past')
         highscores = db.zrangebyscore('score', 0, 0x01 << 64, withscores=True, score_cast_func=int)
         if len(highscores) < NUM_RANKING:
             return True
@@ -137,7 +136,7 @@ def now_or_past():
         _id = int(form['_id']) ^ identifier
         (post_dt, post) = get_log_by_id(_id)
         t_delta = datetime.now() - post_dt
-        db = redis.StrictRedis(**REDIS_SETTING)
+        db = redis.db('now_or_past')
         if is_correct(t_delta, form['res']):
             prev = db.get('prev:%s' % identifier) or 0
             if _id != int(prev):
@@ -167,7 +166,7 @@ def now_or_past():
                                sound=sound)
 
     def entry_highscore(identifier, user_name):
-        db = redis.StrictRedis(**REDIS_SETTING)
+        db = redis.db('now_or_past')
         score = db.get('highscore:%s' % identifier) or 0
         score = int(score)
         if not score:
@@ -232,7 +231,7 @@ def now_or_past():
 @app.route("/now_or_past/ranking", methods=['GET'])
 def ranking():
     ua = request.headers.get('User-Agent')
-    db = redis.StrictRedis(**REDIS_SETTING)
+    db = redis.db('now_or_past')
     highscores = ''
     unique_scores = set()
     for (name, score) in db.zrevrangebyscore('score', 0x01 << 64, 0, withscores=True,
