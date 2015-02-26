@@ -7,7 +7,7 @@ from flask import Flask, request, make_response, Markup, render_template, url_fo
 from elasticsearch import Elasticsearch
 import woothee
 from lib import normalize, misc
-from .db import redis
+from lib.db import redis
 from job.reply import Reply
 from job.cputemp import CpuTemperatureChecker
 
@@ -171,7 +171,7 @@ def now_or_past():
             return False
         user_name = user_name.replace('<', '&lt;').replace('>', '&gt;')
         user_name += datetime.now().strftime('___(%Y/%m/%d___%H:%M:%S)')
-        db.zadd('score', score, user_name)
+        db.zadd('score', user_name, score)
         highscores = db.zrevrangebyscore('score', 0x01 << 64, 0, withscores=True,
                                          score_cast_func=int)
         unique_scores = set()
@@ -201,7 +201,10 @@ def now_or_past():
         es = Elasticsearch(ELASTICSEARCH_SETTING)
         query = {"query": {"range": {"dt": {"gt": start, "lt": end}}}, "size": 1000}
         result = es.search(index=ELASTICSEARCH_IDX, body=query)
-        return random.choice(result['hits']['hits'])
+        try:
+            return random.choice(result['hits']['hits'])
+        except:
+            return get_log()
 
     def parse_log(log):
         body = ''
