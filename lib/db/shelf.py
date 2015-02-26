@@ -3,7 +3,7 @@ import shelve
 import os
 import time
 from _gdbm import error
-from . import path
+from lib import path
 
 
 ERRNO_35 = '[Errno 35] Resource temporarily unavailable'
