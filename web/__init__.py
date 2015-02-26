@@ -144,22 +144,20 @@ def now_or_past():
                 answer = '[%d おまんこ] ' % score + random.choice(CORRECT_MSGS)
                 sound = 'right'
                 db.expire('win:%s' % identifier, 300)
-                db.set('prev:%s' % identifier, _id)
-                db.expire('prev:%s' % identifier, 300)
+                db.setex('prev:%s' % identifier, _id, 300)
             else:
                 answer = 'リロードしたので正解数をリセットします(ﾟД`)'
                 sound = 'wrong'
-                db.set('win:%s' % identifier, 0)
+                db.setex('win:%s' % identifier, 0, 300)
         else:
             answer = '[おちんぽ] ' + random.choice(INCORRECT_MSGS)
             sound = 'wrong'
             score = db.get('win:%s' % identifier) or 0
             score = int(score)
             if score and is_highscore(score):
-                db.set('highscore:%s' % identifier, score)
-                db.expire('highscore:%s' % identifier, 3000)
+                db.setex('highscore:%s' % identifier, score, 3000)
                 highscore = score
-            db.set('win:%s' % identifier, 0)
+            db.setex('win:%s' % identifier, 0, 300)
         post_dt = Markup(parse_dt(post_dt) + gen_usamin_link(_id))
         return render_template('now_or_past.html', post_dt=post_dt, css=determine_css(ua),
                                highscore=highscore, post=Markup(post), answer=Markup(answer),
