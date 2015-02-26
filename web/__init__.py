@@ -171,6 +171,7 @@ def now_or_past():
         score = int(score)
         if not score:
             return False
+        user_name = user_name.replace('<', '&lt;').replace('>', '&gt;')
         user_name += datetime.now().strftime('___(%Y/%m/%d___%H:%M:%S)')
         db.zadd('score', score, user_name)
         highscores = db.zrevrangebyscore('score', 0x01 << 64, 0, withscores=True,
