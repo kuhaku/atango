@@ -6,7 +6,7 @@ import random
 from flask import Flask, request, make_response, Markup, render_template, url_for
 from elasticsearch import Elasticsearch
 import woothee
-from lib import normalize, misc
+from lib import normalize, misc, file_io
 from lib.db import redis
 from job.reply import Reply
 from job.cputemp import CpuTemperatureChecker
@@ -27,11 +27,18 @@ NUM_RANKING = 20
 ELASTICSEARCH_SETTING = [{'host': '192.168.100.2', 'port': 9200}]
 ELASTICSEARCH_IDX = 'qwerty'
 ELASTICSEARCH_DT_FORMAT = '%Y-%m-%dT%H:%M:%S'
+fwords = file_io.read('fwords.json')
 
 
 @app.route("/api/dialogue/")
 def dialogue():
+    def explicit_fword(text):
+        for (implicit, explicit) in fwords.items():
+            text = text.replace(implicit, explicit)
+        return text
+
     _input = request.args.get('text')
+    _input = explicit_fword(_input)
     rep = Reply()
     response = rep.make_response(_input)
     text = normalize.remove_emoticon(response['text'])
