@@ -3,12 +3,12 @@ import time
 import numpy as np
 from lib.logger import logger
 from lib.api import Twitter
-from lib import db, misc
+from lib import misc
+from lib.db import shelf
 from job.tl import TimeLineReply
 from job.reply import Reply
 
 TWO_MINUTES = 120
-ONE_DAY = 60 * 60 * 24
 
 
 class Crawler(object):
@@ -17,8 +17,7 @@ class Crawler(object):
         self.tl_responder = TimeLineReply()
         self.reply_responder = Reply()
         self.twitter = Twitter()
-        self.db = db.ShareableShelf()
-        self.db['latest_tl_replied'] = ''
+        self.db = shelf.ShareableShelf()
         self.debug = debug
 
     @staticmethod

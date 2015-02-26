@@ -6,11 +6,12 @@ import twitter
 from twitter.api import TwitterHTTPError
 from cached_property import cached_property
 from . import file_io, misc, path
+from .db import redis
 from .logger import logger
-from .db import ShareableShelf
 
 CFG_FILE = 'api.cfg'
 re_photo_id = re.compile(r'<photoid>(?P<photoid>[0-9]+)</photoid>')
+HALF_DAY = 60 * 60 * 12
 
 
 def __str__patch(self):
@@ -24,8 +25,6 @@ TwitterHTTPError.__str__ = __str__patch
 class Twitter(object):
 
     def __init__(self):
-        self.shelf = ShareableShelf('atango.shelf')        
-        self.latest_tweets = self.shelf.get('latest_tweets', [])
         cfg_dir = path.cfgdir()
         self.replied_id_file = os.path.join(cfg_dir, 'latest_replied.txt')
 
@@ -56,12 +55,12 @@ class Twitter(object):
             fd.write(str(reply_id))
 
     def is_duplicate_tweet(self, tweet):
-        if tweet in self.latest_tweets:
+        key = 'tweet:%s' % tweet
+        db = redis.db('twitter')
+        if db.exists(key):
+            db.expire(key, HALF_DAY)
             return True
-        if len(self.latest_tweets) > 10:
-            self.latest_tweets.pop(0)
-        self.latest_tweets.append(tweet)
-        self.shelf['latest_tweets'] = self.latest_tweets
+        db.setex(key, 1, HALF_DAY)
         return False
 
     def post(self, text, reply_id=None, image=None, debug=False):
