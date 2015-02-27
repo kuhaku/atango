@@ -41,11 +41,15 @@ function get_atango_response(final_transcript){
       fukidashi2.text(httpObj.responseText);
       game.rootScene.addChild(fukidashi2);
 
-      var audio = new Audio();
-      audio.autoplay = true;
-      audio.src = 'http://localhost:12000/text=' + httpObj.responseText;
-      audio.load();
-      audio.play();
+      // Speech Synthesis
+      var msg = new SpeechSynthesisUtterance();
+      msg.text = httpObj.responseText;
+      msg.volume = 1.0;
+      msg.rate = 1.0;
+      msg.pitch = 1.0;
+      msg.lang = "ja-JP";
+      msg.voice = speechSynthesis.getVoices().filter(function(voice) { return voice.name == "Google 日本人"; })[0];
+      window.speechSynthesis.speak(msg);
 
       cnt++;
       document.getElementById("utterance").innerText = cnt;
