@@ -46,13 +46,5 @@ git clone https://github.com/kuhaku/atango.git /work/atango
 brew install nginx
 cp /work/atango/settings/nginx.conf /usr/local/etc/nginx/nginx.conf
 
-# Install open-jtalk
-wget -O /usr/local/Library/Formula/open-jtalk.rb https://raw.githubusercontent.com/yawara/homebrew/open-jtalk/Library/Formula/open-jtalk.rb
-brew install open-jtalk
-
-# Install node.js for demo
-brew install node
-npm install execsyncs
-
 # Install iStats for CPU temperature monitor
 gem install iStats
