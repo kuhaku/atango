@@ -46,10 +46,13 @@ class Atango(App):
             if message:
                 self.twitter.post(message, debug=self.debug)
         elif job == 'dialogue':
-            from job.tl import TimeLineReply
-            reply = TimeLineReply(verbose=self.verbose, debug=self.debug)
+            from job.reply import Reply
+            reply = Reply()
+            tweet = {'id': 1 << 128, 'user': {'id': 0, 'name': 'まんこ', 'screen_name': 'manko'},
+                     'created_at': '2015-03-09', 'source': 'm'}
             while True:
-                print(reply.make_response(input(), '', ''))
+                tweet['text'] = input()
+                print(reply.respond(tweet))
         else:
             raise ValueError('"%s" is not implemented yet' % job)
 

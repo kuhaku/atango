@@ -7,13 +7,13 @@ def test__extract_oshiete_answer():
     posts = [{'text': 'マミは'},
              {'text': 'マミさんはいるかなぁ？'},
              {'text': 'マミさんはかわいい'}]
-    actual = qa._extract_oshiete_answer('マミ', posts)
+    actual = next(qa._extract_oshiete_answer('マミ', posts))
     assert_equals(actual, 'マミさんはかわいい')
 
 
 def test_respond_oshiete():
     text = 'マミさんって何'
-    actual = qa.respond_oshiete(text)
+    actual = next(qa.respond_oshiete(text))
     assert_true(actual.startswith('マミさん'))
 
 
@@ -26,5 +26,5 @@ def test__build_what_who_query():
 
 
 def test_respond_what_who():
-    actual = qa.respond_what_who('誰がかわいい')
+    actual = next(qa.respond_what_who('誰がかわいい'))
     assert_true('がかわいい' in actual or 'はかわいい' in actual)

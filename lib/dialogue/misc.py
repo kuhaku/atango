@@ -15,12 +15,13 @@ config = file_io.read('atango.json')['Reply']
 
 
 def _random_choice(*arg):
-    return misc.choice(RESPONSES)
+    while True:
+        yield misc.choice(RESPONSES)
 
 
 def respond_by_rule(*arg):
     if arg[0] in config['PRESENT']:
-        return give_present()
+        yield give_present()
 
 
 def give_present(*arg):

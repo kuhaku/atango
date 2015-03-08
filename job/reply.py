@@ -1,11 +1,15 @@
 # -*- coding: utf-8 -*-
+import json
 import re
 from lib import api, file_io, regex, normalize
+from lib.db import redis
 from lib.logger import logger
 from lib.dialogue import qa, dialogue_search, misc
 
 re_screen_name = re.compile('@[\w]+[ 　]*')
 re_atango = re.compile("[ぁあ]単語((ちゃん)|(先輩))?")
+DEFAULT_USER = {'screen_name': 'kuhaku', 'name': '貴殿', 'replies': [], 'tweets': []}
+ONE_WEEK = 60*60*24*7
 
 
 class Reply(object):
@@ -45,14 +49,24 @@ class Reply(object):
         text = text.strip()
         return text
 
-    def replace_name(self, text, screen_name, name):
-        if not screen_name:
-            screen_name = name
-        text = text.replace('\%sn', screen_name)
-        text = text.replace('%name', name)
+    def get_userinfo(self, tweet):
+        db = redis.db('twitter')
+        key = 'user:%s' % tweet['user']['id']
+        user_info = db.get(key)
+        if user_info:
+            user_info = json.loads(user_info.decode('utf8'))
+            user_info['tweets'].append(tweet['text'])
+        else:
+            user_info = {'replies': [], 'tweets': [tweet['text']]}
+        user_info.update({'screen_name': tweet['user']['screen_name'], 'name': tweet['user']['name']})
+        return user_info
+
+    def replace_name(self, text, user_info):
+        text = text.replace('\%sn', user_info['screen_name'])
+        text = text.replace('%name', user_info['name'])
         return text
 
-    def make_response(self, text, screen_name=None, user='貴殿'):
+    def make_response(self, text, user_info=DEFAULT_USER):
         text = normalize.normalize(text)
         METHODS = (
             qa.respond_oshiete,  # XXXって何? -> XXXは***
@@ -61,28 +75,43 @@ class Reply(object):
             misc.respond_by_rule,  # Rule-based response
             misc._random_choice,  # Randomly
         )
+        response = ''
+        stop_make_response = False
         for method in METHODS:
-            logger.debug('execute %s' % method.__name__)
-            response = method(text)
-            if response:
+            for response in method(text):
+                response = response.strip()
+                if response not in user_info['replies']:
+                    stop_make_response = True
+                    break
+            if stop_make_response:
                 break
         if not response:
             response = {'text': 'ああ(;´Д`)'}
         if isinstance(response, str):
             response = {'text': response}
-        response['text'] = self.replace_name(response['text'], screen_name, user)
+        response['text'] = self.replace_name(response['text'], user_info)
         return response
 
+    def store_userinfo(self, user_info, tweet, response):
+        db = redis.db('twitter')
+        key = 'user:%s' % tweet['user']['id']
+        if len(user_info['replies']) >= 20:
+            user_info['replies'].pop(0)
+        if len(user_info['tweets']) >= 20:
+            user_info['tweets'].pop(0)
+        user_info['replies'].append(response['text'])
+        db.setex(key, json.dumps(user_info), ONE_WEEK)
+
     def respond(self, mention):
-        text = self.normalize(mention['text'])
-        screen_name = mention['user']['screen_name']
-        name = mention['user']['name']
+        mention['text'] = self.normalize(mention['text'])
         logger.debug('{id} {user[screen_name]} {text} {created_at}'.format(**mention))
         (valid, reason) = self.is_valid_tweet(mention)
         if not valid:
             logger.debug('skip because this tweet %s' % reason)
             return
-        response = self.make_response(text, screen_name, name)
-        response['text'] = '@%s ' % screen_name + response['text']
+        user_info = self.get_userinfo(mention)
+        response = self.make_response(mention['text'], user_info)
+        self.store_userinfo(user_info, mention, response)
+        response['text'] = '@%s ' % mention['user']['screen_name'] + response['text']
         response['id'] = mention['id']
         return response

@@ -25,7 +25,7 @@ def _extract_oshiete_answer(query, posts):
                 if not answer or any(w in answer for w in NG_SUBSTRS):
                     continue
                 if 3 < len(answer) < 120:
-                    return answer
+                    yield answer
 
 
 def respond_oshiete(text):
@@ -34,7 +34,9 @@ def respond_oshiete(text):
         return None
     query = oshiete_match.group('query')
     posts = list(kuzuha.search(query, field='text', size=5))
-    return _extract_oshiete_answer(query, posts) or NOT_FOUND_MESSAGE % query
+    for answer in _extract_oshiete_answer(query, posts):
+        yield answer
+    yield NOT_FOUND_MESSAGE % query
 
 
 def _build_what_who_query(text):
@@ -64,4 +66,4 @@ def respond_what_who(text):
         query = 'が%s は%s' % (predicate, predicate)
         for post in kuzuha.search(query, field='text', sort=[('dt', 'desc')], _operator='or', size=50):
             if 120 > len(post['text']) > 4 and not mecab.has_demonstrative(post['text']):
-                return post['text']
+                yield post['text']

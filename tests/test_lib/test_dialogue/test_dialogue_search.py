@@ -19,9 +19,12 @@ def test__validate_post():
 
 
 def test__extract_response_by_search():
-    assert_true(dial_search._extract_response_by_search(['マミさん', 'おっぱい'], False))
+    actual = dial_search._extract_response_by_search(['マミさん', 'おっぱい'], False)
+    assert_true(list(actual))
 
 
 def test_respond():
-    assert_true(dial_search.respond('マミさんのおっぱい'))
-    assert_false(dial_search.respond('我爱你'))
+    actual = dial_search.respond('マミさんのおっぱい')
+    assert_true(list(actual))
+    actual = dial_search.respond('我爱你')
+    assert_false(list(actual))
