@@ -1,15 +1,14 @@
 # -*- coding: utf-8 -*-
+import json
 from lib import normalize
 from lib.dialogue import qa, dialogue_search, misc
 from lib.logger import logger
 from job import reply
 
-DEFAULT_USER = {'screen_name': 'kuhaku', 'name': '貴殿', 'replies': [], 'tweets': []}
-
 
 class TimeLineReply(reply.Reply):
 
-    def make_response(self, text, user_info=DEFAULT_USER):
+    def make_response(self, text, user_info=reply.DEFAULT_USER, global_context=[]):
         text = normalize.normalize(text)
         METHODS = (
             misc.respond_by_rule,
@@ -22,7 +21,7 @@ class TimeLineReply(reply.Reply):
         for method in METHODS:
             for response in method(text):
                 response = response.strip()
-                if response not in user_info['replies']:
+                if not (response in user_info['replies'] or response in global_context):
                     stop_make_response = True
                     break
             if stop_make_response:
@@ -43,8 +42,12 @@ class TimeLineReply(reply.Reply):
             logger.debug('skip because this tweet %s' % reason)
             return
         user_info = self.get_userinfo(tweet)
-        response = self.make_response(text, user_info)
+        response = self.make_response(text, user_info, self.global_context)
         if response and response.get('text'):
+            if len(self.global_context) > 100:
+                self.global_context.pop(0)
+            self.global_context.append(response)
+            self.db.setex('global_context', json.dumps(self.global_context), reply.ONE_WEEK)
             self.store_userinfo(user_info, tweet, response)
             response['text'] = '@%s ' % tweet['user']['screen_name'] + response['text']
             response['id'] = tweet['id']

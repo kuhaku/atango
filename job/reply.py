@@ -10,6 +10,7 @@ re_screen_name = re.compile('@[\w]+[ 　]*')
 re_atango = re.compile("[ぁあ]単語((ちゃん)|(先輩))?")
 DEFAULT_USER = {'screen_name': 'kuhaku', 'name': '貴殿', 'replies': [], 'tweets': []}
 ONE_WEEK = 60*60*24*7
+TWO_WEEK = 60*60*24*14
 
 
 class Reply(object):
@@ -17,6 +18,12 @@ class Reply(object):
     def __init__(self):
         self.cfg = file_io.read('atango.json')['Reply']
         self.twitter = api.Twitter()
+        self.db = redis.db('twitter')
+        global_context = self.db.get('global_context')
+        if global_context:
+            self.global_context = json.loads(global_context.decode('utf8'))
+        else:
+            self.global_context = []
 
     def is_valid_tweet(self, mention):
 
@@ -50,9 +57,7 @@ class Reply(object):
         return text
 
     def get_userinfo(self, tweet):
-        db = redis.db('twitter')
-        key = 'user:%s' % tweet['user']['id']
-        user_info = db.get(key)
+        user_info = self.db.get('user:%s' % tweet['user']['id'])
         if user_info:
             user_info = json.loads(user_info.decode('utf8'))
             user_info['tweets'].append(tweet['text'])
@@ -66,7 +71,7 @@ class Reply(object):
         text = text.replace('%name', user_info['name'])
         return text
 
-    def make_response(self, text, user_info=DEFAULT_USER):
+    def make_response(self, text, user_info=DEFAULT_USER, global_context=[]):
         text = normalize.normalize(text)
         METHODS = (
             qa.respond_oshiete,  # XXXって何? -> XXXは***
@@ -80,7 +85,7 @@ class Reply(object):
         for method in METHODS:
             for response in method(text):
                 response = response.strip()
-                if response not in user_info['replies']:
+                if not (response in user_info['replies'] or response in global_context):
                     stop_make_response = True
                     break
             if stop_make_response:
@@ -93,14 +98,13 @@ class Reply(object):
         return response
 
     def store_userinfo(self, user_info, tweet, response):
-        db = redis.db('twitter')
-        key = 'user:%s' % tweet['user']['id']
         if len(user_info['replies']) >= 20:
             user_info['replies'].pop(0)
         if len(user_info['tweets']) >= 20:
             user_info['tweets'].pop(0)
         user_info['replies'].append(response['text'])
-        db.setex(key, json.dumps(user_info), ONE_WEEK)
+        key = 'user:%s' % tweet['user']['id']
+        self.db.setex(key, json.dumps(user_info), TWO_WEEK)
 
     def respond(self, mention):
         mention['text'] = self.normalize(mention['text'])
@@ -110,7 +114,11 @@ class Reply(object):
             logger.debug('skip because this tweet %s' % reason)
             return
         user_info = self.get_userinfo(mention)
-        response = self.make_response(mention['text'], user_info)
+        response = self.make_response(mention['text'], user_info, self.global_context)
+        if len(self.global_context) > 100:
+            self.global_context.pop(0)
+        self.global_context.append(response)
+        self.db.setex('global_context', json.dumps(self.global_context), ONE_WEEK)
         self.store_userinfo(user_info, mention, response)
         response['text'] = '@%s ' % mention['user']['screen_name'] + response['text']
         response['id'] = mention['id']
