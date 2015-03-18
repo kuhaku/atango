@@ -226,8 +226,8 @@ def build_hour_filter(hours=1):
 def _build_sort(sort):
     sort_item = []
     for (field, order) in sort:
-        if field == 'dt':
-            sort_item.append({'dt': {'order': order}})
+        if field in ('dt', '_score'):
+            sort_item.append({field: {'order': order}})
         else:
             sort_item.append({
                 '_script': {
@@ -239,8 +239,8 @@ def _build_sort(sort):
     return sort_item
 
 
-def search(query='', field='q1', _operator='and', sort=[('quoted_by', 'desc')], _filter={},
-           size=1000):
+def search(query='', field='q1', _operator='and', sort=[('_score', 'desc'), ('quoted_by', 'desc')],
+           _filter={}, size=1000, _id=False):
     es = Elasticsearch([elasticsearch_setting])
     if query:
         es_query = {
@@ -265,7 +265,7 @@ def search(query='', field='q1', _operator='and', sort=[('quoted_by', 'desc')], 
     }
     sort_item = _build_sort(sort)
     if sort_item:
-        body.update({'sort' : sort_item})
+        body.update({'sort': sort_item})
     logger.debug(body)
     result = es.search(index='qwerty', body=body, _source=True)
     return (x['_source'] for x in result['hits']['hits'])
