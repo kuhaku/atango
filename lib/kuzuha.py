@@ -209,8 +209,7 @@ def build_date_filter(start_dt=None, end_dt=None):
     return {'range': {'dt': dt_range}}
 
 
-def build_date_filter_by_range(date_range={}):
-    end_dt = datetime.now()
+def build_date_filter_by_range(date_range={}, end_dt=datetime.now()):
     start_dt = end_dt - timedelta(**date_range)
     return build_date_filter(start_dt, end_dt)
 
@@ -220,6 +219,13 @@ def build_hour_filter(hours=1):
     hours_ago = now - timedelta(hours=hours)
     start_dt = datetime(hours_ago.year, hours_ago.month, hours_ago.day, hours_ago.hour, 0, 0)
     end_dt = datetime(hours_ago.year, hours_ago.month, hours_ago.day, hours_ago.hour, 59, 59)
+    return build_date_filter(start_dt, end_dt)
+
+def build_yesterday_filter():
+    now = datetime.now()
+    yesterday = now - timedelta(days=1)
+    start_dt = datetime(yesterday.year, yesterday.month, yesterday.day, 0, 0, 0)
+    end_dt = datetime(yesterday.year, yesterday.month, yesterday.day, 23, 59, 59)
     return build_date_filter(start_dt, end_dt)
 
 
@@ -268,4 +274,11 @@ def search(query='', field='q1', _operator='and', sort=[('_score', 'desc'), ('qu
         body.update({'sort': sort_item})
     logger.debug(body)
     result = es.search(index='qwerty', body=body, _source=True)
+    if _id:
+        return (x for x in result['hits']['hits'])
     return (x['_source'] for x in result['hits']['hits'])
+
+
+def get_log_by_id(_id):
+    es = Elasticsearch([elasticsearch_setting])
+    return es.get(index='qwerty', id=_id)

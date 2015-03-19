@@ -1,0 +1,41 @@
+body {
+	background-color: #004040;
+	color: #ffffff;
+	font-family: ＭＳ ゴシック,Osaka-等幅;
+}
+
+a         { text-decoration: none; }
+a:link    { color: #eeffee;text-decoration: underline; }
+a:visited { color: #dddddd;text-decoration: underline; }
+a:active  { color: #ff0000; }
+a:hover   { color: #ffffff; background-color: #508080; }
+
+em {
+    font-size: 120%;
+    color: red;
+    font-weight: bold;
+    font-style: normal;
+    letter-spacing: 0.15em;
+}
+
+h2 {
+	background-color: #006060;
+	color: #ffffff;
+	margin: 1em 0 0.2em 0;
+	font-size: 130%;
+	font-weight: bold;
+	padding: 0.2em 0.2em 0.2em 1em;
+	border-style: solid;
+	border-color: #088588;
+	border-width: 2px 0;
+}
+
+p {
+	font-size: 100%;
+    padding: 0 0 0 1em;
+}
+
+pre {
+	font-size: 90%;
+	padding: 0 0 0 1em;
+}
