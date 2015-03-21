@@ -18,7 +18,9 @@ def add_tag(text, tag, params={}):
     params_str = ''
     for (k, v) in params.items():
         params_str += '%s="%s"' % (k, v)
-    return '<%s %s>%s</%s>' % (tag, params_str, text, tag)
+    if params_str:
+        params_str = ' ' + params_str
+    return '<%s%s>%s</%s>' % (tag, params_str, text, tag)
 
 
 @functools.lru_cache()
