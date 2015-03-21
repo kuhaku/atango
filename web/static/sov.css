@@ -18,6 +18,16 @@ em {
     letter-spacing: 0.15em;
 }
 
+h1 {
+    font-size: 170%;
+}
+
+h1#title {
+    display: inline;
+    font-size: 100%;
+    font-weight: normal;
+}
+
 h2 {
 	background-color: #006060;
 	color: #ffffff;
@@ -38,4 +48,13 @@ p {
 pre {
 	font-size: 90%;
 	padding: 0 0 0 1em;
+}
+
+form {
+    display: inline;
+}
+
+#ui-datepicker-div {
+  background: #004040;
+  border-style: solid;
 }

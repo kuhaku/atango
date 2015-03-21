@@ -4,9 +4,23 @@
     <meta charset="UTF-8">
     <title>sovぱくりのようなもの (試作品)</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='sov.css') }}" type="text/css">
+    <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+    <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+    <script>
+    $(function() {
+      $("#datepicker").datepicker({
+        dateFormat: "yymmdd",
+        maxDate: "-1d",
+        minDate: new Date(2005, 3 - 1, 11)
+      });
+    });
+    </script>
   </head>
   <body>
-    <h1>{{ dt }} (試作品)</h1>
+    <h1 id="title">sovをしょぼくしたようなもの</h1>
+    <form method="get">Date: <input type="text" id="datepicker" name="date" value="{{ dt }}" onchange="submit(this.form)"></form>
+    <hr>
+    <h1>{{ dt }}</h1>
     <h2>最多ワラタ獲得賞</h2>
     <p><em>{{ num_most_warata }} ﾜﾗﾀ(^Д^)</em></p>
     {{ most_warata_posts }}
