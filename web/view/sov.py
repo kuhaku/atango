@@ -47,9 +47,11 @@ def add_child(post_ids, posts):
             post = kuzuha.get_log_by_id(post_id)['_source']
         dt = dt_to_ymd(post['dt'])
         res_link = add_res_button(post_id, dt).strip()
-        result += res_link.replace('■', parse_kuzuha_date(post['dt'])) + ' '
+        title_text = '" title="%s">' % parse_kuzuha_date(post['dt'])
+        result += res_link.replace('">', title_text) + ' '
+        keisen = '  ' if i == last_idx else '│'
         if 'text' in post:
-            result += post['text'].replace('\n', '\n' + ' ' * 29) + '\n'
+            result += post['text'].replace('\n', '\n' + keisen + '   ') + '\n'
     return result
 
 
