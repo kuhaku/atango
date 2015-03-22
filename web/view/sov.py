@@ -159,5 +159,5 @@ def sov():
     if 'date' in request.args:
         dt = datetime.strptime(request.args['date'], '%Y%m%d')
     else:
-        dt = datetime.today() - timedelta(days=1)
+        dt = datetime.today()
     return generate_report(dt)
