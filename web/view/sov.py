@@ -86,6 +86,8 @@ def generate_report(target_dt):
                 mentioned_post_unixtime = id2time_table[post['quote']]
             else:
                 mentioned_post = kuzuha.get_log_by_id(post['quote'])['_source']
+                if 'dt' not in mentioned_post:
+                    continue
                 mentioned_post_unixtime = get_unixtime(mentioned_post['dt'])
             response_timedelta = post['unixtime'] - mentioned_post_unixtime
             response_timedeltas[response_timedelta].append(post_id)
