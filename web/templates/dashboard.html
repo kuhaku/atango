@@ -3,19 +3,24 @@
   <head>
     <meta charset="UTF-8">
     <title>ぁ単語ダッシボード</title>
-    <link rel="stylesheet" href="{{url_for('static', filename='pc.css')}}" type="text/css">
+    <link rel="stylesheet" href="{{url_for('static', filename='dashboard.css')}}" type="text/css">
   </head>
   <body>
     <h1>ぁ単語ダッシボード</h1>
-    <h2>生存</h2>
-    <p>{{alive}}</p>
-    <h2>いそがしさ</h2>
-    <p>{{cpuusage}} %</p>
-    <h2>メモリー</h2>
-    <p>{{memusage}} %</p>
-    <h2>体温</h2>
-    <p>{{temp}}℃</p>
-    <h2>ログ</h2>
-    {{log}}
+    <table>
+      <tr>
+        <th>生存</th>
+        <th>いそがしさ</th>
+        <th>メモリー</th>
+        <th>体温</th>
+      </tr>
+      <tr>
+        <td>{{alive}}</td>
+        <td>{{cpuusage}} %</td>
+        <td>{{memusage}} %</td>
+        <td>{{temp}}℃</td>
+      </tr>
+    </table>
+      {{log}}
  </body>
 </html>

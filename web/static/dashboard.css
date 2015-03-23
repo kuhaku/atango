@@ -1,0 +1,45 @@
+@charset "utf-8";
+body {
+  background: #004040;
+  color: white;
+}
+
+h1 {
+  font-family: "メイリオ",Meiryo,"ヒラギノ角ゴ Pro W3","Hiragino Kaku Gothic Pro","HiraKaku Pro-W3",Arial,Helvetica,sans-serif;
+  font-size: 150%;
+}
+
+h2 {
+  font-size: 110%;
+  color: yellow;
+}
+
+pre {
+  margin: 2%;
+  padding: 1%;
+  border: 1px solid #ccc;
+  font-size: 100%;
+  word-wrap: normal;
+  overflow: scroll;
+  font-family: "ＭＳ ゴシック","MS Gothic","Osaka－等幅","Osaka-Mono",monospace;
+}
+
+table {
+  margin: 2%;
+  width: 60%;
+  border: 1px solid #ccc;
+  border-collapse : collapse ;
+}
+
+tr {
+  text-align: center;
+}
+
+th {
+  color: lightblue;
+}
+
+td, th {
+  border: 1px solid #ccc;
+}
+

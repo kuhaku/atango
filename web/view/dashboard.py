@@ -28,7 +28,7 @@ def dashboard():
             continue
         with open(logfile, 'r') as fd:
             lines = fd.read().splitlines()
-        log.append('<h3>%s</h3>' % logfile)
+        log.append('<h2>%s</h2>' % logfile)
         log.append('<pre>')
         log += lines[-20:]
         log.append('</pre>')
