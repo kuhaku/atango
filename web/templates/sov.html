@@ -17,8 +17,9 @@
     </script>
   </head>
   <body>
-    <h1 id="title">sovをしょぼくしたようなもの</h1>
-    <form method="get">Date: <input type="text" id="datepicker" name="date" value="{{ dt }}" onchange="submit(this.form)"></form>
+    <h1 class="header" id="title">sovをしょぼくしたようなもの</h1>
+    <form class="header" method="get">Date: <input type="text" id="datepicker" name="date" value="{{ dt }}" onchange="submit(this.form)"></form>
+    <p class="header"><a href="?date=random">Random</a></p>
     <hr>
     <h1>{{ dt }}</h1>
     <h2>最多ワラタ獲得賞</h2>

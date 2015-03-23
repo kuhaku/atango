@@ -1,3 +1,4 @@
+import random
 import re
 from collections import defaultdict, Counter
 from datetime import datetime, timedelta
@@ -158,8 +159,12 @@ def sov_latest():
 
 @app.route("/sov/", methods=['GET'])
 def sov():
+    dt = datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)
     if request.args.get('date'):
-        dt = datetime.strptime(request.args['date'], '%Y%m%d')
-    else:
-        dt = datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)
+        if request.args['date'] == 'random':
+            oldest_timedelta = dt - datetime(2005, 3, 11)
+            rand_timedelta = timedelta(days=random.randint(0, oldest_timedelta.days))
+            dt = dt - rand_timedelta
+        else:
+            dt = datetime.strptime(request.args['date'], '%Y%m%d')
     return generate_report(dt)
