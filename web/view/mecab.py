@@ -90,7 +90,8 @@ def mecab_maintenance():
             nbest = int(request.form.get('nbest'))
             mecab_arg = '-N %s' % nbest if nbest > 1 else ''
             tagger = MeCab.Tagger(mecab_arg)
-            for line in request.form.get('ma').splitlines():
+            text = jctconv.h2z(request.form.get('ma'))
+            for line in text.splitlines():
                 ma_result += line + '\n'
                 if nbest > 2:
                     tagger.parseNBestInit(line)
