@@ -5,15 +5,14 @@ from lib import kuzuha
 from lib.nlp import mecab
 
 app = Blueprint('ma', __name__, template_folder='templates')
-re_alnum = re.compile('[a-zA-Z0-9\.]+')
+re_japanese = re.compile('[ぁ-ゖァ-ヺー]+')
+
 
 def count_words(sentence):
     m = mecab.MeCabWrapper()
     words = []
     for node in m.parse_to_node(sentence):
-        if re_alnum.match(node.surface):
-            continue
-        if node.feature.startswith('名詞'):
+        if node.feature.startswith('名詞') and re_japanese.match(node.surface):
             words.append('%s,%s' % (node.surface, node.feature))
     return words
 
