@@ -26,6 +26,7 @@
     <form method="POST">
       Term: <input type="text" name="term">
       Pronounciation: <input type="text" name="yomi">
+      Lemma: <input type="text" name="lemma">
       <select name="pos">
       {% for pos in PARTS_OF_SPEECH %}
         <option value="{{pos}}">{{ pos }}</option>

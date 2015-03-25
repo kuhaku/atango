@@ -118,7 +118,8 @@ def mecab_maintenance():
             for (i, pos_idx) in enumerate(PARTS_OF_SPEECH):
                 if pos_idx == input_pos:
                     pos = DIC_POS[i].copy()
-                    pos[0] = pos[10] = term
+                    pos[0] = term
+                    pos[10] = request.form['lemma'] or term
                     pos[3] = 0
                     yomi = request.form['yomi'] or get_yomi(term)
                     pos[11] = pos[12] = yomi
