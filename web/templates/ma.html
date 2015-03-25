@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8">
+    <title>Morphological Analysis Dumper</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='sov.css') }}" type="text/css">
+    <script>
+    function switch_display(id) {
+        console.log(id);
+      var target = document.getElementById(id);
+      if (target.style.display === 'none') {
+        target.style.display    = 'block';
+        target.style.visibility = 'visible';
+      } else {
+        target.style.display    = 'none';
+        target.style.visibility = 'hidden';
+      }
+    }
+    </script>
+    <style>
+    ul {
+      display: none
+    }
+    </style>
+  </head>
+  <body>
+    <h1>Morphological Analysis Dumper</h1>
+    <h2>Results (2hours ago)</h2>
+    {{ html }}
+ </body>
+</html>
