@@ -19,7 +19,7 @@ def get_cost(word, mecab, line):
     elif '名詞,固有名詞,人名,姓' in line:
         coefficient = 0.1
     elif ('名詞,一般' in line or '名詞,固有名詞,一般' in line) and re_hiragana.match(word):
-        coefficient = 0.9
+        coefficient = 0.4
     return str(int(cost - np.abs(cost * coefficient)))
 
 
