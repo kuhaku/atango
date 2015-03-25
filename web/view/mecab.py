@@ -1,5 +1,6 @@
 import os
 import re
+from subprocess import Popen
 import jctconv
 import MeCab
 from flask import Blueprint, render_template, request
@@ -70,7 +71,7 @@ def is_updating_dic_now():
     return bool(result[1].splitlines())
 
 def update_dic():
-    misc.command('bash /work/atango/util/mecab/mecab_update.sh', True)
+    Popen(['bash', '/work/atango/util/mecab/mecab_update.sh'])
 
 def get_yomi(word):
     word = re_symbol.sub('', word)
