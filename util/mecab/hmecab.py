@@ -4,7 +4,7 @@ import argparse
 import MeCab
 import jctconv
 
-DEFALUT_FORMAT = ' -F%m\\t%phl,%phr,%c,%H,%pC,%pn,%pc\\n --eos-format=BOS\\t%pC,%pn,%pc\\n'
+DEFALUT_FORMAT = ' -F%m\\t%phl,%phr,%c,%H,%pC,%pn,%pc\\n --eos-format=EOS\\t%pC,%pn,%pc\\n'
 MECAB_ARGS_KEYS = 'rdulDOapmMFUBESxbPCtco'
 
 if __name__ == '__main__':
