@@ -56,6 +56,8 @@ DIC_POS = (
     ["", "557", "557", "", "接頭詞", "形容詞接続", "*", "*", "*", "*", "", "", "", "", ""],
     ["", "772", "772", "", "動詞", "自立", "*", "*", "五段・ラ行", "基本形", "", "", "", "", ""],
 )
+DEFALUT_FORMAT = ' -F%m\\t%phl,%phr,%c,%H\\n --eos-format=EOS\\t%pC,%pn,%pc\\n '
+
 
 def is_updating_dic_now():
     result = misc.command('pgrep -fl bash|grep "mecab_update.sh"', True)
@@ -89,7 +91,7 @@ def mecab_maintenance():
         if request.form.get('ma'):
             nbest = int(request.form.get('nbest'))
             mecab_arg = '-N %s' % nbest if nbest > 1 else ''
-            tagger = MeCab.Tagger(mecab_arg)
+            tagger = MeCab.Tagger(DEFALUT_FORMAT + mecab_arg)
             text = jctconv.h2z(request.form.get('ma'))
             for line in text.splitlines():
                 ma_result += line + '\n'
