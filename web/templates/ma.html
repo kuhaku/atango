@@ -25,7 +25,24 @@
   </head>
   <body>
     <h1>Morphological Analysis Dumper</h1>
-    <h2>Results (2hours ago)</h2>
-    {{ html }}
+    <h2>Select</h2>
+    <form method="POST">
+      <select name="hours">
+      {% for i in range(1, 25) %}
+        {% if hours == i %}
+        <option value="{{i}}" selected>{{ i }} hours ago</option>
+        {% else %}
+        <option value="{{i}}">{{ i }} hours ago</option>
+        {% endif %}
+      {% endfor %}
+      </select>
+      <input type="submit" value="Analyze">
+    </form>
+    {% if all_result %}
+    <h2>Suspected terms ({{ hours }} hours ago)</h2>
+    {{ suspects }}
+    <h2>All Results ({{ hours }} hours ago)</h2>
+    {{ all_result }}
+    {% endif %}
  </body>
 </html>
