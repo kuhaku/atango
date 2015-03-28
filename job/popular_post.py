@@ -32,7 +32,7 @@ class PopularPost(object):
                        for ng in NG_WORDS)
 
         res_counter = Counter()
-        for post in posts.values():
+        for post in posts:
             if post.get('text') and 'quoted_by' in post and is_valid_post(post):
                 res_counter[post['text']] = post['quoted_by']
         return res_counter
@@ -145,10 +145,13 @@ class PopularPost(object):
         return result[:-3]
 
     def run(self, interval=1):
-        params = kuzuha.gen_params('', {'hour': interval})
-        posts = kuzuha.get_log_as_dict('qwerty', params, url=True)
+        dt_filter = kuzuha.build_hour_filter(interval)
+        posts = kuzuha.search('', _filter=dt_filter)
         post_counter = self.count_responses(posts)
-        result = self.make_summary(post_counter, params['s1'], params['s2'])
+        start = int(dt_filter['range']['dt']['gte'][4:6])
+        end = int(dt_filter['range']['dt']['lte'][4:6])
+        end = 0 if end == 23 else end + 1
+        result = self.make_summary(post_counter, start, end)
         return result
 
 if __name__ == '__main__':

@@ -221,6 +221,7 @@ def build_hour_filter(hours=1):
     end_dt = datetime(hours_ago.year, hours_ago.month, hours_ago.day, hours_ago.hour, 59, 59)
     return build_date_filter(start_dt, end_dt)
 
+
 def build_yesterday_filter():
     now = datetime.now()
     yesterday = now - timedelta(days=1)
