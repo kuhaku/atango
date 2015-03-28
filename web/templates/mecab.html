@@ -13,7 +13,7 @@
     <h2>Use MeCab</h2>
     <pre id="result">{{ ma_result }}</pre>
     <form method="POST">
-      <textarea name="ma" rows=5 cols=60></textarea>
+      <textarea name="ma" rows=5 cols=50></textarea>
       <select name="nbest">
       {% for i in range(1, 16) %}
         <option value="{{i}}">{{ i }}</option>
@@ -24,9 +24,9 @@
     <h2>Add term</h2>
     <p>{{ term_added_message }}</p>
     <form method="POST">
-      Term: <input type="text" name="term">
-      Pronounciation: <input type="text" name="yomi">
-      Lemma: <input type="text" name="lemma">
+      Term: <input type="text" name="term"><br>
+      Pronounciation: <input type="text" name="yomi"><br>
+      Lemma: <input type="text" name="lemma"><br>
       <select name="pos">
       {% for pos in PARTS_OF_SPEECH %}
         <option value="{{pos}}">{{ pos }}</option>
