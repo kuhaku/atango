@@ -70,7 +70,7 @@ class PopularPost(object):
                 result.pop(-1)
             elif node.surface == 'たら' and '連用タ接続' in result[-1][1].feature:
                 if result[-1][1].rootform not in ('*', ''):
-                    result[-1] = (result[-1][1].surface, result[-1])
+                    result[-1] = (result[-1][1].surface, result[-1][1])
                 result.append((node.surface, node))
             elif '連用タ接続' in node.feature and node.rootform not in ('よい', '良い'):
                 if node.rootform not in ('*', ''):
@@ -83,9 +83,9 @@ class PopularPost(object):
             elif node.pos == '記号' and (result[-1][0] == 'か' and result[-1][1].pos == '助詞'):
                 result.pop(-1)
                 result.append((node.surface, node))
-            elif node.subpos in ('接続助詞', '格助詞', '終助詞', 'フィラー'):
+            elif node.subpos in ('接続助詞', '格助詞', '終助詞', 'フィラー', '副詞化'):
                 if result[-1][1].rootform not in ('*', ''):
-                    result[-1] = (result[-1][1].rootform, result[-1])
+                    result[-1] = (result[-1][1].rootform, result[-1][1])
             elif node.pos in ('接続詞'):
                 pass
             elif node.pos == '助詞' and node.subpos == '連体化':
