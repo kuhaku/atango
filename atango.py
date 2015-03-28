@@ -30,6 +30,11 @@ class Atango(App):
             ome = Ome()
             for message in self.execute(ome.run, 20):
                 self.twitter.post(message, debug=self.debug)
+        elif job == 'summarize':
+            from job.popular_post import PopularPost
+            pp = PopularPost()
+            result = self.execute(pp.run)
+            self.twitter.post(result, debug=self.debug)
         elif job == 'markov':
             from job.markov import MarkovTweet
             mt = MarkovTweet()

@@ -66,3 +66,9 @@ def map_dict(method, d):
 
 def has_substr(iterable, substr):
     return any(substr in item for item in iterable)
+
+
+def is_mojie(text):
+    if '(  ' in text or '@@@@' in text:
+        return True
+    return text.count(' ') > 4
