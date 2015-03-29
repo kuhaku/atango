@@ -39,6 +39,7 @@ PARTS_OF_SPEECH = (
     '連体詞',
     '動詞,五段ラ行基本',
     'フィラー',
+    '動詞'
 )
 DIC_POS = (
     ["", "1285", "1285", "", "名詞", "一般", "*", "*", "*", "*", "", "", "", "", ""],
@@ -69,6 +70,16 @@ DIC_POS = (
 )
 DEFALUT_FORMAT = ' -F%m\\t%phl,%phr,%c,%H\\n --eos-format=EOS\\t%pC,%pn,%pc\\n '
 
+GODAN_WAONBIN = (
+    ["", "814", "814", "", "動詞", "動詞", "*", "*", "五段・ワ行促音便", "仮定形", "", "", "", "", ""],
+    ["", "817", "817", "", "動詞", "動詞", "*", "*", "五段・ワ行促音便", "基本形", "", "", "", "", ""],
+    ["", "820", "820", "", "動詞", "動詞", "*", "*", "五段・ワ行促音便", "未然ウ接続", "", "", "", "", ""],
+    ["", "823", "823", "", "動詞", "動詞", "*", "*", "五段・ワ行促音便", "未然形", "", "", "", "", ""],
+    ["", "826", "826", "", "動詞", "動詞", "*", "*", "五段・ワ行促音便", "命令e", "", "", "", "", ""],
+    ["", "829", "829", "", "動詞", "動詞", "*", "*", "五段・ワ行促音便", "連用タ接続", "", "", "", "", ""],
+    ["", "832", "832", "", "動詞", "動詞", "*", "*", "五段・ワ行促音便", "連用形", "", "", "", "", ""],
+)
+GODAN_SUFFIXES = ('えうおわえっい', 'れるろられっり')
 
 def is_updating_dic_now():
     result = misc.command('pgrep -fl bash|grep "mecab_update.sh"', True)
@@ -91,6 +102,30 @@ def get_yomi(word):
 def get_dicdir():
     result = misc.command('mecab-config --dicdir', True)
     return result[1].strip()
+
+def add_entry(pos, term, lemma, yomi):
+    pos[0] = term
+    pos[10] = lemma
+    pos[3] = 0
+    pos[11] = pos[12] = yomi
+    pos.append('MA')
+    pos = map(str, pos)
+    entry = ','.join(pos)
+    dicpath = os.path.join(get_dicdir(), 'original', 'manual.csv')
+    with open(dicpath, 'a+', encoding='utf8') as fd:
+        fd.write(entry + '\n')
+    return entry
+
+def is_godan_waonbin(lemma):
+    return lemma.endswith(('う', 'る'))
+
+def add_verb(term, lemma, yomi):
+    if is_godan_waonbin(lemma):
+        suffixes = GODAN_SUFFIXES[0] if lemma.endswith('う') else GODAN_SUFFIXES[1]
+        for (pos, suffix) in zip(GODAN_WAONBIN, suffixes):
+            term = term[:-1] + suffix
+            yomi = yomi[:-1] + jctconv.hira2kata(suffix)
+            yield add_entry(pos, term, lemma, yomi)
 
 @app.route("/mecab/", methods=['GET', 'POST'])
 def mecab_maintenance():
@@ -119,22 +154,18 @@ def mecab_maintenance():
         elif request.form.get('add') and request.form.get('term'):
             input_pos = request.form.get('pos')
             term = request.form.get('term')
-            for (i, pos_idx) in enumerate(PARTS_OF_SPEECH):
-                if pos_idx == input_pos:
-                    pos = DIC_POS[i].copy()
-                    pos[0] = term
-                    pos[10] = request.form['lemma'] or term
-                    pos[3] = 0
-                    yomi = request.form['yomi'] or get_yomi(term)
-                    pos[11] = pos[12] = yomi
-                    pos.append('MA')
-                    pos = map(str, pos)
-                    output = ','.join(pos)
-                    dicpath = os.path.join(get_dicdir(), 'original', 'manual.csv')
-                    with open(dicpath, 'a+', encoding='utf8') as fd:
-                        fd.write(output + '\n')
-                    term_added_message = 'Added %s' % output
-                    break
+            lemma = request.form['lemma'] or term
+            yomi = request.form['yomi'] or get_yomi(term)
+            term_added_message = ''
+            if input_pos == '動詞':
+                for added_entry in add_verb(term, lemma, yomi):
+                    term_added_message += 'Added %s\n' % added_entry
+            else:
+                for (i, pos_idx) in enumerate(PARTS_OF_SPEECH):
+                    if pos_idx == input_pos:
+                        added_entry = add_entry(DIC_POS[i], term, lemma, yomi)
+                        term_added_message = 'Added %s' % added_entry
+                        break
         elif request.form.get('update'):
             update_dic()
     return render_template('mecab.html', ma_result=ma_result,
