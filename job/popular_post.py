@@ -148,8 +148,8 @@ class PopularPost(object):
         dt_filter = kuzuha.build_hour_filter(interval)
         posts = kuzuha.search('', _filter=dt_filter)
         post_counter = self.count_responses(posts)
-        start = int(dt_filter['range']['dt']['gte'][5:7])
-        end = int(dt_filter['range']['dt']['lte'][5:7])
+        start = int(dt_filter['range']['dt']['gte'][11:13])
+        end = int(dt_filter['range']['dt']['lte'][11:13])
         end = 0 if end == 23 else end + 1
         result = self.make_summary(post_counter, start, end)
         return result
