@@ -6,7 +6,7 @@ from lib import kuzuha
 from lib.nlp import mecab
 
 app = Blueprint('ma', __name__, template_folder='templates')
-re_japanese = re.compile('[ぁ-ゖァ-ヺー]+')
+re_japanese = re.compile('[ぁ-ゖァ-ヺー一-鿇]+')
 re_hiragana = re.compile('[ぁ-ゖー]+')
 re_katakana = re.compile('[ァ-ヺー]+')
 DT_RANGE = {'range': {'dt': {}}}
