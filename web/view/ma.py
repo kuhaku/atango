@@ -36,17 +36,14 @@ def suspected_word(words, posts):
     suspects = ''
     for (i, (word, count)) in enumerate(words.most_common()):
         lemma = word.split(',')[0]
-        if '非自立' in word or '接尾' in word:
+        if '非自立' in word or '接尾' in word or len(lemma) > 2:
             continue
-        if re_katakana.search(lemma) and len(lemma) > 2:
-            continue
-        elif len(lemma) > 1:
-            continue
-        suspects += '<h3><a onclick="switch_display(\'s%s\')">%s</a></h3>\n' % (i, word)
-        suspects += '<ul id="s%s">\n' % i
-        for line in posts[word]:
-            suspects += '<li>%s</li>\n' % line
-        suspects += '</ul>\n'
+        if len(lemma) == 1 or re_katakana.search(lemma):
+            suspects += '<h3><a onclick="switch_display(\'s%s\')">%s</a></h3>\n' % (i, word)
+            suspects += '<ul id="s%s">\n' % i
+            for line in posts[word]:
+                suspects += '<li>%s</li>\n' % line
+            suspects += '</ul>\n'
     return suspects
 
 
