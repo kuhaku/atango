@@ -108,7 +108,8 @@ def add_entry(pos, term, lemma, yomi):
     pos[10] = lemma
     pos[3] = 0
     pos[11] = pos[12] = yomi
-    pos.append('MA')
+    if pos[-1] != 'MA':
+        pos.append('MA')
     pos = map(str, pos)
     entry = ','.join(pos)
     dicpath = os.path.join(get_dicdir(), 'original', 'manual.csv')
