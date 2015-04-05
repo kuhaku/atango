@@ -71,6 +71,7 @@ function submit_message(){
     httpObj.send();
   }
   document.getElementById("text").value = "";
+  document.getElementById("text").focus();
 }
 
 function think(){
