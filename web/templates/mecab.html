@@ -34,6 +34,11 @@
       </select>
       <input type="submit" name="add" value="Add">
     </form>
+    <h2>Delete term</h2>
+    <form method="POST">
+      Line: <input type="text" name="del_line"><br>
+      <input type="submit" name="del" value="Delete">
+    </form>
     <h2>Update dictionary</h2>
     {% if updating_dic_now %}
     <p>Updating dictionary now! Please wait a minute.</p>

@@ -179,6 +179,19 @@ def add_shii(term, lemma, yomi):
         new_yomi = yomi + jctconv.hira2kata(suffix)
         yield add_entry(pos, new_term, lemma, new_yomi)
 
+def delete_term(line):
+    dicdir = misc.command('mecab-config --dicdir', True)[1][:-1]
+    dicdir = os.path.join(dicdir, 'original')
+    if line.endswith(',E'):
+        filename = 'enamdict.csv'
+    elif line.endswith(',NST'):
+        filename = 'naist_jdic.csv'
+    elif line.endswith(',W'):
+        filename = 'wiki120121.csv'
+    dicfile = os.path.join(dicdir, filename)
+    misc.command("grep -v '%s' %s > %s.temp" % (line, dicfile, dicfile), True)
+    misc.command("mv %s.temp %s" % (dicfile, dicfile), True)
+
 @app.route("/mecab/", methods=['GET', 'POST'])
 def mecab_maintenance():
     ma_result = ''
@@ -221,6 +234,8 @@ def mecab_maintenance():
                         added_entry = add_entry(DIC_POS[i], term, lemma, yomi)
                         term_added_message = 'Added %s' % added_entry
                         break
+        elif request.form.get('del') and request.form.get('del_line'):
+            delete_term(request.form.get('del_line'))
         elif request.form.get('update'):
             update_dic()
     return render_template('mecab.html', ma_result=ma_result,
