@@ -1,4 +1,4 @@
-var fukidashi, fukidashi2, mmd, koro, last_speech_dt, last_res;
+var fukidashi, fukidashi2, mmd, koro;
 enchant();
 
 var MOTION_PATH = {
@@ -19,14 +19,15 @@ recognition.interimResults = true;
 recognition.lang = "ja-JP";
 
 // Speech Synthesis
+var speechsynthesis = window.speechSynthesis;
 var msg = new SpeechSynthesisUtterance();
 msg.volume = 1.0;
-msg.rate = 1.0;
-msg.pitch = 1.0;
+msg.rate = 0.85;
+msg.pitch = 0.85;
 msg.lang = "ja-JP";
-msg.voice = speechSynthesis.getVoices().filter(function(voice) { return voice.name == "Google 日本人"; })[0];
-last_speech_dt = new Date();
-last_res = ""
+msg.voice = speechsynthesis.getVoices().filter(function(voice) { return voice.name == "Google 日本人"; })[0];
+var last_speech_dt = 0;
+var last_res = ""
 
 
 function get_atango_response(final_transcript){
@@ -54,9 +55,11 @@ function get_atango_response(final_transcript){
 
       if (last_res != httpObj.responseText){
         msg.text = httpObj.responseText;
-        window.speechSynthesis.speak(msg);
+        speechsynthesis.speak(msg);
         cnt++;
-        last_res = httpObj.responseText;
+        last_res = httpObj.responseText.replace(/ /g, '');
+        last_speech_dt = new Date();
+        last_speech_dt = last_speech_dt.getTime();
       }
 
       document.getElementById("utterance").innerText = cnt;
@@ -86,10 +89,20 @@ function get_atango_response(final_transcript){
 }
 
 recognition.onresult = function(event) {
+  if (speechsynthesis.speaking){
+    last_speech_dt = new Date();
+    last_speech_dt = last_speech_dt.getTime();
+    return;
+  }
+  now_dt = new Date();
+  time_delta = now_dt.getTime() - last_speech_dt;
+  if (time_delta < 3500){
+    return;
+  }
+
   var length = event.results.length;
   var intermediate_transcript ="";
   var final_transcript = "";
-  console.log(length);
   if (length > 0) {
     for (var i = event.resultIndex; i < event.results.length; i++){
       var recogStr = event.results[i][0].transcript;
@@ -104,13 +117,12 @@ recognition.onresult = function(event) {
       //認識の最終結果
       if (event.results[i].isFinal || i == event.results.length){
         if (recogStr == ' うー') {
-            console.log('noise');
             return;
         }
         final_transcript += recogStr
       }
     }
-    if (final_transcript.length > 1){
+    if (final_transcript.length > 1 && final_transcript.replace(/ /g, '') != last_res){
       remove_fukidashi();
       fukidashi = new TTweet(650, 64, TTweet.BOTTOM, TTweet.CENTER, 'white');
       fukidashi.x = 150;
@@ -119,10 +131,7 @@ recognition.onresult = function(event) {
       game.rootScene.addChild(fukidashi);
       setTimeout(remove_fukidashi(), 5000);
 
-      now_dt = new Date();
-      if ((now_dt.getTime() - last_speech_dt.getTime()) > 3){
-        get_atango_response(final_transcript);
-      }
+      get_atango_response(final_transcript);
     }
     else {
       document.getElementById("info").innerText = "にんしきちゅう...";
@@ -138,18 +147,18 @@ recognition.onresult = function(event) {
 };
 
 recognition.onstart = function(event) {
-    document.getElementById("info").innerText = "ぁたんごちゃんとはなそう！";
-    koro = mmd.getModelRenderer("korokoro");
-    var boredom = new MMD.Motion(MOTION_PATH['boredom']);
-    boredom.load(function() {
-        boredom.loop = true;
-      koro.addModelMotion("boredom", boredom);
-        koro.play("boredom");
-    });
+  document.getElementById("info").innerText = "なにかはなそう！";
+  koro = mmd.getModelRenderer("korokoro");
+  var boredom = new MMD.Motion(MOTION_PATH['boredom']);
+  boredom.load(function() {
+      boredom.loop = true;
+    koro.addModelMotion("boredom", boredom);
+      koro.play("boredom");
+  });
 };
 
 recognition.onspeechstart = function(event) {
-    document.getElementById("info").innerText = "にんしきちゅう...";
+  document.getElementById("info").innerText = "にんしきちゅう...";
   koro = mmd.getModelRenderer("korokoro");
     var think = new MMD.Motion(MOTION_PATH['think']);
     think.load(function() {
@@ -160,16 +169,16 @@ recognition.onspeechstart = function(event) {
 };
 
 recognition.onnomatch = function(){
-    document.getElementById("info").innerText = "ききとれなかったよ！";
+  document.getElementById("info").innerText = "ききとれなかったよ！";
 };
 
 recognition.onerror = function(){
-    document.getElementById("info").innerText = "エラー";
+  document.getElementById("info").innerText = "エラー";
 };
 
 recognition.onend = function(){
-    document.getElementById("info").innerText = "またはなそう？";
-    recognition.start();
+  document.getElementById("info").innerText = "またはなそう？";
+  recognition.start();
 };
 var cnt = 0;
 recognition.start();
