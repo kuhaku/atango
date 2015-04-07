@@ -61,31 +61,45 @@ class PopularPost(object):
         result = [(nodes[0].surface, nodes[0])]
         for (i, node) in enumerate(nodes[1:]):
             if node.subpos == '係助詞' and node.rootform in ('は', 'も'):
+                logger.debug('Skip 係助詞 は,も: %d' % i)
                 pass
+            elif node.surface == 'ん' and '未然形' in result[-1][1].feature:
+                result.append((node.surface, node))
             elif node.surface == 'から' and node.subpos == '接続助詞':
                 result.append((node.surface, node))
             elif node.surface in ('けど', 'けれど') and node.subpos == '接続助詞':
                 result.append(('が', node))
-            elif node.subpos == '終助詞' and result[-1][1].pos == '助動詞':
-                result.pop(-1)
-            elif node.surface == 'たら' and '連用タ接続' in result[-1][1].feature:
+                logger.debug('Replace %s -> が: %d' % (node.surface, i))
+            elif node.subpos == '終助詞':
+                if result[-1][1].pos == '助動詞' and result[-1][0] != 'ん':
+                    del_node = result.pop(-1)
+                    logger.debug('Delete %s: %d' % (del_node[0], i))
+                logger.debug('Ignore %s: %d' % (node.surface, i))
+            elif node.surface in ('たら', 'た') and '連用タ接続' in result[-1][1].feature:
                 if result[-1][1].rootform not in ('*', ''):
                     result[-1] = (result[-1][1].surface, result[-1][1])
                 result.append((node.surface, node))
+                logger.debug('連用タ接続 %s %s: %d' % (result[-1][0], node.surface, i))
             elif '連用タ接続' in node.feature and node.rootform not in ('よい', '良い'):
                 if node.rootform not in ('*', ''):
                     result.append((node.rootform, node))
+                    logger.debug('連用タ接続 %s %s: %d' % (node.surface, node.rootform, i))
             elif node.pos == '助動詞' and result[-1][0] == 'ん':
-                result.pop(-1)
+                del_node = result.pop(-1)
+                logger.debug('Delete %s: %d' % (del_node[0], i))
             elif (node.surface == 'か' and node.pos == '助詞' and
                     (result[-1][0] in ('ん', 'の') and result[-1][1].pos == '名詞')):
-                result.pop(-1)
+                del_node = result.pop(-1)
+                logger.debug('Delete %s: %d' % (del_node[0], i))
             elif node.pos == '記号' and (result[-1][0] == 'か' and result[-1][1].pos == '助詞'):
-                result.pop(-1)
+                del_node = result.pop(-1)
                 result.append((node.surface, node))
-            elif node.subpos in ('接続助詞', '格助詞', '終助詞', 'フィラー', '副詞化'):
+                logger.debug('Replace %s -> %s: %d' % (del_node[0], result[-1][0], i))
+            elif (result[-1][0] != 'ん' and \
+                    node.subpos in ('接続助詞', '格助詞', '終助詞', 'フィラー', '副詞化')):
                 if result[-1][1].rootform not in ('*', ''):
                     result[-1] = (result[-1][1].rootform, result[-1][1])
+                    logger.debug('Replace %s -> %s: %d' % (result[-1][1].surface, result[-1][0], i))
             elif node.pos in ('接続詞'):
                 pass
             elif node.pos == '助詞' and node.subpos == '連体化':
@@ -155,6 +169,8 @@ class PopularPost(object):
         return result
 
 if __name__ == '__main__':
+    logger.enable_stream_handler()
+    logger.enable_debug()
     pp = PopularPost()
     while True:
         text = input()
