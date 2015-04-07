@@ -188,6 +188,12 @@ def delete_term(line):
         filename = 'naist_jdic.csv'
     elif line.endswith(',W'):
         filename = 'wiki120121.csv'
+    elif line.endswith(',MZ'):
+        filename = 'mozc.csv'
+    elif line.endswith(',N'):
+        filename = 'nico_name.csv'
+    elif line.endswith(',WPH'):
+        filename = 'wp_hiragana.csv'
     dicfile = os.path.join(dicdir, filename)
     misc.command("grep -v '%s' %s > %s.temp" % (line, dicfile, dicfile), True)
     misc.command("mv %s.temp %s" % (dicfile, dicfile), True)
