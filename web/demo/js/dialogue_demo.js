@@ -47,7 +47,7 @@ function get_atango_response(final_transcript){
     if ((httpObj.readyState == 4) && (httpObj.status == 200)){
       console.log(httpObj.responseText);
 
-      fukidashi = create_fukidashi(httpObj.responseText, 100, 700, 'yellow');
+      fukidashi2 = create_fukidashi(httpObj.responseText, 100, 700, 'yellow');
       game.rootScene.addChild(fukidashi2);
 
       if (last_res != httpObj.responseText){
