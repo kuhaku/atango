@@ -14,6 +14,14 @@ RHOMBUS = '　 <a href="http://qwerty.on.arena.ne.jp/cgi-bin/bbs.cgi?m=t&c=900&f
 SANKOU = '<a href="http://qwerty.on.arena.ne.jp/cgi-bin/bbs.cgi?m=f&u=&d=30&c=900&ff={}.dat&s={}">参考：{}</a>'
 
 
+def is_int_castable(s):
+    if isinstance(s, int):
+        return True
+    if s.startswith('-'):
+        s = s[1:]
+    return s.isdigit()
+
+
 def add_tag(text, tag, params={}):
     params_str = ''
     for (k, v) in params.items():

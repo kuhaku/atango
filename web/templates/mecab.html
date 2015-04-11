@@ -9,11 +9,11 @@
     </style>
   </head>
   <body>
-    <h1>sw_words MeCab</h1>
-    <h2>Use MeCab</h2>
+    <h1>MeCab Console</h1>
+    <h2>Check by current MeCab</h2>
     <pre id="result">{{ ma_result }}</pre>
     <form method="POST">
-      <textarea name="ma" rows=5 cols=50></textarea>
+      <textarea name="ma" rows=3 cols=50></textarea>
       <select name="nbest">
       {% for i in range(1, 16) %}
         <option value="{{i}}">{{ i }}</option>
@@ -36,8 +36,21 @@
     </form>
     <h2>Delete term</h2>
     <form method="POST">
-      Line: <input type="text" name="del_line"><br>
-      <input type="submit" name="del" value="Delete">
+      Line: <input type="text" name="del_line"> <input type="submit" name="del" value="Delete">
+    </form>
+    <h2>Edit POS matrix</h2>
+    <p>{{ edit_matrix_message }}</p>
+    <form method="POST">
+      <input type="text" name="lid" size=4> <input type="text" name="rid" size=4>
+      <input type="text" name="cost" size=4>
+      <input type="submit" name="matrix" value="Apply">
+    </form>
+    <h2>Search</h2>
+    {% if search_result %}
+    <pre>{{ search_result }}</pre>
+    {% endif %}
+    <form method="POST">
+      <input type="text" name="search_query"> <input type="submit" name="search" value="Search">
     </form>
     <h2>Update dictionary</h2>
     {% if updating_dic_now %}

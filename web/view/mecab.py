@@ -6,6 +6,7 @@ import MeCab
 from flask import Blueprint, render_template, request
 from lib import misc
 from lib.nlp import mecab
+from . import is_int_castable
 
 app = Blueprint('mecab', __name__, template_folder='templates')
 re_katakana = re.compile('^[ァ-ヺー]+$')
@@ -83,8 +84,8 @@ GODAN_WAONBIN = (
 GODAN_SUFFIXES = ('えうおわえっい', 'れるろられっり')
 
 SHII = (
-    ('い', 
-    ["", "43", "43", "", "形容詞", "自立", "*", "*", "形容詞・イ段", "基本形", "", "", "", "", ""]),
+    ('い',
+        ["", "43", "43", "", "形容詞", "自立", "*", "*", "形容詞・イ段", "基本形", "", "", "", "", ""]),
     ('',
         ["", "45", "45", "", "形容詞", "自立", "*", "*", "形容詞・イ段", "文語基本形", "", "", "", "", ""]),
     ('から',
@@ -118,13 +119,6 @@ SHII = (
 )
 
 
-def is_updating_dic_now():
-    result = misc.command('pgrep -fl bash|grep "mecab_update.sh"', True)
-    return bool(result[1].splitlines())
-
-def update_dic():
-    Popen(['bash', '/work/atango/util/mecab/mecab_update.sh'])
-
 def get_yomi(word):
     word = re_symbol.sub('', word)
     katakana = jctconv.hira2kata(word)
@@ -136,9 +130,11 @@ def get_yomi(word):
             return katakana
     return '*'
 
+
 def get_dicdir():
     result = misc.command('mecab-config --dicdir', True)
-    return result[1].strip()
+    return os.path.join(result[1].strip(), 'original')
+
 
 def add_entry(pos, term, lemma, yomi):
     pos[0] = term
@@ -149,13 +145,15 @@ def add_entry(pos, term, lemma, yomi):
         pos.append('MA')
     pos = map(str, pos)
     entry = ','.join(pos)
-    dicpath = os.path.join(get_dicdir(), 'original', 'manual.csv')
+    dicpath = os.path.join(get_dicdir(), 'manual.csv')
     with open(dicpath, 'a+', encoding='utf8') as fd:
         fd.write(entry + '\n')
     return entry
 
+
 def is_godan_waonbin(lemma):
     return lemma.endswith(('う', 'る'))
+
 
 def add_verb(term, lemma, yomi):
     if is_godan_waonbin(lemma):
@@ -164,6 +162,7 @@ def add_verb(term, lemma, yomi):
             term = term[:-1] + suffix
             yomi = yomi[:-1] + jctconv.hira2kata(suffix)
             yield add_entry(pos, term, lemma, yomi)
+
 
 def add_shii(term, lemma, yomi):
     if term.endswith('しい'):
@@ -179,9 +178,8 @@ def add_shii(term, lemma, yomi):
         new_yomi = yomi + jctconv.hira2kata(suffix)
         yield add_entry(pos, new_term, lemma, new_yomi)
 
+
 def delete_term(line):
-    dicdir = misc.command('mecab-config --dicdir', True)[1][:-1]
-    dicdir = os.path.join(dicdir, 'original')
     if line.endswith(',E'):
         filename = 'enamdict.csv'
     elif line.endswith(',NST'):
@@ -194,14 +192,54 @@ def delete_term(line):
         filename = 'nico_name.csv'
     elif line.endswith(',WPH'):
         filename = 'wp_hiragana.csv'
-    dicfile = os.path.join(dicdir, filename)
+    dicfile = os.path.join(get_dicdir(), filename)
     misc.command("grep -v '%s' %s > %s.temp" % (line, dicfile, dicfile), True)
     misc.command("mv %s.temp %s" % (dicfile, dicfile), True)
+
+
+def edit_matrix(lid, rid, cost):
+    if cost.lower() == 'max':
+        cost = '32765'
+    elif cost.lower() == 'min':
+        cost = '-32765'
+    if not all(is_int_castable(v) for v in (lid, rid, cost)):
+        return '[ERROR] Invalid value'
+    lid = int(lid)
+    rid = int(rid)
+    cost = int(cost)
+    if lid >= 1316 or rid >= 1316 or abs(cost) > 32765:
+        return '[ERROR] Invalid value'
+    matrix_file = os.path.join(get_dicdir(), 'matrix.def')
+    line_number = 1316 * lid + rid + 2
+    command = "sed -e '%dc\\'$'\\n''%d %d %d' %s > /tmp/matrix" % (line_number, lid, rid, cost,
+                                                                   matrix_file)
+    misc.command(command, True)
+    misc.command('mv -f /tmp/matrix %s' % matrix_file, True)
+    return 'Success!'
+
+
+def is_updating_dic_now():
+    result = misc.command('pgrep -fl bash|grep "mecab_update.sh"', True)
+    return bool(result[1].splitlines())
+
+
+def search(query):
+    query = query.replace('*', '\\*')
+    query = query.replace('+', '\\+')
+    result = misc.command("cd %s; ag '%s'" % (get_dicdir(), query), True)
+    return result[1]
+
+
+def update_dic():
+    Popen(['bash', '/work/atango/util/mecab/mecab_update.sh'])
+
 
 @app.route("/mecab/", methods=['GET', 'POST'])
 def mecab_maintenance():
     ma_result = ''
     term_added_message = ''
+    edit_matrix_message = ''
+    search_result = ''
     updating_dic_now = is_updating_dic_now()
 
     if request.method == 'POST':
@@ -242,9 +280,16 @@ def mecab_maintenance():
                         break
         elif request.form.get('del') and request.form.get('del_line'):
             delete_term(request.form.get('del_line'))
+        elif all(request.form.get(v) for v in ('matrix', 'lid', 'rid', 'cost')):
+            edit_matrix_message = edit_matrix(request.form.get('lid'), request.form.get('rid'),
+                                              request.form.get('cost'))
+        elif request.form.get('search') and request.form.get('search_query'):
+            search_result = search(request.form.get('search_query'))
         elif request.form.get('update'):
             update_dic()
     return render_template('mecab.html', ma_result=ma_result,
                            term_added_message=term_added_message,
+                           edit_matrix_message=edit_matrix_message,
+                           search_result=search_result,
                            updating_dic_now=updating_dic_now,
                            PARTS_OF_SPEECH=PARTS_OF_SPEECH)
