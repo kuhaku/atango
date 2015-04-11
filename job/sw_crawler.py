@@ -11,7 +11,7 @@ from job.reply import Reply
 TWO_MINUTES = 120
 
 
-class Crawler(object):
+class StrangeCrawler(object):
 
     def __init__(self, debug=False):
         self.tl_responder = TimeLineReply()
@@ -22,7 +22,7 @@ class Crawler(object):
 
     @staticmethod
     def is_duplicate_launch():
-        result = misc.command('ps aux|grep crawler', True)
+        result = misc.command('ps aux|grep swcrawler', True)
         logger.debug(result[1])
         ignore_grep = filter(lambda x: 'grep' not in x, result[1].splitlines())
         return len(list(ignore_grep)) > 2

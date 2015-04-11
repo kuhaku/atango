@@ -40,9 +40,9 @@ class Atango(App):
             mt = MarkovTweet()
             result = self.execute(mt.run, 60)
             self.twitter.post(result, debug=self.debug)
-        elif job == 'crawler':
-            from job.crawler import Crawler
-            crawler = Crawler(debug=self.debug)
+        elif job == 'swcrawler':
+            from job.sw_crawler import StrangeCrawler
+            crawler = StrangeCrawler(debug=self.debug)
             crawler.run()
         elif job == 'cputemp':
             from job.cputemp import CpuTemperatureChecker
