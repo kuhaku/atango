@@ -11,7 +11,7 @@ def get_longest_common_substring(logs):
     ngram_counter = Counter(ngrams)
 
     if not ngram_counter:
-        return None
+        return []
 
     messages = []
     prev_count = 0
@@ -35,4 +35,5 @@ def respond(text):
     logs = kuzuha.search(mecab.extract_word(text))
     logs = [cleansing(log.get('text', '')) for log in logs]
     for message in get_longest_common_substring(''.join(logs)):
-        yield message + '(;´Д`)'
+        if message:
+            yield message + '(;´Д`)'
