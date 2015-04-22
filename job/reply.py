@@ -4,7 +4,7 @@ import re
 from lib import api, file_io, regex, normalize
 from lib.db import redis
 from lib.logger import logger
-from lib.dialogue import qa, dialogue_search, misc
+from lib.dialogue import qa, dialogue_search, misc, common_substr
 
 re_screen_name = re.compile('@[\w]+[ 　]*')
 re_atango = re.compile("[ぁあ]単語((ちゃん)|(先輩))?")
@@ -78,6 +78,7 @@ class Reply(object):
             qa.respond_what_who,  # (誰|何)がXXX? -> ***がXXX
             dialogue_search.respond,  # past post as-is
             misc.respond_by_rule,  # Rule-based response
+            common_substr.respond,  # most common substring
             misc._random_choice,  # Randomly
         )
         response = ''
