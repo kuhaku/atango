@@ -3,19 +3,13 @@
 <plist version="1.0">
 <dict>
     <key>Label</key>
-    <string>atango.demo.uwsgi</string>
+    <string>atango.uwsgi</string>
     <key>ProgramArguments</key>
     <array>
         <string>/work/venv/atango/bin/uwsgi</string>
-        <string>--master</string>
-        <string>--processes</string>
-        <string>2</string>
-        <string>-s</string>
-        <string>0.0.0.0:5000</string>
-        <string>-w</string>
-        <string>web:app</string>
-        <string>-H</string>
-        <string>/work/venv/atango</string>
+        <string>--catch-exceptions</string>
+        <string>-y</string>
+        <string>/work/atango/settings/uwsgi.yml</string>
     </array>
     <key>RunAtLoad</key>
     <true/>

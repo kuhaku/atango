@@ -1,0 +1,15 @@
+uwsgi:
+    env: PYTHONPATH=/work/atango:/work/venv/atango/lib/python3.4/site-packages
+    master: 1
+    socket: :5000
+    stats: :5001
+    pidfile: /tmp/uwsgi_atango.pid
+    processes: 2
+    max-requests: 40000
+    log-master: 1
+    disable-logging: 1
+    virtualenv: /work/venv/atango
+    wsgi-file: /work/atango/web/__init__.py
+    callable: app
+    logfile: /tmp/uwsgi_atango_errlog
+    logto: /tmp/uwsgi_atango_errlog
