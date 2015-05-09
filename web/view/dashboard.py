@@ -20,7 +20,7 @@ def dashboard():
         result = misc.command("ps aux|awk '{ m+=$4 } END{ print m }'", True)
         return result[1].rstrip()
 
-    alive = 'still aliveヽ(´ー｀)ノ' if is_duplicate_launch() else 'しんだよ(´Д`)'
+    heartbeat = 'いるよ！ヽ(´ー｀)ノ' if is_duplicate_launch() else 'ｼﾎﾞﾘ(;´Д`)'
     temp = CpuTemperatureChecker().get_mac_temperature()
     log = []
     for logfile in glob.glob('/work/atango/logs/*.log'):
@@ -32,5 +32,6 @@ def dashboard():
         log.append('<pre>')
         log += lines[-20:]
         log.append('</pre>')
-    return render_template('dashboard.html', alive=alive, temp=temp, log=Markup('\n'.join(log)),
+    return render_template('dashboard.html', heartbeat=heartbeat, temp=temp,
+                           log=Markup('\n'.join(log)),
                            cpuusage=cpu_usage(), memusage=mem_usage())
