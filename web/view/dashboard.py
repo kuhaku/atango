@@ -20,17 +20,18 @@ def dashboard():
         result = misc.command("ps aux|awk '{ m+=$4 } END{ print m }'", True)
         return result[1].rstrip()
 
+    def read_log(path):
+        result = misc.command(['cat', path])
+        return result[1].rstrip().splitlines()
+
     heartbeat = 'いるよ！ヽ(´ー｀)ノ' if is_duplicate_launch() else 'ｼﾎﾞﾘ(;´Д`)'
     temp = CpuTemperatureChecker().get_mac_temperature()
     log = []
     for logfile in glob.glob('/work/atango/logs/*.log'):
-        if logfile.endswith('cputemp.log'):
-            continue
-        with open(logfile, 'r') as fd:
-            lines = fd.read().splitlines()
+        lines = read_log(logfile)
         log.append('<h2>%s</h2>' % logfile)
         log.append('<pre>')
-        log += lines[-20:]
+        log += lines[-30:]
         log.append('</pre>')
     return render_template('dashboard.html', heartbeat=heartbeat, temp=temp,
                            log=Markup('\n'.join(log)),
