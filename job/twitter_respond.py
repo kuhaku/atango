@@ -11,7 +11,7 @@ from job.reply import Reply
 TWO_MINUTES = 120
 
 
-class StrangeCrawler(object):
+class TwitterResponder(object):
 
     def __init__(self, debug=False):
         self.tl_responder = TimeLineReply()
@@ -22,10 +22,8 @@ class StrangeCrawler(object):
 
     @staticmethod
     def is_duplicate_launch():
-        result = misc.command('ps aux|grep swcrawler', True)
-        logger.debug(result[1])
-        ignore_grep = filter(lambda x: 'grep' not in x, result[1].splitlines())
-        return len(list(ignore_grep)) > 2
+        result = misc.command('pgrep -fl python|grep "atango.py -j twitter_respond"', True)
+        return bool(result[1].splitlines())
 
     def respond(self, instance, tweet, tl=False):
         response = instance.respond(tweet)
@@ -42,7 +40,7 @@ class StrangeCrawler(object):
 
     def run(self):
         if self.is_duplicate_launch():
-            logger.debug('crawler is duplicate')
+            logger.debug('TwitterResponder is already launched')
             return -1
         last_time = time.time()
         for tweet in self.twitter.stream_api.user():

@@ -9,7 +9,7 @@ app = Blueprint('dashboard', __name__, template_folder='templates')
 @app.route("/dashboard/")
 def dashboard():
     def is_duplicate_launch():
-        result = misc.command('pgrep -fl python|grep "atango.py -j swcrawler"', True)
+        result = misc.command('pgrep -fl python|grep "atango.py -j twitter_respond"', True)
         return bool(result[1].splitlines())
 
     def cpu_usage():
