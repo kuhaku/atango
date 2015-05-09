@@ -27,3 +27,7 @@ bootstrap.mlockall: true
 ############################## Network And HTTP ###############################
 
 http.port: 9200
+
+##################################### ETC #####################################
+
+script.groovy.sandbox.enabled: true
