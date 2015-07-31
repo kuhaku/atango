@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import random
 from nose.tools import assert_equals, assert_true, assert_false, assert_raises
 from lib import misc
 
@@ -32,3 +33,13 @@ def test_has_substr():
     iterable = ('マミさん', 'チーズケーキ')
     assert_true(misc.has_substr(iterable, 'マミ'))
     assert_false(misc.has_substr(iterable, 'ほむ'))
+
+
+def test_retry():
+    @misc.retry(1000, interval=0.001)
+    def testfunc():
+        if random.randint(0, 1):
+            raise Exception
+        return True
+
+    assert_true(testfunc())
