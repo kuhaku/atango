@@ -160,7 +160,7 @@ class PopularPost(object):
 
     def run(self, interval=1):
         dt_filter = kuzuha.build_hour_filter(interval)
-        posts = kuzuha.search('', _filter=dt_filter)
+        posts = misc.retry(10, interval=0.5)(kuzuha.search)('', _filter=dt_filter)
         post_counter = self.count_responses(posts)
         start = int(dt_filter['range']['dt']['gte'][11:13])
         end = int(dt_filter['range']['dt']['lte'][11:13])
