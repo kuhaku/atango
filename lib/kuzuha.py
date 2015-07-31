@@ -197,7 +197,8 @@ def get_log_as_dict(site, params, fast=False, url=False, usamin_detail=False):
     parser = swjson.SwJson(fast=fast, url=url, usamin_detail=usamin_detail)
     html = get_log(site, params)
     if html:
-        return parser.to_dict(html)
+        return parser.to_dict(html) or {}
+    return {}
 
 
 def build_date_filter(start_dt=None, end_dt=None):
@@ -274,7 +275,7 @@ def search(query='', field='q1', _operator='and', sort=[('_score', 'desc'), ('qu
     if sort_item:
         body.update({'sort': sort_item})
     logger.debug(body)
-    result = es.search(index='qwerty', body=body, _source=True)
+    result = es.search(index='qwerty', body=body, _source=True, timeout=55)
     if _id:
         return (x for x in result['hits']['hits'])
     return (x['_source'] for x in result['hits']['hits'])
