@@ -25,8 +25,8 @@ REGEX = {
     'KUZUHA': {
         'pre': re.compile(r'(?<=<PRE>).*?(?=</PRE>)', re.S),
         'id': re.compile(r'(?<=<!-- )\d+(?= -->)'),
-        'date': re.compile(u'<FONT size="\-1">投稿日：(?P<Y>\d{4})/(?P<m>\d\d)/(?P<D>\d\d)'
-                           u'\(.\)(?P<H>\d\d)時(?P<M>\d\d)分(?P<S>\d\d)秒', re.I),
+        'date': re.compile('<FONT[^>]+>投稿日：(?P<Y>\d{4})/(?P<m>\d\d)/(?P<D>\d\d)'
+                           '\(.\)(?P<H>\d\d)時(?P<M>\d\d)分(?P<S>\d\d)秒', re.I),
         'quote': re.compile(u'<A href="#(\d+)">参考：', re.I),
         'author': re.compile(u'投稿者：<b>(.+?)</b>', re.I),
         'to': re.compile(u'<FONT size="\+1" color="#fffffe"><B>＞(.+?)</B>', re.I)
@@ -57,7 +57,7 @@ re_hr = re.compile('<hr/?>', re.I)
 re_q2 = re.compile('\A(&gt;|>) (&gt;|>) ')
 re_q1 = re.compile('\A(&gt;|>) ')
 re_link = re.compile('<a[^<]+</a>', re.I)
-
+re_quote_link = re.compile('<a[^>]+>参考：[^秒]+秒</a>', re.I)
 
 class SwJson:
 
@@ -139,7 +139,7 @@ class SwJson:
         return int(time.mktime(time.strptime(date, '%Y-%m-%d-%H-%M-%S')))
 
     def _extract_post_text(self, post):
-        return self.regex['pre'].search(post).group(0).strip()
+        return self.regex['pre'].search(post).group(0).rstrip()
 
     def _parse_post_text(self, pre):
         parsed_post_text = defaultdict(list)
@@ -175,6 +175,11 @@ class SwJson:
                 post[item] = re_link.sub('', post[item])
         return post
 
+    @staticmethod
+    def _delete_quote_link(text):
+        text = re_quote_link.sub('', text)
+        return text.rstrip()
+
     def _extract_items(self, post):
         _id = self._extract_id(post)
         if not _id:
@@ -186,7 +191,11 @@ class SwJson:
 
         extraction_target = {'q1': parsed_post_text.get('q1', None),
                              'q2': parsed_post_text.get('q2', None),
-                             'text': parsed_post_text.get('text', None)}
+                             'text': parsed_post_text.get('text', None),
+                             'author': self._extract_name(post, 'author'),
+                             'to': self._extract_name(post, 'to'),
+                             'date': self._extract_post_date(post),
+                             }
         if self.usamin_detail:
             for resnum in self.regex['resnum'].findall(post):
                 resnum = int(resnum)
@@ -195,14 +204,6 @@ class SwJson:
                 break
             if 'resnum' in extraction_target:
                 extraction_target['thread'] = int(self.regex['thread'].findall(post)[0])
-        if self.fast is False:
-            extraction_target.update(
-                {
-                    'author': self._extract_name(post, 'author'),
-                    'to': self._extract_name(post, 'to'),
-                    'date': self._extract_post_date(post)
-                }
-            )
         for (key, value) in extraction_target.items():
             if value:
                 post_items[key] = value
@@ -227,7 +228,8 @@ class SwJson:
                 if 'q2' in posts[_id]:
                     posts[_id]['q2'] = '\n'.join(posts[_id]['q2'])
             if 'text' in posts[_id]:
-                posts[_id]['text'] = '\n'.join(posts[_id]['text']).strip()
+                text = '\n'.join(posts[_id]['text']).rstrip()
+                posts[_id]['text'] = self._delete_quote_link(text)
             if self.url is False:
                 posts[_id] = self._delete_anchor_tag(posts[_id])
         return posts
