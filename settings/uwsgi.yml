@@ -1,5 +1,6 @@
 uwsgi:
     env: PYTHONPATH=/work/atango:/work/venv/atango/lib/python3.4/site-packages
+    env: PATH=/bin:/usr/bin:/usr/local/bin:/usr/local/libexec/mecab:/work/venv/atango/bin
     master: 1
     socket: :5000
     stats: :5001
