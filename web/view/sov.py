@@ -124,24 +124,40 @@ def generate_report(target_dt):
     most_warata_posts = Markup(most_warata_posts)
 
     # 最多レス獲得賞
-    most_mentioned = max(mentions)
-    most_mentioned_posts = join_posts(mentions[most_mentioned], posts, True, use_usamin_link)
+    if mentions:
+        most_mentioned = max(mentions)
+        most_mentioned_posts = join_posts(mentions[most_mentioned], posts, True, use_usamin_link)
+    else:
+        most_mentioned = None
+        most_mentioned_posts = None
 
     # 最長ストッパー賞
-    longest_stopped = max(stop_counter)
-    longest_stopped_posts = join_posts(stop_counter[longest_stopped], posts, False,
-                                       use_usamin_link)
-    longest_stopped = parse_time(longest_stopped)
+    if stop_counter:
+        longest_stopped = max(stop_counter)
+        longest_stopped_posts = join_posts(stop_counter[longest_stopped], posts, False,
+                                           use_usamin_link)
+        longest_stopped = parse_time(longest_stopped)
+    else:
+        longest_stopped = None
+        longest_stopped_posts = None
 
     # 最速レス賞
-    fastest_res = min(response_timedeltas)
-    fastest_res_posts = join_posts(response_timedeltas[fastest_res], posts, False, use_usamin_link)
-    fastest_res = parse_time(fastest_res)
+    if response_timedeltas:
+        fastest_res = min(response_timedeltas)
+        fastest_res_posts = join_posts(response_timedeltas[fastest_res], posts, False, use_usamin_link)
+        fastest_res = parse_time(fastest_res)
+    else:
+        fastest_res = None
+        fastest_res_posts = None
 
     # 最遅レス賞
-    slowest_res = max(response_timedeltas)
-    slowest_res_posts = join_posts(response_timedeltas[slowest_res], posts, False, use_usamin_link)
-    slowest_res = parse_time(slowest_res)
+    if response_timedeltas:
+        slowest_res = max(response_timedeltas)
+        slowest_res_posts = join_posts(response_timedeltas[slowest_res], posts, False, use_usamin_link)
+        slowest_res = parse_time(slowest_res)
+    else:
+        slowest_res = None
+        slowest_res_posts = None
 
     return render_template('sov.html', dt=target_day,
                            num_most_warata=most_warata, most_warata_posts=most_warata_posts,
