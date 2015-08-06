@@ -4,7 +4,7 @@ import sys
 import traceback
 import re
 import os
-from . import path, api, misc
+from . import pathutil, api, misc
 from .logger import logger
 
 TIME_LIMIT = 55
@@ -30,7 +30,7 @@ class App(object):
     def setup_logger(self, jobname):
         logpath = self._gen_logfile_path(jobname)
         logger.enable_file_handler(logpath)
-        path.mkdir(LOG_DIR)
+        pathutil.mkdir(LOG_DIR)
 
         if self.verbose:
             logger.enable_stream_handler()

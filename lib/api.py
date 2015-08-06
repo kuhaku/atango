@@ -5,7 +5,7 @@ import os
 import twitter
 from twitter.api import TwitterHTTPError
 from cached_property import cached_property
-from . import file_io, misc, path
+from . import file_io, misc, pathutil
 from .db import redis
 from .logger import logger
 
@@ -25,7 +25,7 @@ TwitterHTTPError.__str__ = __str__patch
 class Twitter(object):
 
     def __init__(self):
-        cfg_dir = path.cfgdir()
+        cfg_dir = pathutil.cfgdir()
         self.replied_id_file = os.path.join(cfg_dir, 'latest_replied.txt')
 
     def _get_oauth(self):

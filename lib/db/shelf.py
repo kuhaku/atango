@@ -3,7 +3,7 @@ import shelve
 import os
 import time
 from _gdbm import error
-from lib import path
+from lib import pathutil
 
 
 ERRNO_35 = '[Errno 35] Resource temporarily unavailable'
@@ -52,7 +52,7 @@ def decorate(cls):
 class ShareableShelf(object):
 
     def __init__(self, filename='atango.shelve', flag='', protocol=None, writeback=False):
-        filename = os.path.join(path.datadir(), filename)
+        filename = os.path.join(pathutil.cfgdir(), filename)
         self.shelve_params = {'filename': filename}
         if flag:
             self.shelve_params['flag'] = flag
