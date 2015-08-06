@@ -18,6 +18,14 @@ class Atango(App):
             up_flickr = not self.debug
             wc = WordCount(plot_wordmap=True, up_flickr=up_flickr)
             self.twitter.post(self.execute(wc.run, hour=1), debug=self.debug)
+        elif job == 'food':
+            from job.clause_extractor import FoodExtractor
+            e = FoodExtractor()
+            self.twitter.post(self.execute(e.run, 24), debug=self.debug)
+        elif job == 'okazu':
+            from job.clause_extractor import OkazuExtractor
+            e = OkazuExtractor()
+            self.twitter.post(self.execute(e.run, 24), debug=self.debug)
         elif job == 'url':
             from job.popular_url import PopularUrl
             pop_url = PopularUrl(debug=self.debug)
