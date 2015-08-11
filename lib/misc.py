@@ -77,13 +77,15 @@ def is_mojie(text):
     return text.count(' ') > 4
 
 
-def retry(num=1, interval=0.1):
+def retry(num=1, interval=0.1, allow_null=True):
     def receive_func(func):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
             for i in range(num):
                 try:
-                    return func(*args, **kwargs)
+                    result = func(*args, **kwargs)
+                    assert result, ValueError('Null result is not allowed')
+                    return result
                 except Exception as e:
                     logger.warn('%s: %s' % (type(e), str(e)))
                     time.sleep(interval)
