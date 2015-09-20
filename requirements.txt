@@ -5,10 +5,6 @@ python-tr
 requests
 nkf
 beautifulsoup4
-numpy
-scipy
-Pillow
-matplotlib
 mecab-python3
 elasticsearch
 cached-property
@@ -17,3 +13,8 @@ uwsgi
 flask
 mmh3
 woothee
+git+https://github.com/numpy/numpy
+git+https://github.com/scipy/scipy
+git+https://github.com/python-pillow/Pillow
+git+https://github.com/matplotlib/matplotlib
+git+https://github.com/taku910/cabocha.git#egg=CaboCha&subdirectory=python
