@@ -38,6 +38,12 @@
     <form method="POST">
       Line: <input type="text" name="del_line"> <input type="submit" name="del" value="Delete">
     </form>
+    <h2>Check POS matrix</h2>
+    <p>{{ check_matrix_message }}</p>
+    <form method="POST">
+      <input type="text" name="lid" size=4> <input type="text" name="rid" size=4>
+      <input type="submit" name="chk_matrix" value="Check">
+    </form>
     <h2>Edit POS matrix</h2>
     <p>{{ edit_matrix_message }}</p>
     <form method="POST">

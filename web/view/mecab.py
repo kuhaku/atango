@@ -6,7 +6,7 @@ import MeCab
 from flask import Blueprint, render_template, request
 from lib import misc
 from lib.nlp import mecab
-from . import is_int_castable
+from . import catch_exception, is_int_castable
 
 app = Blueprint('mecab', __name__, template_folder='templates')
 re_katakana = re.compile('^[ァ-ヺー]+$')
@@ -197,6 +197,12 @@ def delete_term(line):
     misc.command("mv %s.temp %s" % (dicfile, dicfile), True)
 
 
+def check_matrix(lid, rid):
+    grep = "grep -e'^%s %s ' matrix.def" % (lid, rid)
+    result = misc.command("cd %s; %s" % (get_dicdir(), grep), True)
+    return result[1]
+
+
 def edit_matrix(lid, rid, cost):
     if cost.lower() == 'max':
         cost = '32765'
@@ -238,6 +244,7 @@ def update_dic():
 def mecab_maintenance():
     ma_result = ''
     term_added_message = ''
+    check_matrix_message = ''
     edit_matrix_message = ''
     search_result = ''
     updating_dic_now = is_updating_dic_now()
@@ -280,6 +287,8 @@ def mecab_maintenance():
                         break
         elif request.form.get('del') and request.form.get('del_line'):
             delete_term(request.form.get('del_line'))
+        elif all(request.form.get(v) for v in ('chk_matrix', 'lid', 'rid')):
+            check_matrix_message = check_matrix(request.form['lid'], request.form['rid'])
         elif all(request.form.get(v) for v in ('matrix', 'lid', 'rid', 'cost')):
             edit_matrix_message = edit_matrix(request.form.get('lid'), request.form.get('rid'),
                                               request.form.get('cost'))
@@ -289,6 +298,7 @@ def mecab_maintenance():
             update_dic()
     return render_template('mecab.html', ma_result=ma_result,
                            term_added_message=term_added_message,
+                           check_matrix_message=check_matrix_message,
                            edit_matrix_message=edit_matrix_message,
                            search_result=search_result,
                            updating_dic_now=updating_dic_now,
