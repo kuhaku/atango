@@ -139,6 +139,24 @@ SHII = (
     ('',
         ["", "39", "39", "", "形容詞", "自立", "*", "*", "形容詞・イ段", "ガル接続", "", "", "", "", ""]),
 )
+GODAN_MA = (
+    ('め',
+        ["", "760", "760", "", "動詞", "自立", "*", "*", "五段・マ行", "仮定形", "", "", "", "", ""]),
+    ('みゃ',
+        ["", "761", "761", "", "動詞", "自立", "*", "*", "五段・マ行", "仮定縮約1", "", "", "", "", ""]),
+    ('む',
+        ["", "762", "762", "", "動詞", "自立", "*", "*", "五段・マ行", "基本形", "", "", "", "", ""]),
+    ('も',
+        ["", "763", "763", "", "動詞", "自立", "*", "*", "五段・マ行", "未然ウ接続", "", "", "", "", ""]),
+    ('ま',
+        ["", "764", "764", "", "動詞", "自立", "*", "*", "五段・マ行", "未然形", "", "", "", "", ""]),
+    ('め',
+        ["", "765", "765", "", "動詞", "自立", "*", "*", "五段・マ行", "命令e", "", "", "", "", ""]),
+    ('ん',
+        ["", "766", "766", "", "動詞", "自立", "*", "*", "五段・マ行", "連用タ接続", "", "", "", "", ""]),
+    ('み',
+        ["", "767", "767", "", "動詞", "自立", "*", "*", "五段・マ行", "連用形", "", "", "", "", ""]),
+)
 
 
 def get_dicdir():
@@ -165,14 +183,24 @@ def is_godan_waonbin(lemma):
     return lemma.endswith(('う', 'る'))
 
 
+def is_godan_magyou(lemma):
+    return lemma.endswith(('込む', 'こむ'))
+
+
 def add_verb(term, lemma, yomi):
     if is_godan_waonbin(lemma):
-        suffixes = GODAN_SUFFIXES[0] if lemma.endswith(
-            'う') else GODAN_SUFFIXES[1]
+        suffixes = GODAN_SUFFIXES[0] if lemma.endswith('う') else GODAN_SUFFIXES[1]
         for (pos, suffix) in zip(GODAN_WAONBIN, suffixes):
             term = term[:-1] + suffix
             yomi = yomi[:-1] + jctconv.hira2kata(suffix)
             yield write_dic(pos, term, lemma, yomi)
+    elif is_godan_magyou(lemma):
+        term = lemma[:-1]
+        yomi = yomi[:-1]
+        for (suffix, pos) in GODAN_MA:
+            new_term = term + suffix
+            new_yomi = yomi + jctconv.hira2kata(suffix)
+            yield write_dic(pos, new_term, lemma, new_yomi)
 
 
 def add_shii(term, lemma, yomi):
