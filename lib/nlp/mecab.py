@@ -108,7 +108,7 @@ def to_yomi(text):
     return ['']
 
 def has_demonstrative(text):
-    mecab = MeCabWrapper('-d /usr/local/lib/mecab/dic/jumandic')
+    mecab = MeCabWrapper('-d /usr/local/lib/mecab/dic/juman')
     for n in mecab.parse_to_node(text):
         if n.feature.startswith('指示詞'):
             return True
