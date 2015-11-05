@@ -15,11 +15,11 @@ class test_PopularUrl(object):
     def test__count_url(self):
         for (title, desired) in TITLES:
             actual = self.purl._shorten_title(title)
-            assert_equals(actual, desired)
-        assert_equals(self.purl._shorten_title('雫...'), '雫…')
+            assert actual == desired
+        assert self.purl._shorten_title('雫...') == '雫…'
         title = '女性声優画像bot on Twitter: "内田真礼 http://t.co/s0WPLYOyYV"'
         desired = '女性声優画像bot"内田真礼"'
-        assert_equals(self.purl._shorten_title(title), desired)
+        assert self.purl._shorten_title(title) == desired
 
     @nottest
     def test__shorten_title(self):
@@ -31,9 +31,9 @@ class test_PopularUrl(object):
 
     def test_extract_tweet_id(self):
         url = 'https://twitter.com/sw_words/status/346716382630645760'
-        assert_equals(self.purl.extract_tweet_id(url), '346716382630645760')
+        assert self.purl.extract_tweet_id(url) == '346716382630645760'
         url = 'https://twitter.com/sw_words/status/346716382630645760/photo/1'
-        assert_equals(self.purl.extract_tweet_id(url), '346716382630645760')
+        assert self.purl.extract_tweet_id(url) == '346716382630645760'
 
     @nottest
     def test_calc_tweet_length(self):

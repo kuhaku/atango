@@ -20,25 +20,25 @@ class test_WordCount:
         else:
             expect_start_hour = now.hour - 1
             expect_end_hour = now.hour
-        assert_equals(self.wc.start_hour, expect_start_hour)
-        assert_equals(self.wc.end_hour, expect_end_hour)
+        assert self.wc.start_hour == expect_start_hour
+        assert self.wc.end_hour == expect_end_hour
 
     def test_sort_by_time(self):
         posts = [{'time': 1}, {'time': 2}]
         got = self.wc._sort_by_time(posts)
-        assert_equals(got, [{'time': 1}, {'time': 2}])
+        assert got, [{'time': 1} == {'time': 2}]
 
     def test_is_valid_post(self):
         log = {'text': 'x'}
-        assert_true(self.wc.is_valid_post(log))
-        assert_true(not self.wc.is_valid_post({}))
+        assert self.wc.is_valid_post(log) is True
+        assert not self.wc.is_valid_post({}) is True
         log = {'text': 'x', 'author': u'アニメ時報'}
-        assert_true(not self.wc.is_valid_post(log))
+        assert not self.wc.is_valid_post(log) is True
 
     def test_calc_avg_time(self):
         word = Word(count=2, time=3)
         self.wc.start_time = 0
-        assert_equals(self.wc.calc_avg_time(word, 7), 5)
+        assert self.wc.calc_avg_time(word, 7) == 5
 
     @nottest
     def test_prepare_for_counting(self):
@@ -54,14 +54,14 @@ class test_WordCount:
         word = Word(count=1, distribution=Counter({'x': 1, 'y': 1}))
         total_words = {'x': word}
         got = self.wc.merge_counter(counter, total_words)
-        assert_equals(got['x'].count, 2)
-        assert_equals(got['x'].distribution, Counter({'x': 2, 'y': 1}))
+        assert got['x'].count == 2
+        assert got['x'].distribution == Counter({'x': 2, 'y': 1})
 
     def test_is_valid_word(self):
-        assert_true(self.wc.is_valid_word(u'まんこ'))
-        assert_true(not self.wc.is_valid_word(u'あと'))
-        assert_true(not self.wc.is_valid_word(u'111'))
-        assert_true(not self.wc.is_valid_word(u'ょゅぅ'))
+        assert self.wc.is_valid_word(u'まんこ') is True
+        assert not self.wc.is_valid_word(u'あと') is True
+        assert not self.wc.is_valid_word(u'111') is True
+        assert not self.wc.is_valid_word(u'ょゅぅ') is True
 
     @nottest
     def test_del_word(self):
@@ -80,7 +80,7 @@ class test_WordCount:
                 Word(surface='manko', count=-1)]
         words = dict(zip(('anko', 'manko'), vals))
         got = self.wc.del_minus_count_word(words)
-        assert_equals(list(got.keys()), ['anko'])
+        assert list(got.keys()) == ['anko']
 
     def test_sort_by_keys_length(self):
         vals = [Word(surface='xx', count=2),
@@ -88,8 +88,8 @@ class test_WordCount:
         mapping = dict(zip(('xx', 'x'), vals))
         gots = self.wc.sort_by_keys_length(mapping)
         for got, expect in zip(gots, vals):
-            assert_equals(got[1].surface, expect.surface)
-            assert_equals(got[1].count, expect.count)
+            assert got[1].surface == expect.surface
+            assert got[1].count == expect.count
 
     @nottest
     def test_del_duplicate_word(self):
@@ -106,7 +106,7 @@ class test_WordCount:
         self.wc.end_hour = 1
         got = self.wc.gen_report({'word_x': word_x, 'word_y': word_y})
         expect = u'0~1時の＠上海:\n word_x：2, word_y：1'
-        assert_equals(got, expect)
+        assert got == expect
 
     @nottest
     def test_run(self):

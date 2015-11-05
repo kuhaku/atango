@@ -14,7 +14,7 @@ flask
 mmh3
 woothee
 git+https://github.com/numpy/numpy
-git+https://github.com/scipy/scipy
+scipy
 git+https://github.com/python-pillow/Pillow
 git+https://github.com/matplotlib/matplotlib
 git+https://github.com/taku910/cabocha.git#egg=CaboCha&subdirectory=python

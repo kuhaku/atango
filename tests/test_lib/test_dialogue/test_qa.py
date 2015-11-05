@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from nose.tools import assert_true, assert_equals
 from lib.dialogue import qa
 
 
@@ -8,23 +7,23 @@ def test__extract_oshiete_answer():
              {'text': 'マミさんはいるかなぁ？'},
              {'text': 'マミさんはかわいい'}]
     actual = next(qa._extract_oshiete_answer('マミ', posts))
-    assert_equals(actual, 'マミさんはかわいい')
+    assert actual == 'マミさんはかわいい'
 
 
 def test_respond_oshiete():
     text = 'マミさんって何'
     actual = next(qa.respond_oshiete(text))
-    assert_true(actual.startswith('マミさん'))
+    assert actual.startswith('マミさん') is True
 
 
 def test__build_what_who_query():
     actual = qa._build_what_who_query('誰がかわいい？')
-    assert_equals(actual, 'かわいい')
+    assert actual == 'かわいい'
 
     actual = qa._build_what_who_query('何がおかしい')
-    assert_equals(actual, 'おかしい')
+    assert actual == 'おかしい'
 
 
 def test_respond_what_who():
     actual = next(qa.respond_what_who('誰がかわいい'))
-    assert_true('がかわいい' in actual or 'はかわいい' in actual)
+    assert ('がかわいい' in actual or 'はかわいい' in actual) is True

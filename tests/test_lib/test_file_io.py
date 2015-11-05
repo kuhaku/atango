@@ -18,13 +18,13 @@ EXAMPLES = dict(zip(EXAMPLE_PATHS, (CFG, JSON, '\n'.join(TXT))))
 TEST_DATA = dict(zip(EXAMPLE_PATHS, (ASSERT_CFG, JSON.replace('"', "'"), ASSERT_TXT)))
 
 
-def setup():
+def setup_module():
     for (example_path, content) in EXAMPLES.items():
         with open(example_path, 'w') as fd:
             fd.write(content)
 
 
-def teardown():
+def teardown_module():
     shutil.rmtree(tempdir)
 
 
@@ -35,10 +35,10 @@ def test_read_text_file():
             fd.write('マミさん')
 
         got = file_io.read_text_file(filename, 'utf8')
-        assert_equals(got, 'マミさん')
+        assert got == 'マミさん'
 
         got = file_io.read_text_file(filename)
-        assert_equals(got, 'マミさん')
+        assert got == 'マミさん'
     finally:
         os.remove(filename)
 
@@ -46,4 +46,4 @@ def test_read_text_file():
 def test_read():
     for (example_path, content) in TEST_DATA.items():
         actual = file_io.read(example_path)
-        assert_equals(str(actual), content)
+        assert str(actual) == content

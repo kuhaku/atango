@@ -11,8 +11,8 @@ class test_CpuTemperatureChecker(object):
 
     def test_get_mac_temperature(self):
         actual = self.checker.get_mac_temperature()
-        assert_true(isinstance(actual, float))
-        assert_true(actual > 0)
+        assert isinstance(actual, float) is True
+        assert actual > 0 is True
 
     def test_run(self):
         with patch('job.cputemp.misc.command') as cmd_patcher:
@@ -22,11 +22,11 @@ class test_CpuTemperatureChecker(object):
 
                 cputemp.THRESHOLD = 80
                 actual = self.checker.run()
-                assert_true(actual)
+                assert actual is True
 
                 cputemp.THRESHOLD = 100
                 actual = self.checker.run()
-                assert_true(actual)
+                assert actual is True
 
                 cputemp.THRESHOLD = 1000
                 actual = self.checker.run()

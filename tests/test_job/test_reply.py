@@ -21,34 +21,34 @@ class test_Reply(object):
         tweet = TWEET_MOCK.copy()
         with mock.patch('lib.api.Twitter.get_latest_replied_id') as m:
             m.return_value = 1
-            assert_equals(self.rep.is_valid_tweet(tweet), (False, 'is old'))
+            assert self.rep.is_valid_tweet(tweet), (False == 'is old')
             tweet['id'] = 2
-            assert_equals(self.rep.is_valid_tweet(tweet), (True, 'OK'))
+            assert self.rep.is_valid_tweet(tweet), (True == 'OK')
 
             tweet['user']['screen_name'] = 'sw_words'
-            assert_equals(self.rep.is_valid_tweet(tweet), (False, 'is NG screen name'))
+            assert self.rep.is_valid_tweet(tweet), (False == 'is NG screen name')
 
             tweet['user']['screen_name'] = ''
             tweet['text'] = 'レスしなくていい'
-            assert_equals(self.rep.is_valid_tweet(tweet), (False, 'has NG word'))
+            assert self.rep.is_valid_tweet(tweet), (False == 'has NG word')
 
             tweet['text'] = ''
             tweet['source'] = 'paper.li'
-            assert_equals(self.rep.is_valid_tweet(tweet), (False, 'is written by NG source'))
+            assert self.rep.is_valid_tweet(tweet), (False == 'is written by NG source')
 
     def test_normalize(self):
         tweet = '@sw_words ぁ単語は糞だな http://omanko'
-        assert_equals(self.rep.normalize(tweet), '貴殿は糞だな')
+        assert self.rep.normalize(tweet) == '貴殿は糞だな'
 
     def test_replace_name(self):
         tweet = '<ENEMA>\%sn</ENEMA>'
         userinfo = {'screen_name': 'akari', 'name': '神岸あかり'}
         actual = self.rep.replace_name(tweet, userinfo)
-        assert_equals(actual, '<ENEMA>akari</ENEMA>')
+        assert actual == '<ENEMA>akari</ENEMA>'
 
         tweet = '<ENEMA>%name</ENEMA>'
         actual = self.rep.replace_name(tweet, userinfo)
-        assert_equals(actual, '<ENEMA>神岸あかり</ENEMA>')
+        assert actual == '<ENEMA>神岸あかり</ENEMA>'
 
     def test_get_userinfo(self):
         db = redis.db('twitter')
@@ -58,14 +58,14 @@ class test_Reply(object):
                  'text': 'おまんこ', 'created_at': '2015-03-09', 'source': 'm'}
         actual = self.rep.get_userinfo(tweet)
         desired = {'name': 'まんこ', 'screen_name': 'manko', 'tweets': ['おまんこ'], 'replies': []}
-        assert_equals(actual, desired)
+        assert actual == desired
 
         userinfo = {'name': 'まんこ', 'screen_name': 'manko',
                     'tweets': ['おまんこ', 'まんこ'], 'replies': ['manko', 'omanko']}
         db.set('user:0', json.dumps(userinfo))
         actual = self.rep.get_userinfo(tweet)
         userinfo['tweets'] = ['おまんこ', 'まんこ', 'おまんこ']
-        assert_equals(actual, userinfo)
+        assert actual == userinfo
 
     @nottest
     def test_respond(self):

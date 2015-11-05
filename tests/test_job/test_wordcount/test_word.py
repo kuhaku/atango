@@ -11,4 +11,4 @@ class test_Word:
                 'distance': None, 'time': 0, 'x': 0, 'y': 0}
         self.wc = Word(**args)
         for (idx, val) in args.items():
-            assert_equals(getattr(self.wc, idx), val)
+            assert getattr(self.wc, idx) == val

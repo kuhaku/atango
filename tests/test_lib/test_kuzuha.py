@@ -43,7 +43,7 @@ def test_gen_params_by_day():
         's2': '24',
         'e2': '0'
     }
-    assert_equals(got_params, expect)
+    assert got_params == expect
 
 
 def test_gen_params_by_hour():
@@ -58,7 +58,7 @@ def test_gen_params_by_hour():
         's2': '1',
         'e2': '0'
     }
-    assert_equals(got_params, expect)
+    assert got_params == expect
 
     # when crossing days
     date_range = {'hour': 1}
@@ -72,7 +72,7 @@ def test_gen_params_by_hour():
         's2': '24',
         'e2': '0'
     }
-    assert_equals(got_params, expect)
+    assert got_params == expect
 
 
 def test_gen_params_by_minute():
@@ -87,7 +87,7 @@ def test_gen_params_by_minute():
         's2': '1',
         'e2': '55'
     }
-    assert_equals(got_params, expect)
+    assert got_params == expect
 
     date_range = {'minute': 10}
     now = datetime.datetime(2011, 2, 14, 0, 0)
@@ -100,7 +100,7 @@ def test_gen_params_by_minute():
         's2': '24',
         'e2': '0'
     }
-    assert_equals(got_params, expect)
+    assert got_params == expect
 
 
 def test_gen_params():
@@ -112,14 +112,14 @@ def test_gen_params():
         'kwd': '',
         'chk20131014.dat': 'checked'
     })
-    assert_equals(actual, desired)
+    assert actual == desired
 
 
 def test__parse_keyword():
     actual = kuzuha._parse_keyword('マミ', 'cp932')
-    assert_equals(actual, 'マミ'.encode('cp932'))
+    assert actual == 'マミ'.encode('cp932')
     actual = kuzuha._parse_keyword(['マミ', 'パイ'], 'utf8')
-    assert_equals(actual, 'マミ パイ'.encode('utf8'))
+    assert actual == 'マミ パイ'.encode('utf8')
 
 def test__get_qwerty_log():
     pass

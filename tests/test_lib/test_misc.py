@@ -5,19 +5,19 @@ from lib import misc
 
 
 def test_command():
-    assert_true(misc.command('date')[0])
+    assert misc.command('date')[0] is True
 
 
 def test_choice():
     got = misc.choice('aaaa')
-    assert_equals(got, 'a')
+    assert got == 'a'
 
 
 def test_nones():
     got = misc.nones(2)
-    assert_equals(got, [None, None])
+    assert got, [None == None]
     got = misc.nones(2, 2)
-    assert_equals(got, [[None, None], [None, None]])
+    assert got, [[None, None], [None == None]]
     assert_raises(ValueError, misc.nones, 1, 0.5)
     assert_raises(ValueError, misc.nones, 0.5, 1)
     assert_raises(ValueError, misc.nones, 0, 1)
@@ -26,12 +26,12 @@ def test_nones():
 
 def test_map_dict():
     got = misc.map_dict(int, {1: '1', 2: '2'})
-    assert_equals(got, {1: 1, 2: 2})
+    assert got == {1: 1, 2: 2}
 
 
 def test_has_substr():
     iterable = ('マミさん', 'チーズケーキ')
-    assert_true(misc.has_substr(iterable, 'マミ'))
+    assert misc.has_substr(iterable, 'マミ') is True
     assert_false(misc.has_substr(iterable, 'ほむ'))
 
 
@@ -42,4 +42,4 @@ def test_retry():
             raise Exception
         return True
 
-    assert_true(testfunc())
+    assert testfunc() is True
