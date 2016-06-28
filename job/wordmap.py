@@ -152,7 +152,7 @@ class WordMap(object):
     def gen_report(self):
         message = '%d~%d時の＠上海:\n' % (self.start_hour, self.end_hour)
         for (w, count) in self.unique_wordcounts.most_common():
-            if len(message) + len(self.words[w]) + len(str(count)) + 1 < 120:
+            if len(message) + len(self.words[w]) + len(str(count)) + 1 < 115:
                 message = '%s %s：%d,' % (message, self.words[w], count)
         return message[:-1]
 
