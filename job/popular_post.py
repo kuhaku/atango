@@ -138,6 +138,7 @@ class PopularPost(object):
                 text = text.replace(old, new)
             if text and text[-1] in ('な', 'だ'):
                 text = text[:-1]
+            text = text.replace('かるて', 'かって')
             text = text.replace('るてる', 'ってる')
             text = text.replace('書くた', '書いた')
             logger.debug(text)

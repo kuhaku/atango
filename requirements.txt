@@ -18,3 +18,4 @@ scipy
 git+https://github.com/python-pillow/Pillow
 git+https://github.com/matplotlib/matplotlib
 git+https://github.com/taku910/cabocha.git#egg=CaboCha&subdirectory=python
+scikit-learn
