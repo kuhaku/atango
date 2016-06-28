@@ -53,7 +53,7 @@ class Atango(App):
             crawler = TwitterResponder(debug=self.debug)
             crawler.run()
         elif job == 'elasticsearch_update':
-            from elasticsearch_update import ElasticSearchUpdate
+            from job.elasticsearch_update import ElasticSearchUpdate
             updater = ElasticSearchUpdate()
             updater.run()
         elif job == 'cputemp':
