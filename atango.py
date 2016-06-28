@@ -13,11 +13,11 @@ class Atango(App):
 
     def run(self, job):
         self.setup_logger(job)
-        if job == 'wordcount':
-            from job.wordcount.wordcount import WordCount
-            up_flickr = not self.debug
-            wc = WordCount(plot_wordmap=True, up_flickr=up_flickr)
-            self.twitter.post(self.execute(wc.run, hour=1), debug=self.debug)
+        if job == 'wordmap':
+            from job.wordmap import WordMap
+            wm = WordMap()
+            (text, image) = self.execute(wm.run, hour=1)
+            self.twitter.post(text, image=image, debug=self.debug)
         elif job == 'food':
             from job.clause_extractor import FoodExtractor
             e = FoodExtractor()

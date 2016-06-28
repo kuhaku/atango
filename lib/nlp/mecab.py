@@ -8,7 +8,7 @@ from lib.multiprocess import Pool
 
 re_number = re.compile('[0-9,]+')
 POS = {'content_word': ('名詞', '動詞', '形容詞', '副詞'),
-       'noun': ('名詞,一般', '名詞,サ変接続', '名詞,固有名詞', '名詞,数', '名詞,接尾')}
+       'noun': ('名詞,一般', '名詞,サ変接続', '名詞,固有名詞')}
 ROOTFORM_IDX = {'IPA': 6}
 
 
