@@ -32,12 +32,13 @@ def _extract_response_by_search(query, or_flag):
     if not validated_query:
         return
     _operator = 'or' if or_flag else 'and'
-    _filter = {
-        "script": {
-            "script": "doc['log.quoted_by'].size() > 0",
-        }
-    }
-    posts = kuzuha.search(validated_query, _operator=_operator, _filter=_filter, size=200)
+    #_filter = {
+    #    "script": {
+    #        "script": "doc['log.quoted_by'].size() > 0",
+    #    }
+    #}
+    #posts = kuzuha.search(validated_query, _operator=_operator, _filter=_filter, size=200)
+    posts = kuzuha.search(validated_query, _operator=_operator, size=200)
     for post in sorted(posts, key=lambda x: len(x['q1'])):
         response = _validate_post(post)
         if response:

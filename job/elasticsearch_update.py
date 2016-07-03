@@ -11,8 +11,8 @@ ONE_DAY = 60 * 60 * 24
 
 class ElasticSearchUpdate(object):
 
-    def __init__(self):
-        self.es = Elasticsearch()
+    def __init__(self, es_setting=None):
+        self.es = Elasticsearch(es_setting)
         self.db = redis.db('log')
         self.actions = []
 

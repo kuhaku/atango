@@ -237,13 +237,14 @@ def _build_sort(sort):
         if field in ('dt', '_score'):
             sort_item.append({field: {'order': order}})
         else:
-            sort_item.append({
-                '_script': {
-                    'type': 'string',
-                    'script': "doc['log.%s'].size()" % field,
-                    'order': order
-                }
-            })
+            #sort_item.append({
+            #    '_script': {
+            #        'type': 'string',
+            #        'script': "doc['log.%s'].size()" % field,
+            #        'order': order
+            #    }
+            #})
+            pass
     return sort_item
 
 
