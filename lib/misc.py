@@ -35,7 +35,7 @@ def choice(iterable):
     Return:
         <object> content
     """
-    np.random.seed(int(str(time.time())[-6:]))
+    np.random.seed(int(str(time.time())[-5:]))
     return iterable[np.random.randint(len(iterable))]
 
 
