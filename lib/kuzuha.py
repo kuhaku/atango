@@ -275,7 +275,7 @@ def search(query='', field='q1', _operator='and', sort=[('_score', 'desc'), ('qu
     if sort_item:
         body.update({'sort': sort_item})
     logger.debug(body)
-    result = es.search(index='qwerty', body=body, _source=True, timeout=55)
+    result = es.search(index='qwerty', body=body, _source=True)
     if _id:
         return (x for x in result['hits']['hits'])
     return (x['_source'] for x in result['hits']['hits'])
