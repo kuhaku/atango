@@ -5,7 +5,7 @@ import os
 import twitter
 from twitter.api import TwitterHTTPError
 from cached_property import cached_property
-from . import file_io, misc, pathutil
+from . import file_io, misc, pathutil, normalize
 from .db import redis
 from .logger import logger
 
@@ -65,6 +65,7 @@ class Twitter(object):
 
     def post(self, text, reply_id=None, image=None, debug=False):
         if text:
+            text = normalize.normalize(text, emoticon=True)
             params = {'status': text, 'in_reply_to_status_id': reply_id}
             logging_msg = 'Tweet: text={status}'
             if reply_id:
@@ -72,7 +73,7 @@ class Twitter(object):
             logger.info(logging_msg.format(**params))
             if not debug:
                 if self.is_duplicate_tweet(text):
-                    logger.warn('tweet is duplicate')
+                    logger.warn('tweet is duplicate: %s' % text)
                     return
                 if image:
                     with open(image, "rb") as imagefile:

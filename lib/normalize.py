@@ -1,16 +1,13 @@
 # -*- coding: utf-8 -*-
 import re
-import html.entities
+from html.parser import HTMLParser
 import itertools
 from collections import OrderedDict
 import jctconv
 import tr
 from . import file_io
 
-# for htmlentity2unicode
-re_reference = re.compile("&(#x?[0-9a-f]{,32}|[a-z]{,32});", re.I)
-re_hex = re.compile('#x\d{1,32}', re.I)
-re_decimal = re.compile('#\d{1,32}', re.I)
+
 # for remove_emoticon
 re_emoticon = re.compile('\(.*\)')
 re_left_hand = re.compile(r'[vヽъ／＼]\(')
@@ -44,7 +41,7 @@ def remove_useless_symbol(text):
 
 
 def normalize(text, emoticon=False, repeat=None):
-    text = htmlentity2unicode(text)
+    text = HTMLParser().unescape(text)
     text = text.replace('\r', '\n')
     if emoticon is False:
         text = remove_useless_symbol(text)
@@ -63,31 +60,6 @@ def normalize_word(word):
     """
     word = jctconv.kata2hira(word)
     return word.lower()
-
-
-def htmlentity2unicode(text):
-    u"""
-    文字参照を文字に変換
-    Based on http://snipplr.com/view/11344/
-    """
-    included_htmlentities = {}
-    if '&' in text and ';' in text:
-        for reference in re_reference.findall(text):
-            # 実体参照 or 文字参照
-            if reference in html.entities.name2codepoint:
-                codepoint = html.entities.name2codepoint[reference]
-                included_htmlentities["&%s;" % reference] = chr(codepoint)
-            # 文字参照(16進)
-            elif re_hex.match(reference):
-                index = "&%s;" % reference
-                included_htmlentities[index] = chr(int(u'0'+reference[1:], 16))
-            # 文字参照(10進)
-            elif re_decimal.match(reference):
-                index = "&%s;" % reference
-                included_htmlentities[index] = chr(int(reference[1:]))
-    for (reference, char) in included_htmlentities.items():
-        text = text.replace(reference, char)
-    return text
 
 
 def remove_emoticon(text):
