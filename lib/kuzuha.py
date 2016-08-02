@@ -238,9 +238,10 @@ def _build_sort(sort):
             sort_item.append({field: {'order': order}})
         else:
             sort_item.append({
-                   '_script': {
-                    'type': 'string',
-                    'script': "doc['log.%s'].size()" % field,
+                '_script': {
+                    'script': "doc[\"log.%s\"].size()" % field,
+                    "lang": "groovy",
+                    "type": "number",
                     'order': order
                 }
             })
