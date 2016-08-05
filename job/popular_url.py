@@ -13,7 +13,7 @@ HOUR_RANGE = 4
 MAX_TWEET_LENGTH = 140
 SHORT_URL_LENGTH = 23
 HASH_TAG = ' #上海人気URL'
-DELIMITER = ' ／ '
+DELIMITER = '／'
 TWEET_FORMAT = '%s %s %d件' + DELIMITER
 
 re_title_delimiter = re.compile(u'[\[\(（【｜\)\]）】]|( \- )|( \| )|( ― )|( : )')
@@ -69,7 +69,7 @@ class PopularUrl(object):
             soup = BeautifulSoup(html)
             if soup.title and soup.title.string:
                 title = soup.title.string
-                title = normalize.htmlentity2unicode(title)
+                title = normalize.normalize(title)
                 title = self._shorten_title(title)
         return title
 
