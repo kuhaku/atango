@@ -56,6 +56,11 @@ class Atango(App):
             from job.elasticsearch_update import ElasticSearchUpdate
             updater = ElasticSearchUpdate()
             updater.run()
+        elif job == '575':
+            from job.n575 import Senryu
+            s = Senryu()
+            result = self.execute(s.run)
+            self.twitter.post(result, debug=self.debug)
         elif job == 'cputemp':
             from job.cputemp import CpuTemperatureChecker
             temp_checker = CpuTemperatureChecker()
