@@ -9,6 +9,7 @@ from job.tl import TimeLineReply
 from job.reply import Reply
 
 TWO_MINUTES = 120
+RESPONDING_PROBABILITY = 1
 
 
 class TwitterResponder(object):
@@ -38,6 +39,8 @@ class TwitterResponder(object):
                     self.db.set('latest_tl_replied', response['text'].split(' ')[0])
 
     def is_valid_tweet(self, text):
+        if text.startswith('@sw_words'):
+            return True
         return not ('@' in text or '#' in text or 'RT' in text or 'http' in text)
 
     def run(self):
@@ -49,7 +52,8 @@ class TwitterResponder(object):
             if 'text' in tweet:
                 if tweet['text'].startswith('@sw_words'):
                     self.respond(self.reply_responder, tweet)
-                elif (np.random.randint(100) < 2 and self.is_valid_tweet(tweet['text']) and
+                elif (np.random.randint(100) < RESPONDING_PROBABILITY and
+                        self.is_valid_tweet(tweet['text']) and
                       self.db.get('latest_tl_replied') != tweet['user']['screen_name']):
                     self.respond(self.tl_responder, tweet, tl=True)
             if time.time() - last_time > TWO_MINUTES:

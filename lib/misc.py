@@ -73,9 +73,9 @@ def has_substr(iterable, substr):
 
 
 def is_mojie(text):
-    if '(  ' in text or '@@@@' in text:
+    if '( ' in text or '(　' in text or '@@' in text:
         return True
-    return text.count(' ') > 4
+    return text.count(' ') > 3 or text.count('　') > 1
 
 
 def retry(num=1, interval=0.1, allow_null=True):

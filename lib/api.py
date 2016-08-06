@@ -66,6 +66,10 @@ class Twitter(object):
     def post(self, text, reply_id=None, image=None, debug=False):
         if text:
             text = normalize.normalize(text, emoticon=True)
+            if misc.is_mojie(text):
+                text = list(text)
+                text[text.index(' ')] = '.\n'
+                text = ''.join(text)
             params = {'status': text, 'in_reply_to_status_id': reply_id}
             logging_msg = 'Tweet: text={status}'
             if reply_id:

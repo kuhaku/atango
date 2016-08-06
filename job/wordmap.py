@@ -59,9 +59,9 @@ class WordMap(object):
         self.period = '%s:00~%s:00' % (self.start_hour, self.end_hour)
         graphtitle = '%s/%s/%s %s qwerty' % (self.year, self.month, self.day, self.period)
         return graphtitle
-    
+
     def _configure_graph(self):
-        plt.switch_backend('agg')
+        plt.switch_backend('tkagg')
         plt.figure(figsize=(self.fig_size, self.fig_size))
         plt.axes(axisbg=self.bgcolor)
         ax = plt.gca()
@@ -153,7 +153,7 @@ class WordMap(object):
         message = '%d~%d時の＠上海:\n' % (self.start_hour, self.end_hour)
         for (w, count) in self.unique_wordcounts.most_common():
             if len(message) + len(self.words[w]) + len(str(count)) + 1 < 115:
-                message = '%s %s：%d,' % (message, self.words[w], count)
+                message += '%s：%d,' % (self.words[w], count)
         return message[:-1]
 
     def run(self, hour):

@@ -5,30 +5,36 @@ from lib.dialogue import qa, dialogue_search, misc
 from lib.logger import logger
 from job import reply
 
+RESPONDING_METHODS = (
+    misc.respond_by_rule,
+    qa.respond_oshiete,  # XXXって何? -> XXXは***
+    qa.respond_what_who,  # (誰|何)がXXX? -> ***がXXX
+    dialogue_search.respond,  # past post as-is
+)
+#RESPONDING_METHODS = (misc.present_at_event,)
+
 
 class TimeLineReply(reply.Reply):
 
     def make_response(self, text, user_info=reply.DEFAULT_USER, global_context=[]):
         text = normalize.normalize(text)
-        METHODS = (
-            misc.respond_by_rule,
-            qa.respond_oshiete,  # XXXって何? -> XXXは***
-            qa.respond_what_who,  # (誰|何)がXXX? -> ***がXXX
-            dialogue_search.respond,  # past post as-is
-        )
         response = ''
         stop_make_response = False
-        for method in METHODS:
+        for method in RESPONDING_METHODS:
             for response in method(text):
-                response = response.strip()
-                if not (response in user_info['replies'] or response in global_context):
-                    stop_make_response = True
-                    break
-            if stop_make_response:
-                break
+                if isinstance(response, dict):
+                    response['text'] = response.get('text', '').strip()
+                    if not (response['text'] in user_info['replies'] or response['text'] in global_context):
+                        stop_make_response = True
+                        break
+                else:
+                    response = response.strip()
+                    if not (response in user_info['replies'] or response in global_context):
+                        stop_make_response = True
+                        break
         if not response:
             return
-        if isinstance(response, str):
+        elif isinstance(response, str):
             response = {'text': response}
         response['text'] = self.replace_name(response['text'], user_info)
         return response

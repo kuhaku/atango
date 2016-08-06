@@ -11,6 +11,15 @@ re_atango = re.compile("[ぁあ]単語((ちゃん)|(先輩))?")
 DEFAULT_USER = {'screen_name': 'kuhaku', 'name': '貴殿', 'replies': [], 'tweets': []}
 ONE_WEEK = 60*60*24*7
 TWO_WEEK = 60*60*24*14
+RESPONDING_METHODS = (
+    misc.respond_by_rule,  # Rule-based response
+    qa.respond_oshiete,  # XXXって何? -> XXXは***
+    qa.respond_what_who,  # (誰|何)がXXX? -> ***がXXX
+    dialogue_search.respond,  # past post as-is
+    common_substr.respond,  # most common substring
+    misc._random_choice,  # Randomly
+)
+#RESPONDING_METHODS = (misc.present_at_event,)
 
 
 class Reply(object):
@@ -63,7 +72,8 @@ class Reply(object):
             user_info['tweets'].append(tweet['text'])
         else:
             user_info = {'replies': [], 'tweets': [tweet['text']]}
-        user_info.update({'screen_name': tweet['user']['screen_name'], 'name': tweet['user']['name']})
+        user_info.update({'screen_name': tweet['user']['screen_name'],
+                          'name': tweet['user']['name']})
         return user_info
 
     def replace_name(self, text, user_info):
@@ -73,27 +83,25 @@ class Reply(object):
 
     def make_response(self, text, user_info=DEFAULT_USER, global_context=[]):
         text = normalize.normalize(text)
-        METHODS = (
-            qa.respond_oshiete,  # XXXって何? -> XXXは***
-            qa.respond_what_who,  # (誰|何)がXXX? -> ***がXXX
-            dialogue_search.respond,  # past post as-is
-            misc.respond_by_rule,  # Rule-based response
-            common_substr.respond,  # most common substring
-            misc._random_choice,  # Randomly
-        )
         response = ''
         stop_make_response = False
-        for method in METHODS:
+        for method in RESPONDING_METHODS:
             for response in method(text):
-                response = response.strip()
-                if not (response in user_info['replies'] or response in global_context):
-                    stop_make_response = True
-                    break
+                if isinstance(response, dict):
+                    response['text'] = response.get('text', '').strip()
+                    if not (response['text'] in user_info['replies'] or response['text'] in global_context):
+                        stop_make_response = True
+                        break
+                else:
+                    response = response.strip()
+                    if not (response in user_info['replies'] or response in global_context):
+                        stop_make_response = True
+                        break
             if stop_make_response:
                 break
         if not response:
             response = {'text': 'ああ(;´Д`)'}
-        if isinstance(response, str):
+        elif isinstance(response, str):
             response = {'text': response}
         response['text'] = self.replace_name(response['text'], user_info)
         return response

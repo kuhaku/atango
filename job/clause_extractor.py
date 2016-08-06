@@ -57,5 +57,7 @@ class OkazuExtractor(ClauseExtractor):
         date_range = kuzuha.build_date_filter_by_range({'hours': hour_range})
         result = self.find('しこる', 'でしこ', date_range)
         result += self.find('抜く', 'で抜', date_range)
+        result += self.find('オナニュ', 'でオナニュす', date_range)
+        result += self.find('オナニュ', 'でオナニュし', date_range)
         if len(result) < MAX_TWEET_LENGTH:
             return result

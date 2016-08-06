@@ -118,7 +118,7 @@ def search(q, best_kwds_max_length=50):
                                                                best_kwds_max_length)
     else:
         result['result_page'] = sbiutil.search_by_word(q)
-        soup_result_page = BeautifulSoup(result['result_page'])
+        soup_result_page = BeautifulSoup(result['result_page'], 'html.parser')
         if not sbiutil.has_captcha(soup_result_page):
             result['images'] = sbiutil.extract_all_image_urls(soup_result_page)
     return result
