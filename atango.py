@@ -56,6 +56,11 @@ class Atango(App):
             from job.elasticsearch_update import ElasticSearchUpdate
             updater = ElasticSearchUpdate()
             updater.run()
+        elif job == 'haiku':
+            from lib import file_io, misc
+            haiku_list = file_io.read('haiku.txt')
+            haiku = misc.choice(haiku_list) + ' #くわ川柳'
+            self.twitter.post(haiku, debug=self.debug)
         elif job == '575':
             from job.n575 import Senryu
             s = Senryu()
