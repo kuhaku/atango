@@ -20,6 +20,8 @@ class Senryu(object):
     def is_valid_pos(feature):
         if feature[0] in ('助詞'):
             return False
+        if feature[1] in ('接尾'):
+            return False
         return True
 
     def extract575(self, text):
