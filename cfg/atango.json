@@ -1,6 +1,6 @@
 {
   "elasticsearch":{
-    "host": "192.168.100.2",
+    "host": "localhost",
     "port": 9200
   },
   "Redis":{
@@ -45,9 +45,19 @@
       "paper.li",
       "twittbot.net"
     ],
+    "VALENTINE": [
+      "バレンタイン",
+      "チョコ"
+    ],
     "PRESENT": [
       "プレゼント",
       "クリスマス"
+    ],
+    "HAIKU": [
+      "俳句",
+      "一句",
+      "川柳",
+      "詠んで"
     ]
   }
 }
