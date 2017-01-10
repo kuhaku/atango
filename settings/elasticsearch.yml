@@ -31,3 +31,6 @@ http.port: 9200
 ##################################### ETC #####################################
 
 script.groovy.sandbox.enabled: true
+script.engine.groovy.inline.search: on
+http.cors.enabled: true
+http.cors.allow-origin: "*"
