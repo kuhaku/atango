@@ -10,7 +10,7 @@ app = Blueprint('dashboard', __name__, template_folder='templates')
 def dashboard():
     def is_duplicate_launch():
         result = misc.command('pgrep -fl python|grep "atango.py -j twitter_respond"', True)
-        return bool(result[1].splitlines())
+        return bool(result[1])
 
     def cpu_usage():
         result = misc.command("ps aux|awk '{ m+=$3 } END{ print m }'", True)
@@ -25,7 +25,6 @@ def dashboard():
         return result[1].rstrip().splitlines()
 
     heartbeat = 'いるよ！ヽ(´ー｀)ノ' if is_duplicate_launch() else 'ｼﾎﾞﾘ(;´Д`)'
-    temp = CpuTemperatureChecker().get_mac_temperature()
     log = []
     for logfile in glob.glob('/work/atango/logs/*.log'):
         lines = read_log(logfile)
@@ -33,6 +32,6 @@ def dashboard():
         log.append('<pre>')
         log += lines[-30:]
         log.append('</pre>')
-    return render_template('dashboard.html', heartbeat=heartbeat, temp=temp,
+    return render_template('dashboard.html', heartbeat=heartbeat,
                            log=Markup('\n'.join(log)),
                            cpuusage=cpu_usage(), memusage=mem_usage())
