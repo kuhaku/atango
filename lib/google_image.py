@@ -95,11 +95,7 @@ class GoogleImageSearch(object):
         return self.slim_keywords(most_common_kwds)
 
     def extract_all_image_urls(self, soup):
-        urls = []
-        for a in soup.find_all('a'):
-            query = urlparse(a.get('href')).query
-            for imgurl in parse_qs(query).get('imgurl', []):
-                urls.append(imgurl)
+        urls = [url for url in re.findall('"ou":"([^"]+)"', str(soup))]
         return urls
 
 def search(q, best_kwds_max_length=50):
