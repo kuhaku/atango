@@ -8,9 +8,8 @@ from . import swjson, web, normalize, file_io
 # Regular Expressions
 link_u = re.compile('<A[^<]+</A>')
 
-QWERTY_URL = 'http://qwerty.on.arena.ne.jp/cgi-bin/bbs.cgi'
-GIKOGICOM_URL = 'http://gikogi.com/bbslog/qwerty'
-USAMIN_URL = 'http://usamin.mine.nu/cgi/swlog'
+MISAO_URL = 'http://misao.on.arena.ne.jp/cgi-bin/bbs.cgi'
+USAMIN_URL = 'http://usamin.elpod.org/cgi-bin/swlog.cgi'
 
 DEFAULT_KUZUHA_PARAMS = {
     's1': '0',
@@ -23,8 +22,11 @@ DEFAULT_KUZUHA_PARAMS = {
     'alp': 'checked',
     'g': 'checked',
     'm': 'g',
-    'k': '%82%A0',
-    'sv': 'on'
+    'c': 100,
+    'k': 'あ',
+    'sv': 'on',
+    'btn': 'checked',
+    'j': 'checked'
 }
 elasticsearch_setting = file_io.read('atango.json')['elasticsearch']
 
@@ -130,23 +132,9 @@ def _parse_keyword(keyword, encoding):
     return keyword.encode(encoding)
 
 
-def _get_qwerty_log(params):
+def _get_misao_log(params):
     params['kwd'] = _parse_keyword(params['kwd'], 'cp932')
-    html = web.open_url(QWERTY_URL, params=params)
-    return html
-
-
-def _get_gikogicom_log(params):
-    if 'kwd' in params:
-        params['qs'] = _parse_keyword(params['kwd'], 'cp932')
-        del params['kwd']
-    elif 'qs' in params:
-        params['qs'] = _parse_keyword(params['qs'], 'cp932')
-    if 'n' not in params:
-        params['n'] = 'all'
-    if 'o' not in params:
-        params['o'] = 'o'
-    html = web.open_url(GIKOGICOM_URL, params=params)
+    html = web.open_url(MISAO_URL, referer=MISAO_URL, params=params)
     return html
 
 
@@ -165,15 +153,9 @@ def _get_usamin_log(params):
 
 
 def get_log(site, params={}, link=False, font_tag=False):
-    if site == 'qwerty':
-        html = _get_qwerty_log(params)
+    if site == 'misao':
+        html = _get_misao_log(params)
         if '<PRE' not in html:
-            return None
-        html = cleansing(html, font_tag, link, site)
-
-    elif site == 'gikogi':
-        html = _get_gikogicom_log(params)
-        if '<pre' not in html:
             return None
         html = cleansing(html, font_tag, link, site)
 
@@ -276,7 +258,7 @@ def search(query='', field='q1', _operator='and', sort=[('_score', 'desc'), ('qu
     if sort_item:
         body.update({'sort': sort_item})
     logger.debug(body)
-    result = es.search(index='qwerty', body=body, _source=True)
+    result = es.search(index=['qwerty', 'misao'], body=body, _source=True)
     if _id:
         return (x for x in result['hits']['hits'])
     return (x['_source'] for x in result['hits']['hits'])
@@ -284,4 +266,4 @@ def search(query='', field='q1', _operator='and', sort=[('_score', 'desc'), ('qu
 
 def get_log_by_id(_id):
     es = Elasticsearch([elasticsearch_setting])
-    return es.get(index='qwerty', id=_id)
+    return es.get(index='misao', id=_id)

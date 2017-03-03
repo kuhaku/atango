@@ -125,10 +125,10 @@ class WordMap(object):
         self.word_matrix = csr_matrix((data, indices, indptr), dtype=np.double)
 
     def analysis(self):
-        #tsne = manifold.TSNE(n_components=2, init='pca', random_state=0)
-        #Y = tsne.fit_transform(self.word_matrix.toarray())
-        mds = manifold.MDS(random_state=0)
-        Y = mds.fit_transform(self.word_matrix.toarray())
+        Y = manifold.TSNE(n_components=2, init='pca').fit_transform(self.word_matrix.toarray())
+        #Y = manifold.SpectralEmbedding().fit_transform(self.word_matrix.toarray())
+        #Y = manifold.Isomap(30, 2).fit_transform(self.word_matrix.toarray())
+        #Y = manifold.MDS().fit_transform(self.word_matrix.toarray())
         for (w, count) in self.unique_wordcounts.most_common()[::-1]:
             if count < 3 or w >= Y.shape[0]:
                 Y[w] = np.array([0.5, 0.5])
@@ -150,7 +150,7 @@ class WordMap(object):
         plt.savefig(self.temp_file)
 
     def gen_report(self):
-        message = '%d~%d時の＠上海:\n' % (self.start_hour, self.end_hour)
+        message = '%d~%d時＠みさお:\n' % (self.start_hour, self.end_hour)
         for (w, count) in self.unique_wordcounts.most_common():
             if len(message) + len(self.words[w]) + len(str(count)) + 1 < 115:
                 message += '%s：%d,' % (self.words[w], count)

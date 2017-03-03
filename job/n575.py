@@ -46,11 +46,17 @@ class Senryu(object):
                 features.append(feature)
                 if phase == 2 and sum(yomi_count) == 17 and self.is_valid575(tokens):
                     return ''.join(tokens)
+                elif phase == 2 and sum(yomi_count) == 14 and yomi_count[-1] == 2:
+                    if not self.is_valid_pos(feature):
+                        return None
                 elif phase == 2 and sum(yomi_count) == 13:
                     if not self.is_valid_pos(feature):
                         return None
                 elif phase == 1 and sum(yomi_count) == 12:
                     phase = 2
+                elif phase == 1 and sum(yomi_count) == 7 and yomi_count[-1] == 2:
+                    if not self.is_valid_pos(feature):
+                        return None
                 elif phase == 1 and sum(yomi_count) == 6:
                     if not self.is_valid_pos(feature):
                         return None
@@ -74,4 +80,4 @@ class Senryu(object):
             text = regex.re_url.sub('', text)
             result = self.extract575(text)
             if result:
-                return result + ' #くわ川柳'
+                return result + ' #みさお川柳'
