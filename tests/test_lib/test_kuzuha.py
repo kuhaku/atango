@@ -18,6 +18,9 @@ DEFAULT_PARAMS_DETAIL = {
     'e2': '0',
     'kwd': '',
     'ao': 'o',
+    'j': 'checked',
+    'c': 100,
+    'btn': 'checked',
     'tt': 'a',
     'alp': 'checked',
     'g': 'checked',
@@ -110,7 +113,8 @@ def test_gen_params():
     desired = DEFAULT_PARAMS_DETAIL.copy()
     desired.update({
         'kwd': '',
-        'chk20131014.dat': 'checked'
+        'chk20131014.dat': 'checked',
+        'k': 'あ'
     })
     assert actual == desired
 

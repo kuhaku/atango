@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from lib.dialogue import dialogue_search as dial_search
-
+import pytest
 
 def test__validate_query():
     query = ['私', '殺す', '思い出', '']
@@ -16,12 +16,13 @@ def test__validate_post():
     assert dial_search._validate_post({'text': 'きええええ'*200}) is False
     assert dial_search._validate_post({'q1': '', 'text': '<A href=\"url\">url</A>'}) == ''
 
-
+@pytest.fixture(scope="module")
 def test__extract_response_by_search():
     actual = dial_search._extract_response_by_search(['マミさん', 'おっぱい'], False)
     assert list(actual)
 
 
+@pytest.fixture(scope="module")
 def test_respond():
     actual = dial_search.respond('マミさんのおっぱい')
     assert list(actual)

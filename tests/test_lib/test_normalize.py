@@ -26,13 +26,6 @@ def test_normalize_word():
     assert got == u'おまんこ'
 
 
-def test_htmlentity2unicode():
-    got = normalize.htmlentity2unicode('&nbsp;')
-    assert got == u'\xa0'
-    got = normalize.htmlentity2unicode('&hearts;')
-    assert got == u'♥'
-
-
 def test_remove_emoticon():
     emoticons = (u'(;´Д`)', u'ヽ(´ー｀)ノ', u'v(*ﾟД､`)v', u'(;´Д`)人(;´Д`)')
     for emoticon in emoticons:
