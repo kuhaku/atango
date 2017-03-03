@@ -1,7 +1,6 @@
 import glob
 from flask import Blueprint, Markup, render_template
 from lib import misc
-from job.cputemp import CpuTemperatureChecker
 
 app = Blueprint('dashboard', __name__, template_folder='templates')
 
@@ -32,6 +31,6 @@ def dashboard():
         log.append('<pre>')
         log += lines[-30:]
         log.append('</pre>')
-    return render_template('dashboard.html', heartbeat=heartbeat,
+    return render_template('dashboard.html',
                            log=Markup('\n'.join(log)),
-                           cpuusage=cpu_usage(), memusage=mem_usage())
+                                          cpuusage=cpu_usage(), memusage=mem_usage())
