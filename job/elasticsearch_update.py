@@ -2,22 +2,23 @@
 import json
 from datetime import datetime
 from elasticsearch import Elasticsearch, helpers
-from lib import kuzuha
+from lib import kuzuha, file_io
 from lib.db import redis
 from lib.logger import logger
 
 ONE_DAY = 60 * 60 * 24
+elasticsearch_setting = file_io.read('atango.json')['elasticsearch']
 
 
 class ElasticSearchUpdate(object):
 
-    def __init__(self, es_setting=None):
-        self.es = Elasticsearch(es_setting)
+    def __init__(self):
+        self.es = Elasticsearch([elasticsearch_setting])
         self.db = redis.db('log')
         self.actions = []
 
     def find(self, post_id):
-        record = self.db.get('qwerty:%s' % post_id)
+        record = self.db.get('misao:%s' % post_id)
         if record:
             record = record.decode('utf8')
             stored_body = json.loads(record)
@@ -27,7 +28,7 @@ class ElasticSearchUpdate(object):
         return {}
 
     def update(self, post_id, body, _op_type):
-        self.actions.append({'_index': "qwerty", '_type': "log",
+        self.actions.append({'_index': "misao", '_type': "log",
                              '_op_type': _op_type, '_id': post_id, '_source': body.copy()})
         if _op_type == 'update':
             b = self.find(post_id)
@@ -35,7 +36,7 @@ class ElasticSearchUpdate(object):
             body = b
         body['dt'] = body['dt'].strftime('%Y-%m-%d-%H-%M-%S')
         logger.debug('%s: %s' % (_op_type.upper(), body))
-        self.db.setex('qwerty:%s' % post_id, json.dumps(body), ONE_DAY)
+        self.db.setex('misao:%s' % post_id, json.dumps(body), ONE_DAY)
 
     def build_body(self, post, post_id):
         body = {}
@@ -55,8 +56,8 @@ class ElasticSearchUpdate(object):
         return body
 
     def run(self):
-        params = kuzuha.gen_params('', {'minute': 20})
-        posts = kuzuha.get_log_as_dict('qwerty', params, url=True) or {}
+        params = kuzuha.gen_params('', {'minute': 50})
+        posts = kuzuha.get_log_as_dict('misao', params, url=True) or {}
         for (post_id, post) in posts.items():
             if 'date' not in post:
                 continue
@@ -68,4 +69,4 @@ class ElasticSearchUpdate(object):
                 logger.debug('NO CHANGE: %s' % body)
         if self.actions:
             logger.info(helpers.bulk(self.es, self.actions))
-            self.es.indices.refresh(index='qwerty')
+            self.es.indices.refresh(index='misao')

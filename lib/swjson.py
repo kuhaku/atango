@@ -36,20 +36,11 @@ REGEX = {
         'id': re.compile(r'(?<=")\d+(?=")'),
         'date': re.compile(u'<font size="\-1">(?P<Y>\d{4})/(?P<m>\d\d)/(?P<D>\d\d) \(.\) '
                            u'(?P<H>\d\d):(?P<M>\d\d):(?P<S>\d\d)'),
-        'quote': re.compile(u'<A href="#(\d+)">参考：.+秒</A>'),
+        'quote': re.compile(u'<A href="#(\d+)">参考：.+秒</A>', re.I),
         'author': re.compile(u'投稿者：<b>(.+?)</b>', re.I),
         'to': re.compile(u'<FONT size="\+1" color="#ffffff"><B>＞(.+?)</B>'),
-        'resnum': re.compile('\[(\d+)\]'),
+        'resnum': re.compile('<a href="#(\d+)">'),
         'thread': re.compile('s=([\d]+)">◆')
-    },
-    'GIKOGICOM': {
-        'pre': re.compile(r'(?<=<pre class="msg">)(.+)(?=\n<\/pre>)'),
-        'id': re.compile(r'(?<=<div class="m" id="m)\d+(?=">)'),
-        'date': re.compile(u'<span class="md">投稿日：(?P<Y>\d{4})/(?P<m>\d\d)/(?P<D>\d\d)'
-                           u'\(.\)(?P<H>\d\d)時(?P<M>\d\d)分(?P<S>\d\d)秒'),
-        'quote': re.compile('<a href="http://gikogi.com/bbslog/qwerty/id/(\d+)"'),
-        'author': re.compile('<span class="mn">([^　\n]+)'),
-        'to': re.compile(u'<span class="mt">＞([^　\n]+)')
     }
 }
 
@@ -74,10 +65,8 @@ class SwJson:
         Return:
             <str> site_name
         """
-        if u'<title>Q全文:' in html or u'<title>qwerty全文検索</title>' in html:
+        if u'<title>Q全文:' in html or u'<title>misao全文検索</title>' in html:
             return 'USAMIN'
-        elif '(gikogi.com)</title>' in html:
-            return 'GIKOGICOM'
         return 'KUZUHA'
 
     def _cleansing(self, html, site):
@@ -90,10 +79,8 @@ class SwJson:
             <str> html
         """
         html = html.replace(' target="link"', '')
-        if site == 'GIKOGICOM':
-            html = html[:html.rindex('<hr>')]
-            html = html.replace('<span class="q">', '').replace('</span>', '')
-        elif site == 'KUZUHA':
+        if site == 'KUZUHA':
+            html = html.replace('<FONT color="#d1d1d1">', '')
             html = html.replace('<FONT color="#ffffff">', '')
             html = html.replace('</FONT>', '')
         return html

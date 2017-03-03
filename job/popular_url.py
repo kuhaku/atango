@@ -12,7 +12,7 @@ from lib.logger import logger
 HOUR_RANGE = 4
 MAX_TWEET_LENGTH = 140
 SHORT_URL_LENGTH = 23
-HASH_TAG = ' #上海人気URL'
+HASH_TAG = ' #みさお人気URL'
 DELIMITER = '／'
 TWEET_FORMAT = '%s %s %d件' + DELIMITER
 
@@ -66,7 +66,7 @@ class PopularUrl(object):
         elif not ext in ignore_extensions:
             logger.info('Retrieve web resource: %s' % url)
             html = web.open_url(url)
-            soup = BeautifulSoup(html)
+            soup = BeautifulSoup(html, "html.parser")
             if soup.title and soup.title.string:
                 title = soup.title.string
                 title = normalize.normalize(title)

@@ -3,8 +3,9 @@ import time
 from datetime import datetime
 import mmh3
 from lib import kuzuha
+from lib.logger import logger
 
-
+ERROR_LOG_PATH = '/work/atango/logs/uwsgi_error.log'
 ELASTICSEARCH_DT_FORMAT = '%Y-%m-%dT%H:%M:%S'
 KUZUHA_DT_FORMAT = '%s/%02d/%02d(%s)%02d時%02d分%02d秒'
 WEEKDAYS = '月火水木金土日'
@@ -12,6 +13,17 @@ WEEKDAYS = '月火水木金土日'
 SQUARE = '　 <a href="http://qwerty.on.arena.ne.jp/cgi-bin/bbs.cgi?m=f&u=&d=30&c=900&ff={}.dat&s={}">■</a>'
 RHOMBUS = '　 <a href="http://qwerty.on.arena.ne.jp/cgi-bin/bbs.cgi?m=t&c=900&ff={}.dat&s={}">◆</a>'
 SANKOU = '<a href="http://qwerty.on.arena.ne.jp/cgi-bin/bbs.cgi?m=f&u=&d=30&c=900&ff={}.dat&s={}">参考：{}</a>'
+
+
+def catch_exception(f):
+    @functools.wraps(f)
+    def decorator(*args, **kwargs):
+        try:
+            return f(*args, **kwargs)
+        except Exception as e:
+            logger.crit(e)
+            #traceback.print_exception(file=open(ERROR_LOG_PATH, 'a+'))
+    return decorator
 
 
 def is_int_castable(s):
