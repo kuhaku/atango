@@ -6,6 +6,8 @@
     <string>atango.nginx</string>
     <key>RunAtLoad</key>
     <true/>
+    <key>KeepAlive</key>
+    <true/>
     <key>ProgramArguments</key>
     <array>
         <string>/usr/local/bin/nginx</string>
