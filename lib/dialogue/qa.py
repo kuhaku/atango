@@ -7,7 +7,7 @@ import re
 from lib import kuzuha, normalize
 from lib.nlp import mecab
 
-re_oshiete = re.compile('(?P<query>.*[^っ])((って)|(とは)|(について)|(のこと)|(を)|(には))(、)?([何誰]|(教えて)|(どこ)|(どう))')
+re_oshiete = re.compile('(?P<query>.{1,15}[^っ])って[何誰]？')
 NOUN_SUFFIXES = '(ちゃん)?(君)?(さん)?(先生)?'
 NG_SUBSTRS = ('すか', 'ょうか', 'だろう', 'っていう', 'かなぁ', '?', '？', '2萌え')
 NOT_FOUND_MESSAGE = 'ごめん(;´Д`)%s知らない'
