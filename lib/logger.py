@@ -45,7 +45,7 @@ class TwitterHandler(handlers.BufferingHandler):
             if record.levelno >= self.send_level:
                 error_message.append(record.msg)
         if error_message:
-            message = '%s %s' % (random.choice(TWEET_PREFIXES), ''.join(error_message))
+            message = '@kuhaku %s %s' % (random.choice(TWEET_PREFIXES), ''.join(error_message))
             if len(message) > 140:
                 message = message[:139] + '…'
             return message
