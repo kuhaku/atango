@@ -78,7 +78,7 @@ function get_atango_response(final_transcript){
   }
   httpObj.onreadystatechange = function(){speech(httpObj);};
   if (httpObj){
-      url = 'http://mamisan.no-ip.org/api/dialogue/?text='+final_transcript;
+      url = window.location.origin+'/api/dialogue/?text='+final_transcript;
     httpObj.open("GET", url, true);
     httpObj.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
     httpObj.send();
