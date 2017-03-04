@@ -58,7 +58,7 @@ class Atango(App):
             updater.run()
         elif job == 'haiku':
             from lib import file_io, misc
-            haiku_list = file_io.read('haiku.txt')
+            haiku_list = file_io.read('haiku.txt', data=True)
             haiku = misc.choice(haiku_list) + ' #くわ川柳'
             self.twitter.post(haiku, debug=self.debug)
         elif job == '575':

@@ -22,8 +22,8 @@ ROOTFORM_IDX = 6
 class PopularPost(object):
 
     def __init__(self):
-        self.paraphrases = file_io.read('shorten.json')
-        self.car_shorten_map = file_io.read('shorten_char.json')
+        self.paraphrases = file_io.read('shorten.json', data=True)
+        self.car_shorten_map = file_io.read('shorten_char.json', data=True)
 
     def count_responses(self, posts):
 

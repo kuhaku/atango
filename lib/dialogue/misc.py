@@ -34,7 +34,7 @@ def present_at_event(*arg):
 
 
 def give_present(*arg):
-    present_list = file_io.read('present.txt')
+    present_list = file_io.read('present.txt', data=True)
     sentence = misc.choice(present_list)
     while ('集計' in sentence or 'シュウケイ' in sentence or 'を' not in sentence or
             sentence.endswith('萌え') or len(sentence) < 3):
@@ -57,7 +57,7 @@ def give_present(*arg):
 
 
 def give_valentine_present(*arg):
-    present_list = file_io.read('valentine.txt')
+    present_list = file_io.read('valentine.txt', data=True)
     present = misc.choice(present_list)
     search_result = google_image.search(present)
     if 'images' in search_result:
@@ -74,5 +74,5 @@ def give_valentine_present(*arg):
 
 
 def haiku(*arg):
-    haiku_list = file_io.read('haiku.txt')
+    haiku_list = file_io.read('haiku.txt', data=True)
     return misc.choice(haiku_list) + ' #くわ川柳'

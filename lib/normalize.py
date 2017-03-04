@@ -78,7 +78,7 @@ class SynonymUnification(object):
 
     def __init__(self):
         self.synonym_map = OrderedDict()
-        propensity = file_io.read('propensity.json')
+        propensity = file_io.read('propensity.json', data=True)
         for (k, v) in sorted(propensity.items(), key=lambda x: len(x[0]), reverse=True):
             self.synonym_map[k] = v
 

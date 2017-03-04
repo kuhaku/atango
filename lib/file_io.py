@@ -23,15 +23,16 @@ def read_text_file(filename, encoding=''):
     return mycodecs.decode(text, encoding, 'replace')
 
 
-def read(filename, encoding=''):
+def read(filename, data=False, encoding=''):
+    _dir = pathutil.datadir() if data else pathutil.cfgdir()
     if filename.endswith('.cfg'):
-        cfg = os.path.join(pathutil.cfgdir(), filename)
+        cfg = os.path.join(_dir, filename)
         config_parser = SafeConfigParser()
         config_parser.read(cfg)
         return dict(config_parser)
     elif filename.endswith('.json'):
-        return json.load(open(os.path.join(pathutil.cfgdir(), filename), 'r', encoding='utf-8'))
+        return json.load(open(os.path.join(_dir, filename), 'r', encoding='utf-8'))
     elif filename.endswith('.txt'):
-        filename = os.path.join(pathutil.cfgdir(), filename)
+        filename = os.path.join(_dir, filename)
         text = read_text_file(filename, encoding)
         return text.splitlines()
