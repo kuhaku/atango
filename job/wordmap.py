@@ -57,7 +57,7 @@ class WordMap(object):
             <str> graphtitle
         """
         self.period = '%s:00~%s:00' % (self.start_hour, self.end_hour)
-        graphtitle = '%s/%s/%s %s qwerty' % (self.year, self.month, self.day, self.period)
+        graphtitle = '%s/%s/%s %s misao' % (self.year, self.month, self.day, self.period)
         return graphtitle
 
     def _configure_graph(self):
