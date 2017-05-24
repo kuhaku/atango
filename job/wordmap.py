@@ -19,6 +19,8 @@ from lib.nlp import mecab
 
 USAMIN_URL = 'http://usamin.mine.nu/cgi/swlog?b0=on&w='
 FLICKR_URL = 'https://www.flickr.com/photos/sw_words/'
+NG_WORDS = ('人', '貴殿')
+
 
 class WordMap(object):
 
@@ -99,7 +101,9 @@ class WordMap(object):
                     post[idx] = '\n'.join(post[idx])
                 for line in post[idx].splitlines():
                     line = self.prepare_for_counting(line)
-                    for w in mecab.extract_word(line):
+                    for w in mecab.extract_word(line, phrase=True):
+                        if w in NG_WORDS:
+                            continue
                         ws = []
                         ws.append(self.word_ids[w])
                         if w not in self.words:
