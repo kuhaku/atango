@@ -8,11 +8,8 @@
     <string>atango.elasticsearch</string>
     <key>ProgramArguments</key>
     <array>
-      <string>/usr/local/bin/elasticsearch</string>
+      <string>/usr/local/opt/elasticsearch/bin/elasticsearch</string>
     </array>
-    <key>EnvironmentVariables</key>
-    <dict>
-    </dict>
     <key>RunAtLoad</key>
     <true/>
     <key>WorkingDirectory</key>
