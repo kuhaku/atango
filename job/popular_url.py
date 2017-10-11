@@ -66,7 +66,7 @@ class PopularUrl(object):
         elif not ext in ignore_extensions:
             logger.info('Retrieve web resource: %s' % url)
             html = web.open_url(url)
-            soup = BeautifulSoup(html, "html.parser")
+            soup = BeautifulSoup(html, "html5lib")
             if soup.title and soup.title.string:
                 title = soup.title.string
                 title = normalize.normalize(title)
@@ -87,7 +87,7 @@ class PopularUrl(object):
 
     def run(self, hour_range=HOUR_RANGE):
         date_range = kuzuha.build_date_filter_by_range({'hours': hour_range})
-        posts = kuzuha.search('http', _filter=date_range)
+        posts = kuzuha.search('http', _filter=date_range, sort=[])
         tweet = ''
         for (url, count) in self._count_url(posts).most_common():
             if url.startswith('https://twitter.com/'):

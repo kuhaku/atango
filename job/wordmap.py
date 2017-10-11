@@ -18,7 +18,6 @@ from lib import api, app, kuzuha, normalize, file_io, regex
 from lib.nlp import mecab
 
 USAMIN_URL = 'http://usamin.mine.nu/cgi/swlog?b0=on&w='
-FLICKR_URL = 'https://www.flickr.com/photos/sw_words/'
 NG_WORDS = ('人', '貴殿')
 
 
@@ -84,7 +83,7 @@ class WordMap(object):
         self.day = _filter['range']['dt']['gte'][8:10]
         self.start_hour = int(_filter['range']['dt']['gte'][11:13])
         self.end_hour = int(_filter['range']['dt']['lte'][11:13]) + 1
-        return kuzuha.search(_filter=_filter)
+        return kuzuha.search(_filter=_filter, sort=[])
 
     @staticmethod
     def prepare_for_counting(text):
@@ -101,7 +100,7 @@ class WordMap(object):
                     post[idx] = '\n'.join(post[idx])
                 for line in post[idx].splitlines():
                     line = self.prepare_for_counting(line)
-                    for w in mecab.extract_word(line, phrase=True):
+                    for w in mecab.extract_word(line):
                         if w in NG_WORDS:
                             continue
                         ws = []

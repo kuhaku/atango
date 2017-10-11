@@ -11,7 +11,7 @@ class MarkovTweet(object):
     def run(self, interval=60, min_length=40):
         m_generator = markov.MarkovGenerater()
         m = mecab.MeCabWrapper()
-        posts = kuzuha.search('', _filter=kuzuha.build_date_filter_by_range({'minutes': interval}))
+        posts = kuzuha.search('', _filter=kuzuha.build_date_filter_by_range({'minutes': interval}), sort=[])
 
         words = []
         for post in posts:

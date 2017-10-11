@@ -34,7 +34,7 @@ class ClauseExtractor(object):
 
     def find(self, lemma, query, date_range):
         result = ''
-        posts = kuzuha.search(query, field='text', _filter=date_range)
+        posts = kuzuha.search(query, field='text', _filter=date_range, sort=[])
         for post in posts:
             result = self.find_clause(lemma, cabocha.parse(post['text']), query[0])
             if result:
