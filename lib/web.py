@@ -11,7 +11,7 @@ from .misc import choice
 from . import file_io, mycodecs
 
 
-TIMEOUT = 20
+TIMEOUT = 40
 USER_AGENTS = [  # from: http://techblog.willshouse.com/2012/01/03/most-common-user-agents/
     'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) '
     'Chrome/31.0.1650.57 Safari/537.36',
