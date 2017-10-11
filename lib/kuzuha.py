@@ -8,7 +8,7 @@ from . import swjson, web, normalize, file_io
 # Regular Expressions
 link_u = re.compile('<A[^<]+</A>')
 
-MISAO_URL = 'http://misao.on.arena.ne.jp/cgi-bin/bbs.cgi'
+MISAO_URL = 'http://misao.mixh.jp/cgi-bin/bbs.cgi'
 USAMIN_URL = 'http://usamin.elpod.org/cgi-bin/swlog.cgi'
 
 DEFAULT_KUZUHA_PARAMS = {
@@ -170,8 +170,7 @@ def get_log(site, params={}, link=False, font_tag=False):
 
 
 def cleansing(html, font_tag, link, site):
-    html = normalize.normalize(html)
-    html = html.replace('&gt;', '>')
+    html = normalize.normalize(html, emoticon=True)
     return html
 
 
@@ -221,9 +220,11 @@ def _build_sort(sort):
         else:
             sort_item.append({
                 '_script': {
-                    'script': "doc.%s.size()" % field,
-                    "lang": "groovy",
-                    "type": "string",
+                    "type" : "number",
+                    'script':{
+                        "source": "doc.%s.size()" % field,
+                        "lang": "groovy"
+                    },
                     'order': order
                 }
             })
@@ -231,34 +232,32 @@ def _build_sort(sort):
 
 
 def search(query='', field='q1', _operator='and', sort=[('_score', 'desc'), ('quoted_by', 'desc')],
-           _filter={}, size=1000, _id=False):
+           _filter=[{}], size=1000, _id=False, indices=['misao']):
     es = Elasticsearch([elasticsearch_setting])
     if query:
-        es_query = {
-            'match': {
-                field: {
-                    'query': query,
-                    'operator': _operator,
-                    'minimum_should_match': '85%'
-                }
-            }
-        }
+        es_query = {'match': {field: query}}
     else:
         es_query = {"match_all": {}}
-    body = {
-        "query": {
-            "filtered": {
-                "query": es_query,
-                "filter": _filter
-            }
-        },
-        'size': size
-    }
+    if _filter:
+        body = {
+            "query": {
+                "bool": {
+                    "must": es_query,
+                    "filter": _filter
+                },
+            },
+            'size': size
+        }
+    else:
+        body = {
+            'query': es_query,
+            'size': size
+        }
     sort_item = _build_sort(sort)
     if sort_item:
         body.update({'sort': sort_item})
     logger.debug(body)
-    result = es.search(index=['qwerty', 'misao'], body=body, _source=True)
+    result = es.search(index=indices, body=body, _source=True)
     if _id:
         return (x for x in result['hits']['hits'])
     return (x['_source'] for x in result['hits']['hits'])
