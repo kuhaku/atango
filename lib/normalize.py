@@ -44,11 +44,10 @@ def normalize(text, emoticon=False, repeat=None):
     text = HTMLParser().unescape(text)
     text = text.replace('\r', '\n')
     if emoticon is False:
-        text = remove_useless_symbol(text)
-        text = text.replace(u'γ⌒ヽ', '')
+        text = remove_emoticon(text)
         text = jctconv.h2z(text)
-        text = text.replace(u'よぉ', u'よ').replace(u'よぉ', u'よ')
-        text = text.replace(u'よお', u'よ').replace(u'よお', u'よ')
+        text = text.replace('よぉ', 'よ').replace('よぉ', 'よ')
+        text = text.replace('よお', 'よ').replace('よお', 'よ')
     if repeat:
         text = shorten_repeat(text, repeat)
     return text
@@ -63,10 +62,12 @@ def normalize_word(word):
 
 
 def remove_emoticon(text):
+    text = remove_useless_symbol(text)
+    text = text.replace('γ⌒ヽ', '')
     text = re_face.sub('', text)
     text = re_left_hand.sub('(', text)
     text = re_right_hand.sub(')', text)
-    text = text.replace(u'＾＾', '')
+    text = text.replace('＾＾', '')
     text = text.replace('^^;', '')
     text = text.replace('^^', '')
     text = re_emoticon.sub('', text)
