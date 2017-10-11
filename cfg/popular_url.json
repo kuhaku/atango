@@ -1,6 +1,7 @@
 {
   "IGNORE_URL": [
     "http://misao.on.arena.ne.jp/c/up/",
+    "http://misao.mixh.jp/c/up/",
     "http://cal.syoboi.jp/"
   ],
   "REMOVE_TITLE_SUBSTR": [
