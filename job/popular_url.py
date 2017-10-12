@@ -11,7 +11,7 @@ from lib.logger import logger
 
 HOUR_RANGE = 4
 MAX_TWEET_LENGTH = 140
-SHORT_URL_LENGTH = 23
+SHORT_URL_LENGTH = 24
 HASH_TAG = ' #みさお人気URL'
 DELIMITER = '／'
 TWEET_FORMAT = '%s %s %d件' + DELIMITER
