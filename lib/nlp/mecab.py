@@ -85,6 +85,8 @@ class MeCabMultiProcessing(object):
             self.set_pool()
         f = partial(count_word, **kwds)
         return reduce(lambda x, y: x+y, self.pool.imap_unordered(f, doc))
+
+
 mmp = MeCabMultiProcessing()
 count_doc = mmp.count_doc
 
@@ -106,6 +108,7 @@ def to_yomi(text):
     if yomi:
         return yomi.rstrip(" \n").split(" ")
     return ['']
+
 
 def has_demonstrative(text):
     mecab = MeCabWrapper('-d /usr/local/lib/mecab/dic/juman')

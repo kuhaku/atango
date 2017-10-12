@@ -104,7 +104,7 @@ def search(q, best_kwds_max_length=50):
     if isinstance(q, str) and q.startswith('http'):
         result['result_page'] = sbiutil.search_by_url(q)
         result['best_guess'] = sbiutil.extract_best_guess_tag(result['result_page'])
-        soup_result_page = BeautifulSoup(result['result_page'])
+        soup_result_page = BeautifulSoup(result['result_page'], 'html5lib')
         sbiutil.has_captcha(soup_result_page)
         result['titles'] = sbiutil.extract_titles(soup_result_page)
         result['snippets'] = sbiutil.extract_snippets(soup_result_page)
