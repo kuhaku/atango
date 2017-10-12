@@ -51,7 +51,7 @@ class PopularUrl(object):
         if len(title) < 15 or re_no_shortened_title.search(title):
             return title
         titles = [substr for substr in re_title_delimiter.split(title)]
-        titles = filter(lambda x: x, titles)  # 0文字の要素をカット
+        titles = filter(bool, titles)  # 0文字の要素をカット
         return sorted(titles, key=lambda x: len(x), reverse=True)[0].strip()  # 最長の要素を返す
 
     def _get_title(self, url):
@@ -108,9 +108,11 @@ class PopularUrl(object):
             else:
                 tweet = tweet[:-len(DELIMITER)] + HASH_TAG
                 if tweet != HASH_TAG:
+                    tweet = tweet.replace('\n', '').replace('\r', '')
                     yield tweet
                 tweet = new_url_info
         if tweet:
             if tweet.endswith(DELIMITER):
                 tweet = tweet[:-len(DELIMITER)]
+            tweet = tweet.replace('\n', '').replace('\r', '')
             yield tweet + HASH_TAG
