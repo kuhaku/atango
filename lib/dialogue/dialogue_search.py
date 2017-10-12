@@ -30,7 +30,8 @@ def _extract_response_by_search(query, or_flag):
     if not validated_query:
         return
     _operator = 'or' if or_flag else 'and'
-    posts = kuzuha.search(validated_query, _operator=_operator, size=200)
+    posts = kuzuha.search(validated_query, _operator=_operator, size=200,
+                          indices=['mirai', 'qwerty', 'misao'])
     for post in sorted(posts, key=lambda x: len(x['q1'])):
         response = _validate_post(post)
         if response:
