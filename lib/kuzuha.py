@@ -232,10 +232,10 @@ def _build_sort(sort):
 
 
 def search(query='', field='q1', _operator='and', sort=[('_score', 'desc'), ('quoted_by', 'desc')],
-           _filter=[{}], size=1000, _id=False, indices=['misao']):
+           _filter=[], size=1000, _id=False, indices=['misao']):
     es = Elasticsearch([elasticsearch_setting])
     if query:
-        es_query = {'match': {field: query}}
+        es_query = {'match': {field: ' '.join(query)}}
     else:
         es_query = {"match_all": {}}
     if _filter:
@@ -256,7 +256,7 @@ def search(query='', field='q1', _operator='and', sort=[('_score', 'desc'), ('qu
     sort_item = _build_sort(sort)
     if sort_item:
         body.update({'sort': sort_item})
-    logger.debug(body)
+    logger.info(body)
     result = es.search(index=indices, body=body, _source=True)
     if _id:
         return (x for x in result['hits']['hits'])
