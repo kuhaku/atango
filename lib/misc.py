@@ -6,7 +6,7 @@ import numpy as np
 from lib.logger import logger
 
 
-def command(cmd, shell=False, allow_err=False):
+def command(cmd, shell=False, allow_err=False, cwd=None):
     '''
     Args:
         <tuple> command parameters
@@ -16,7 +16,7 @@ def command(cmd, shell=False, allow_err=False):
     '''
     out = ''
     error = ''
-    proc = subprocess.Popen(cmd, shell=shell,
+    proc = subprocess.Popen(cmd, shell=shell, cwd=cwd,
                             stdout=subprocess.PIPE,
                             stderr=subprocess.PIPE)
     (out, error) = proc.communicate()
