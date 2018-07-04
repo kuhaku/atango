@@ -235,7 +235,10 @@ def search(query='', field='q1', _operator='and', sort=[('_score', 'desc'), ('qu
            _filter=[], size=1000, _id=False, indices=['misao']):
     es = Elasticsearch([elasticsearch_setting])
     if query:
-        es_query = {'match': {field: ' '.join(query)}}
+        if isinstance(query, list):
+            es_query = {'match': {field: ' '.join(query)}}
+        else:
+            es_query = {'match': {field: query}}
     else:
         es_query = {"match_all": {}}
     if _filter:
