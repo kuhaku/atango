@@ -32,7 +32,7 @@ python ${SCRIPT_DIR}/normalize_cost.py ${ORIGINAL_DICDIR}/ipadic.csv ${TMP_DICDI
 ${MECAB_LIBEXEC_DIR}/mecab-dict-index -d ${TMP_DICDIR} -o ${TMP_DICDIR} -f utf-8 -t utf-8 >> /dev/null
 rm ${TMP_DICDIR}/1.temp
 
-for i in {2..100}
+for i in {2..20}
 do
   TMPFILE=${TMP_DICDIR}/${i}.temp
   if [ -e ${TMPFILE} ]; then
@@ -48,4 +48,4 @@ then
 fi
 
 mv ${TMP_DICDIR} ${STORE_DICDIR}
-rm ${STORE_DICDIR}/*.csv
+rm ${STORE_DICDIR}/*.csv ${STORE_DICDIR}/*.temp ${TMP_DICDIR}/*.temp

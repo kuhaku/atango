@@ -9,7 +9,8 @@ import zipfile
 from collections import OrderedDict
 import shutil
 from bs4 import BeautifulSoup
-import jctconv
+import jaconv
+sys.path.append('/work/atango')
 from lib import web
 from lib.nlp import mecab
 
@@ -56,7 +57,7 @@ class WebNeologism(object):
 
     def get_trend_search_query(self, url):
         html = web.open_url(url)
-        soup = BeautifulSoup(html)
+        soup = BeautifulSoup(html, "html5lib")
         for item in soup.find_all('item'):
             title = item.find('title')
             keyword = str(title.string).strip()
@@ -98,7 +99,7 @@ class WebNeologism(object):
 
     def get_yomi(self, word):
         def normalize(s):
-            s = jctconv.hira2kata(s).replace('・', '')
+            s = jaconv.hira2kata(s).replace('・', '')
             s = re_symbol.sub('', s)
             return re_tyouon.sub('ー', s)
 
@@ -112,7 +113,7 @@ class WebNeologism(object):
         return '*'
 
     def normalize_yomi(self, yomi):
-        yomi = jctconv.hira2kata(yomi)
+        yomi = jaconv.hira2kata(yomi)
         return yomi.replace('ウ゛', 'ヴ').replace(' ', '')
 
     def to_mecab_format(self, word, yomi, label):

@@ -4,6 +4,8 @@ from collections import defaultdict
 import operator
 from functools import reduce
 import numpy as np
+
+sys.path.append('/work/atango')
 from lib.misc import map_dict
 
 

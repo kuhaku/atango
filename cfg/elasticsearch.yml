@@ -30,6 +30,7 @@ http.port: 9200
 
 ##################################### ETC #####################################
 
+network.host: 0.0.0.0
 script.groovy.sandbox.enabled: true
 script.engine.groovy.inline.search: on
 http.cors.enabled: true
