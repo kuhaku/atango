@@ -10,6 +10,7 @@ from .db import redis
 from .logger import logger
 
 CFG_FILE = 'api.cfg'
+FRIENDS_FILE = 'friends.json'
 re_photo_id = re.compile(r'<photoid>(?P<photoid>[0-9]+)</photoid>')
 HALF_DAY = 60 * 60 * 12
 
@@ -40,9 +41,10 @@ class Twitter(object):
     def api(self):
         return twitter.Twitter(auth=self._get_oauth())
 
-    @cached_property
-    def stream_api(self):
-        return twitter.TwitterStream(auth=self._get_oauth(), domain='userstream.twitter.com')
+    def stream_filter(self):
+        friends = ','.join(map(str, file_io.read(FRIENDS_FILE)))
+        stream = twitter.TwitterStream(auth=self._get_oauth(), secure=True)
+        return stream.statuses.filter(follow=friends)
 
     def get_latest_replied_id(self):
         if not os.path.exists(self.replied_id_file):
@@ -67,9 +69,7 @@ class Twitter(object):
         if text:
             text = normalize.normalize(text, emoticon=True)
             if misc.is_mojie(text):
-                text = list(text)
-                text[text.index(' ')] = '.\n'
-                text = ''.join(text)
+                text = '.\n' + text
             params = {'status': text, 'in_reply_to_status_id': reply_id}
             logging_msg = 'Tweet: text={status}'
             if reply_id:

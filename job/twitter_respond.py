@@ -48,7 +48,7 @@ class TwitterResponder(object):
             logger.debug('TwitterResponder is already launched')
             return -1
         last_time = time.time()
-        for tweet in self.twitter.stream_api.user():
+        for tweet in self.twitter.stream_filter():
             if 'text' in tweet:
                 if tweet['text'].startswith('@sw_words'):
                     self.respond(self.reply_responder, tweet)
