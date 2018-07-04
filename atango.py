@@ -66,12 +66,6 @@ class Atango(App):
             s = Senryu()
             result = self.execute(s.run)
             self.twitter.post(result, debug=self.debug)
-        elif job == 'cputemp':
-            from job.cputemp import CpuTemperatureChecker
-            temp_checker = CpuTemperatureChecker()
-            message = temp_checker.run()
-            if message:
-                self.twitter.post(message, debug=self.debug)
         elif job == 'dialogue':
             from job.reply import Reply
             reply = Reply()
@@ -80,6 +74,10 @@ class Atango(App):
             while True:
                 tweet['text'] = input()
                 print(reply.respond(tweet))
+        elif job == 'friends':
+            from job.friends import TwitterFriendsUpdater
+            tfu = TwitterFriendsUpdater()
+            tfu.run()
         else:
             raise ValueError('"%s" is not implemented yet' % job)
 
