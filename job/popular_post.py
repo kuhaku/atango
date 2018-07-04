@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import re
 from collections import Counter, namedtuple
-import jctconv
+import jaconv
 from lib import file_io, kuzuha, normalize, misc
 from lib.logger import logger
 from lib.nlp.mecab import MeCabWrapper
@@ -39,7 +39,7 @@ class PopularPost(object):
 
     def prepare(self, text):
         text = normalize.shorten_repeat(text, 3)
-        text = jctconv.h2z(text)
+        text = jaconv.h2z(text)
         text = re_a_tag.sub('', text)
         text = kigou.sub('', text)
         for (old, new) in self.paraphrases['before'].items():

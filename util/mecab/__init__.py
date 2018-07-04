@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 import re
-import jctconv
+import jaconv
 import MeCab
 import sys
 sys.path.append('/work/atango')
@@ -33,12 +33,12 @@ def get_yomi(word, yomi=''):
         return nolmcb.parse(word).strip()
 
     word = re_symbol.sub('', word)
-    word = jctconv.hira2kata(word)
+    word = jaconv.hira2kata(word)
     if re_katakana.search(word):
         return word
     elif re_katakana.search(yomi):
         return yomi
-    yomi = jctconv.hira2kata(to_yomi(word))
+    yomi = jaconv.hira2kata(to_yomi(word))
     if re_katakana.search(yomi):
         return yomi
     return '*'

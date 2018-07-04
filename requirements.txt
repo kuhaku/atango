@@ -1,6 +1,6 @@
 twitter
 nose
-jctconv
+jaconv
 python-tr
 requests
 nkf
@@ -13,9 +13,8 @@ uwsgi
 flask
 mmh3
 woothee
-git+https://github.com/numpy/numpy
+numpy
 scipy
-git+https://github.com/python-pillow/Pillow
-git+https://github.com/matplotlib/matplotlib
-git+https://github.com/taku910/cabocha.git#egg=CaboCha&subdirectory=python
+Pillow
+matplotlib
 scikit-learn

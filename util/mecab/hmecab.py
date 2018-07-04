@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 import argparse
 import MeCab
-import jctconv
+import jaconv
 
 DEFALUT_FORMAT = ' -F%m\\t%phl,%phr,%c,%H,%pC,%pn,%pc\\n --eos-format=EOS\\t%pC,%pn,%pc\\n'
 MECAB_ARGS_KEYS = 'rdulDOapmMFUBESxbPCtco'
@@ -23,7 +23,7 @@ if __name__ == '__main__':
     mecab = MeCab.Tagger(mecab_arg)
     while True:
         sentence = input()
-        sentence = jctconv.h2z(sentence)
+        sentence = jaconv.h2z(sentence)
         if args.N:
             mecab.parseNBestInit(sentence)
             for i in range(args.N):

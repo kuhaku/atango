@@ -3,7 +3,7 @@ import re
 from html.parser import HTMLParser
 import itertools
 from collections import OrderedDict
-import jctconv
+import jaconv
 import tr
 from . import file_io
 
@@ -45,7 +45,7 @@ def normalize(text, emoticon=False, repeat=None):
     text = text.replace('\r', '\n')
     if emoticon is False:
         text = remove_emoticon(text)
-        text = jctconv.h2z(text)
+        text = jaconv.h2z(text)
         text = text.replace('よぉ', 'よ').replace('よぉ', 'よ')
         text = text.replace('よお', 'よ').replace('よお', 'よ')
     if repeat:
@@ -57,7 +57,7 @@ def normalize_word(word):
     """
     For identify same word
     """
-    word = jctconv.kata2hira(word)
+    word = jaconv.kata2hira(word)
     return word.lower()
 
 
