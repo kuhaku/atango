@@ -73,7 +73,8 @@ class Reply(object):
         else:
             user_info = {'replies': [], 'tweets': [tweet['text']]}
         user_info.update({'screen_name': tweet['user']['screen_name'],
-                          'name': tweet['user']['name']})
+                          'name': tweet['user']['name'],
+                          'icon': tweet['user']['profile_image_url']})
         return user_info
 
     def replace_name(self, text, user_info):
@@ -86,14 +87,14 @@ class Reply(object):
         response = ''
         stop_make_response = False
         for method in RESPONDING_METHODS:
-            for response in method(text):
+            for response in method(text, user_info):
                 if isinstance(response, dict):
                     response['text'] = response.get('text', '').strip()
                     if not (response['text'] in user_info['replies'] or response['text'] in global_context):
                         stop_make_response = True
                         break
                 else:
-                    response = response.strip()
+                    response = response.rstrip()
                     if not (response in user_info['replies'] or response in global_context):
                         stop_make_response = True
                         break

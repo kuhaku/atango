@@ -31,7 +31,7 @@ def cleansing(text):
     return normalize.normalize(text, repeat=3)
 
 
-def respond(text):
+def respond(text, *args):
     logs = kuzuha.search(mecab.extract_word(text))
     logs = [cleansing(log.get('text', '')) for log in logs]
     for message in get_longest_common_substring(''.join(logs)):

@@ -38,7 +38,7 @@ def _extract_response_by_search(query, or_flag):
             yield response
 
 
-def respond(text):
+def respond(text, *args):
     """Extract a past post responding a post similar to given text
     """
     for response in _extract_response_by_search([text], False):

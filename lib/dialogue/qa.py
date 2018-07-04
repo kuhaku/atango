@@ -28,7 +28,7 @@ def _extract_oshiete_answer(query, posts):
                     yield answer
 
 
-def respond_oshiete(text):
+def respond_oshiete(text, *args):
     oshiete_match = re_oshiete.search(text)
     if not oshiete_match:
         return None
@@ -55,7 +55,7 @@ def _build_what_who_query(text):
     return query
 
 
-def respond_what_who(text):
+def respond_what_who(text, *args):
     """
     何がXXX？ -> YYYがXXX
     e.g. 何がおかしい？ -> 頭がおかしい
