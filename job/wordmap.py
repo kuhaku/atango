@@ -11,7 +11,7 @@ from scipy.sparse import csr_matrix
 from sklearn import manifold
 import matplotlib.pyplot as plt
 import matplotlib.font_manager as font_manager
-from mpl_toolkits.axes_grid1.anchored_artists import AnchoredText
+from  matplotlib.offsetbox import AnchoredText
 import PIL.ImageFont
 
 from lib import api, app, kuzuha, normalize, file_io, regex
@@ -64,7 +64,7 @@ class WordMap(object):
     def _configure_graph(self):
         plt.switch_backend('tkagg')
         plt.figure(figsize=(self.fig_size, self.fig_size))
-        plt.axes(axisbg=self.bgcolor)
+        plt.axes(facecolor=self.bgcolor)
         ax = plt.gca()
         self.hide_unused_figure_object(ax)
         self.prop = font_manager.FontProperties(fname=self.font_path)
